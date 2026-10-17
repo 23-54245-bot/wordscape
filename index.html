@@ -2,36 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>STREAMLINED Word Delivery</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg-gradient: linear-gradient(180deg, #1d438a 0%, #3a7bd5 40%, #68b8f8 80%, #a2dbff 100%);
-  --card-bg: rgba(255, 255, 255, 0.92);
-  --card-border: rgba(255, 255, 255, 0.6);
-  --card-shadow: 0 16px 36px rgba(13, 37, 77, 0.25), 0 4px 10px rgba(0,0,0,0.06);
+  --card-bg: rgba(255, 255, 255, 0.94);
+  --card-border: rgba(255, 255, 255, 0.75);
+  --card-shadow: 0 16px 36px rgba(5, 15, 35, 0.45), 0 4px 12px rgba(0,0,0,0.15);
   --ink: #1e293b;
   --ink-light: #475569;
   --muted: #64748b;
   
   --accent: #ff7a18;
   --accent-grad: linear-gradient(135deg, #ff9736 0%, #ff6200 100%);
-  --accent-shadow: 0 6px 16px rgba(255, 106, 0, 0.38);
+  --accent-shadow: 0 6px 16px rgba(255, 106, 0, 0.42);
   --accent2: #d64f00;
 
   --good: #10b981;
   --good-grad: linear-gradient(135deg, #34d399 0%, #059669 100%);
   --bad: #ef4444;
 
-  --wheel-bg: radial-gradient(circle, rgba(255,255,255,0.96) 30%, rgba(240,246,255,0.85) 100%);
+  --wheel-bg: radial-gradient(circle, rgba(255,255,255,0.98) 30%, rgba(235,244,255,0.9) 100%);
   --tile-bg: linear-gradient(145deg, #ffffff, #f0f4f9);
   --tile-border: #cbd5e1;
-  --tile-shadow: 0 5px 0 #94a3b8, 0 8px 12px rgba(0,0,0,0.12);
+  --tile-shadow: 0 5px 0 #94a3b8, 0 8px 12px rgba(0,0,0,0.15);
   --tile-active: linear-gradient(145deg, #ff9b44, #f55d00);
   --tile-active-shadow: 0 4px 0 #b34100, 0 6px 14px rgba(255, 102, 0, 0.45);
 
-  --cell-blank: rgba(255, 255, 255, 0.82);
+  --cell-blank: rgba(255, 255, 255, 0.88);
   --cell-border: #93c5fd;
   --cell-revealed: linear-gradient(145deg, #ff8c2b, #ea580c);
   --cell-shadow: 0 4px 0 #2563eb;
@@ -39,23 +39,27 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-gradient: linear-gradient(180deg, #0b1329 0%, #112244 40%, #1e3a6a 80%, #2a4d87 100%);
-    --card-bg: rgba(23, 37, 66, 0.9);
-    --card-border: rgba(255, 255, 255, 0.12);
-    --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
-    --ink: #f1f5f9;
+    --card-bg: rgba(20, 32, 56, 0.93);
+    --card-border: rgba(255, 255, 255, 0.15);
+    --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+    --ink: #f8fafc;
     --ink-light: #cbd5e1;
     --muted: #94a3b8;
-    --wheel-bg: radial-gradient(circle, rgba(29, 45, 77, 0.95) 30%, rgba(20, 32, 56, 0.9) 100%);
+    --wheel-bg: radial-gradient(circle, rgba(29, 45, 77, 0.96) 30%, rgba(18, 28, 50, 0.92) 100%);
     --tile-bg: linear-gradient(145deg, #2a3c61, #1d2b48);
     --tile-border: #475569;
-    --tile-shadow: 0 5px 0 #0f172a, 0 8px 12px rgba(0,0,0,0.4);
-    --cell-blank: rgba(30, 48, 80, 0.85);
+    --tile-shadow: 0 5px 0 #0f172a, 0 8px 12px rgba(0,0,0,0.45);
+    --cell-blank: rgba(30, 48, 80, 0.88);
     --cell-border: #3b82f6;
   }
 }
 
-* { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+* { 
+  box-sizing: border-box; 
+  user-select: none; 
+  -webkit-user-select: none; 
+  -webkit-touch-callout: none;
+}
 html { height: 100%; }
 
 body {
@@ -64,51 +68,16 @@ body {
   min-height: 100dvh;
   font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
   color: var(--ink);
-  background: var(--bg-gradient);
+  background: 
+    linear-gradient(180deg, rgba(10, 22, 45, 0.68) 0%, rgba(13, 27, 56, 0.82) 100%),
+    url('Streamline-bg.jpg') center center / cover no-repeat fixed,
+    var(--bg-gradient);
   background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow-x: hidden;
   position: relative;
-}
-
-/* Background animated scenery clouds */
-.sky-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-.cloud {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  filter: blur(4px);
-  animation: drift linear infinite;
-}
-.cloud::before, .cloud::after {
-  content: '';
-  position: absolute;
-  background: inherit;
-  border-radius: 50%;
-}
-.cloud1 { width: 140px; height: 46px; top: 12%; left: -160px; animation-duration: 34s; }
-.cloud1::before { width: 56px; height: 56px; top: -24px; left: 24px; }
-.cloud1::after { width: 44px; height: 44px; top: -16px; left: 68px; }
-
-.cloud2 { width: 200px; height: 60px; top: 38%; left: -220px; animation-duration: 48s; animation-delay: 8s; }
-.cloud2::before { width: 75px; height: 75px; top: -34px; left: 36px; }
-.cloud2::after { width: 60px; height: 60px; top: -24px; left: 96px; }
-
-.cloud3 { width: 160px; height: 50px; top: 68%; left: -180px; animation-duration: 40s; animation-delay: 18s; }
-.cloud3::before { width: 62px; height: 62px; top: -28px; left: 30px; }
-.cloud3::after { width: 50px; height: 50px; top: -20px; left: 78px; }
-
-@keyframes drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(100vw + 300px)); }
 }
 
 main {
@@ -125,13 +94,13 @@ main {
 /* Glassmorphic main cards */
 .card {
   background: var(--card-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
   border-radius: 28px;
   padding: 20px 18px;
   box-shadow: var(--card-shadow);
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 h1 {
@@ -155,7 +124,7 @@ h1 {
 .big-icon {
   font-size: 3.5rem;
   text-align: center;
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.22));
   animation: floatBounce 3s ease-in-out infinite;
 }
 @keyframes floatBounce {
@@ -180,16 +149,17 @@ input {
 }
 input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(255, 122, 24, 0.22);
+  box-shadow: 0 0 0 4px rgba(255, 122, 24, 0.25);
 }
 
-/* Button styles */
-button {
+/* Button styles - instant tap response */
+button, .btn, .sm-btn, .icon-btn {
   font: inherit;
   cursor: pointer;
   border: 0;
   color: inherit;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn {
   background: var(--accent-grad);
@@ -207,9 +177,7 @@ button {
   gap: 8px;
   transition: transform 0.1s, box-shadow 0.1s;
 }
-.btn:hover {
-  filter: brightness(1.06);
-}
+.btn:hover { filter: brightness(1.06); }
 .btn:active {
   transform: translateY(3px);
   box-shadow: 0 1px 0 var(--accent2);
@@ -256,7 +224,7 @@ button {
 /* Delivery progress bar */
 .progress-wrap {
   margin: 2px 0 12px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 999px;
   height: 10px;
   overflow: hidden;
@@ -267,7 +235,7 @@ button {
   height: 100%;
   width: 0%;
   border-radius: 999px;
-  transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .rname {
@@ -313,15 +281,15 @@ button {
   font-weight: 800;
   text-transform: uppercase;
   color: var(--ink);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.06);
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .cell.on {
   background: var(--cell-revealed);
   border-color: #ff9b44;
   color: #fff;
   box-shadow: 0 5px 12px rgba(234, 88, 12, 0.4), inset 0 2px 2px rgba(255,255,255,0.4);
-  animation: cellPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: cellPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes cellPop {
   0% { transform: scale(0.6) rotate(-8deg); opacity: 0; }
@@ -390,7 +358,7 @@ button {
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.3px;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Letter Wheel & Drag Canvas */
@@ -399,16 +367,26 @@ button {
   width: 270px;
   height: 270px;
   margin: 4px auto 14px;
+  touch-action: none;
 }
 #wheel {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: var(--wheel-bg);
-  box-shadow: inset 0 0 0 5px rgba(255,255,255,0.6), 0 12px 28px rgba(15, 34, 67, 0.18), inset 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: inset 0 0 0 5px rgba(255,255,255,0.7), 0 12px 28px rgba(10, 25, 55, 0.25), inset 0 4px 12px rgba(0,0,0,0.06);
   border: 1px solid var(--card-border);
   touch-action: none;
 }
+#wheel.spin {
+  animation: wheelSpin 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes wheelSpin {
+  0% { transform: rotate(0deg) scale(0.96); }
+  50% { transform: rotate(180deg) scale(1.04); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
 #wheel-canvas {
   position: absolute;
   inset: 0;
@@ -431,7 +409,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s, box-shadow 0.15s, color 0.15s;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.12s, box-shadow 0.12s;
   z-index: 3;
 }
 #wheel button.selected {
@@ -457,24 +435,21 @@ button {
   padding: 10px 18px;
   font-weight: 700;
   font-size: 0.95rem;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   color: var(--ink);
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
 }
-.sm-btn:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateY(-1px);
-}
+.sm-btn:hover { background: rgba(255, 255, 255, 1); }
 .sm-btn:active {
   transform: translateY(2px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 /* Shake animation */
-.shake { animation: shakeEffect 0.4s ease-in-out; }
+.shake { animation: shakeEffect 0.35s ease-in-out; }
 @keyframes shakeEffect {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px) rotate(-1deg); }
@@ -483,9 +458,43 @@ button {
   80% { transform: translateX(5px); }
 }
 
+/* Round Complete Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 16, 32, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+  animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  padding: 24px 22px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popUp {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* End stats table */
 .stat-box {
-  background: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.45);
   border-radius: 18px;
   padding: 8px 16px;
   margin: 16px 0;
@@ -517,14 +526,20 @@ button {
 </head>
 <body>
 
-<!-- Animated ambient sky background -->
-<div class="sky-bg">
-  <div class="cloud cloud1"></div>
-  <div class="cloud cloud2"></div>
-  <div class="cloud cloud3"></div>
-</div>
-
 <canvas id="confetti-canvas"></canvas>
+
+<!-- Instant Round Clear Modal -->
+<div id="round-modal" class="modal-overlay" hidden>
+  <div class="modal-card">
+    <div style="font-size: 3rem; margin-bottom: 4px;">🚚✨📦</div>
+    <h2 id="modal-title" style="margin: 4px 0 8px; font-weight: 800; font-size: 1.6rem; color: var(--accent);">Route Complete!</h2>
+    <p id="modal-note" style="color: var(--ink-light); font-size: 0.96rem; line-height: 1.45; margin: 8px 0 16px;"></p>
+    <div style="background: rgba(16, 185, 129, 0.12); border: 1px dashed rgba(16, 185, 129, 0.4); border-radius: 14px; padding: 10px 14px; margin-bottom: 18px; font-weight: 700; color: #059669; font-size: 1rem;">
+      ✨ All packages delivered on this route!
+    </div>
+    <button class="btn" id="modal-next-btn">Next Route ➜</button>
+  </div>
+</div>
 
 <main>
   <!-- Welcome / Start Screen -->
@@ -532,10 +547,10 @@ button {
     <div class="big-icon">📦🚚✨</div>
     <h1>STREAMLINED</h1>
     <p class="sub" style="font-weight:600; color:var(--ink);"><b>Word Delivery Challenge</b></p>
-    <p class="sub">Swipe across letters on the wheel to form words, clear the route, and deliver packages across 3 high-speed rounds!</p>
+    <p class="sub">Letters are randomized each round! Swipe across the wheel to deliver every package across 3 high-speed routes.</p>
     
     <div style="background: rgba(255, 122, 24, 0.08); border: 1px dashed rgba(255, 122, 24, 0.4); border-radius: 16px; padding: 12px; margin-bottom: 14px; font-size: 0.88rem; color: var(--ink-light); text-align: center;">
-      🎯 <b>Pro-Tip:</b> Drag & swipe through letters just like Wordscapes, or tap them with mouse or keyboard!
+      🎯 <b>Pro-Tip:</b> Drag & swipe through letters to connect them, or tap them with mouse or keyboard!
     </div>
 
     <input id="name" placeholder="Enter courier name" maxlength="30" autocomplete="off" autofocus>
@@ -661,7 +676,7 @@ class SoundEngine {
       this.ctx.resume();
     }
   }
-  playTone(freq, type='sine', duration=0.15, gain=0.18) {
+  playTone(freq, type='sine', duration=0.12, gain=0.18) {
     if (!soundEnabled) return;
     this.init();
     if (!this.ctx) return;
@@ -680,36 +695,37 @@ class SoundEngine {
   }
   letterPick(index) {
     const note = this.pentatonic[Math.min(index, this.pentatonic.length - 1)];
-    this.playTone(note, 'triangle', 0.12, 0.22);
+    this.playTone(note, 'triangle', 0.1, 0.22);
   }
   wordSuccess() {
     [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-      setTimeout(() => this.playTone(freq, 'sine', 0.28, 0.2), i * 65);
+      setTimeout(() => this.playTone(freq, 'sine', 0.22, 0.2), i * 55);
     });
   }
   bonusWord() {
     [659.25, 880.00, 1318.51].forEach((freq, i) => {
-      setTimeout(() => this.playTone(freq, 'triangle', 0.22, 0.18), i * 75);
+      setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.18), i * 65);
     });
   }
   error() {
-    this.playTone(180, 'sawtooth', 0.22, 0.15);
+    this.playTone(180, 'sawtooth', 0.18, 0.14);
   }
   roundWin() {
     const fanfare = [392.00, 523.25, 659.25, 783.99, 1046.50];
     fanfare.forEach((f, i) => {
-      setTimeout(() => this.playTone(f, 'triangle', 0.4, 0.25), i * 90);
+      setTimeout(() => this.playTone(f, 'triangle', 0.32, 0.24), i * 75);
     });
   }
 }
 const audio = new SoundEngine();
 
 /* -------------------------------------------------------------
-   CONFETTI CANNON
+   CONFETTI CANNON (Lightweight & auto-stopping)
    ------------------------------------------------------------- */
 const confettiCanvas = $('#confetti-canvas');
 const ctxConfetti = confettiCanvas.getContext('2d');
 let confettiPieces = [];
+let confettiTimer = null;
 
 function resizeConfetti() {
   confettiCanvas.width = window.innerWidth;
@@ -720,12 +736,13 @@ resizeConfetti();
 
 function burstConfetti() {
   const colors = ['#ff7a18', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
-  for (let i = 0; i < 90; i++) {
+  confettiPieces = [];
+  for (let i = 0; i < 65; i++) {
     confettiPieces.push({
       x: window.innerWidth / 2,
-      y: window.innerHeight * 0.45,
-      vx: (Math.random() - 0.5) * 16,
-      vy: (Math.random() - 0.8) * 16,
+      y: window.innerHeight * 0.42,
+      vx: (Math.random() - 0.5) * 15,
+      vy: (Math.random() - 0.8) * 15,
       size: Math.random() * 8 + 4,
       color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * 360,
@@ -736,8 +753,18 @@ function burstConfetti() {
   if (!animatingConfetti) animateConfetti();
 }
 
+function stopConfetti() {
+  confettiPieces = [];
+  ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+}
+
 let animatingConfetti = false;
 function animateConfetti() {
+  if (confettiPieces.length === 0) {
+    animatingConfetti = false;
+    ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    return;
+  }
   animatingConfetti = true;
   ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
   confettiPieces = confettiPieces.filter(p => p.life > 0);
@@ -745,10 +772,10 @@ function animateConfetti() {
   confettiPieces.forEach(p => {
     p.x += p.vx;
     p.y += p.vy;
-    p.vy += 0.35; // gravity
+    p.vy += 0.38;
     p.vx *= 0.98;
     p.rotation += p.vRot;
-    p.life -= 0.012;
+    p.life -= 0.016;
 
     ctxConfetti.save();
     ctxConfetti.translate(p.x, p.y);
@@ -759,12 +786,7 @@ function animateConfetti() {
     ctxConfetti.restore();
   });
 
-  if (confettiPieces.length > 0) {
-    requestAnimationFrame(animateConfetti);
-  } else {
-    animatingConfetti = false;
-    ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-  }
+  requestAnimationFrame(animateConfetti);
 }
 
 /* -------------------------------------------------------------
@@ -844,14 +866,35 @@ function build(r) {
 const isFound = p => p.keys.every(k => R.revealed.has(k));
 
 /* -------------------------------------------------------------
-   ROUND MANAGEMENT
+   ROUND MANAGEMENT & RANDOMIZED WHEEL INITIALIZATION
    ------------------------------------------------------------- */
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function randomizeRoundLetters(letters) {
+  const n = letters.length;
+  let arr = [...Array(n).keys()];
+  let attempts = 0;
+  // Ensure the letters are not arranged in obvious alphabetical or original word order
+  do {
+    shuffleArray(arr);
+    attempts++;
+  } while (attempts < 10 && arr.map(i => letters[i]).join('') === letters);
+  return arr;
+}
+
 function startRound() {
   const r = ROUNDS[ri];
   R = build(r);
   R.r = r;
   sel = [];
-  order = [...Array(r.letters.length).keys()];
+  // Randomize letters so the solution word is not obvious!
+  order = randomizeRoundLetters(r.letters);
   
   $('#rd').textContent = `Round ${ri + 1} / ${ROUNDS.length}`;
   $('#route-tag').textContent = `ROUTE ${ri + 1}`;
@@ -932,7 +975,6 @@ function renderWheel() {
     b.dataset.idx = p.idx;
     if (sel.includes(p.idx)) b.classList.add('selected');
 
-    // Click handler for tap-friendly play
     b.onclick = (e) => {
       e.stopPropagation();
       audio.init();
@@ -964,7 +1006,7 @@ function showFloatScore(text, color = 'var(--accent)') {
   span.style.color = color;
   span.textContent = text;
   wrap.appendChild(span);
-  setTimeout(() => span.remove(), 1200);
+  setTimeout(() => span.remove(), 1100);
 }
 
 function say(t, c) {
@@ -990,7 +1032,7 @@ function drawLines() {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Draw glow
+  // Glow
   ctx.strokeStyle = 'rgba(255, 122, 24, 0.4)';
   ctx.lineWidth = 14;
   ctx.beginPath();
@@ -1005,7 +1047,7 @@ function drawLines() {
   }
   ctx.stroke();
 
-  // Draw main stroke
+  // Core stroke
   ctx.strokeStyle = '#ff7a18';
   ctx.lineWidth = 7;
   ctx.beginPath();
@@ -1024,7 +1066,7 @@ function drawLines() {
 }
 
 /* -------------------------------------------------------------
-   TOUCH / MOUSE DRAG GESTURE HANDLING
+   TOUCH / POINTER DRAG GESTURE HANDLING
    ------------------------------------------------------------- */
 const wheelContainer = $('#wheel-container');
 
@@ -1042,9 +1084,7 @@ function checkLetterHit(coords) {
   const positions = getLetterPositions();
   for (const p of positions) {
     const dist = Math.hypot(coords.x - p.x, coords.y - p.y);
-    if (dist < 34) {
-      return p.idx;
-    }
+    if (dist < 34) return p.idx;
   }
   return null;
 }
@@ -1075,7 +1115,6 @@ wheelContainer.addEventListener('pointermove', (e) => {
       renderWheel();
       renderCur();
     } else if (sel.length >= 2 && sel[sel.length - 2] === hit) {
-      // Reversible swipe (drag back to previous letter unselects)
       sel.pop();
       renderWheel();
       renderCur();
@@ -1096,9 +1135,10 @@ function endDrag() {
 
 wheelContainer.addEventListener('pointerup', endDrag);
 wheelContainer.addEventListener('pointercancel', endDrag);
+wheelContainer.addEventListener('touchmove', e => { if (isDragging) e.preventDefault(); }, { passive: false });
 
 /* -------------------------------------------------------------
-   SUBMISSION & WORD LOGIC
+   SUBMISSION & ROUND FINISH (Zero-Delay Modal)
    ------------------------------------------------------------- */
 function submit() {
   const w = sel.map(i => R.r.letters[i]).join('');
@@ -1158,14 +1198,24 @@ function submit() {
 function finishRound() {
   audio.roundWin();
   burstConfetti();
-  say(R.r.note, 'var(--good)');
-  $('#ent').innerHTML = ri < ROUNDS.length - 1 ? 'Next Round ➜' : 'See Final Results 🏆';
-  $('#ent').onclick = () => {
-    $('#ent').innerHTML = 'Deliver Word 📦';
-    $('#ent').onclick = submit;
-    ri++;
-    ri < ROUNDS.length ? startRound() : showEnd();
-  };
+  
+  // Show clean round-complete modal for immediate, responsive progression
+  const modal = $('#round-modal');
+  $('#modal-title').textContent = `Route ${ri + 1} Cleared!`;
+  $('#modal-note').textContent = R.r.note;
+  $('#modal-next-btn').textContent = ri < ROUNDS.length - 1 ? 'Next Route ➜' : 'See Final Results 🏆';
+  modal.hidden = false;
+}
+
+function advanceNextRoute() {
+  stopConfetti();
+  $('#round-modal').hidden = true;
+  ri++;
+  if (ri < ROUNDS.length) {
+    startRound();
+  } else {
+    showEnd();
+  }
 }
 
 function hint() {
@@ -1182,17 +1232,20 @@ function hint() {
 }
 
 function shuffle() {
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
   audio.letterPick(1);
+  const wh = $('#wheel');
+  wh.classList.remove('spin');
+  void wh.offsetWidth;
+  wh.classList.add('spin');
+  
+  shuffleArray(order);
   renderWheel();
   drawLines();
 }
 
 function showEnd() {
   burstConfetti();
+  $('#round-modal').hidden = true;
   $('#play').hidden = true;
   $('#end').hidden = false;
   $('#who').textContent = (pname ? `${pname} · ` : '') + `Final Score ⭐ ${score}`;
@@ -1204,7 +1257,7 @@ function showEnd() {
 }
 
 /* -------------------------------------------------------------
-   EVENT LISTENERS & CONTROLS
+   EVENT LISTENERS & FAST-TAP CONTROLS
    ------------------------------------------------------------- */
 $('#go').onclick = () => {
   audio.init();
@@ -1224,6 +1277,8 @@ $('#clr').onclick = () => {
   drawLines();
 };
 
+$('#modal-next-btn').onclick = advanceNextRoute;
+
 $('#again').onclick = () => {
   ri = 0; score = 0; bonusTotal = 0;
   $('#end').hidden = true;
@@ -1242,7 +1297,11 @@ document.addEventListener('keydown', e => {
   if ($('#play').hidden || e.target.tagName === 'INPUT') return;
   audio.init();
   if (e.key === 'Enter') {
-    $('#ent').click();
+    if (!$('#round-modal').hidden) {
+      advanceNextRoute();
+    } else {
+      $('#ent').click();
+    }
   } else if (e.key === 'Backspace') {
     sel.pop();
     renderWheel();
@@ -1253,6 +1312,8 @@ document.addEventListener('keydown', e => {
     renderWheel();
     renderCur();
     drawLines();
+  } else if (e.key.toLowerCase() === ' ') {
+    shuffle();
   } else if (/^[a-z]$/i.test(e.key)) {
     const L = R.r.letters;
     const i = order.find(i => L[i] === e.key.toUpperCase() && !sel.includes(i));
