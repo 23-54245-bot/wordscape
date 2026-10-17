@@ -720,7 +720,7 @@ button, .btn, .sm-btn, .icon-btn {
         <span style="text-align:center;">#</span>
         <span>Courier</span>
         <span style="text-align:right;">Time</span>
-        <span style="text-align:right;">Score</span>
+        <span style="text-align:right;">Rating</span>
       </div>
       <div id="lb-entries"></div>
     </div>
@@ -802,7 +802,7 @@ button, .btn, .sm-btn, .icon-btn {
       <!-- Wheel Controls -->
       <div class="controls-row">
         <button class="sm-btn" id="shuf">🔀 Shuffle</button>
-        <button class="sm-btn" id="hint">💡 Hint (−5)</button>
+        <button class="sm-btn" id="hint">💡 Hint (3/3) [−15]</button>
         <button class="sm-btn" id="clr">⌫ Clear</button>
       </div>
 
@@ -884,6 +884,20 @@ const $ = s => document.querySelector(s);
 let ri = 0, score = 0, pname = '', R = null, sel = [], order = [], bonusTotal = 0;
 let isDragging = false, currentPointer = null;
 let soundEnabled = true;
+let hintsLeft = 3; // Maximum 3 hints per shipment
+
+function updateHintButton() {
+  const btn = $('#hint');
+  if (!btn) return;
+  btn.textContent = `💡 Hint (${hintsLeft}/3) [−15]`;
+  if (hintsLeft <= 0) {
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+}
 
 /* -------------------------------------------------------------
    TIMER & TIME RECORDING SYSTEM
@@ -1500,14 +1514,30 @@ function advanceNextRoute() {
 }
 
 function hint() {
+  if (hintsLeft <= 0) {
+    say('No hints remaining for this shipment! (0/3 left)', 'var(--bad)');
+    audio.error();
+    const wh = $('#wheel');
+    wh.classList.remove('shake');
+    void wh.offsetWidth;
+    wh.classList.add('shake');
+    return;
+  }
+  if (score < 15) {
+    say('Need at least 15 points to request a hint!', 'var(--bad)');
+    audio.error();
+    return;
+  }
   const open = R.placed.filter(p => !isFound(p));
   if (!open.length) return;
   const p = open[Math.floor(Math.random() * open.length)];
   const k = p.keys.find(k => !R.revealed.has(k));
   R.revealed.add(k);
-  score = Math.max(0, score - 5);
+  score -= 15;
+  hintsLeft--;
+  updateHintButton();
   audio.letterPick(3);
-  say('💡 Revealed a letter clue! (−5)', 'var(--accent)');
+  say(`💡 Hint clue revealed! (-15 pts) · ${hintsLeft} hints left`, 'var(--accent)');
   renderAll();
   if (R.placed.every(isFound)) finishRound();
 }
@@ -1525,8 +1555,21 @@ function shuffle() {
 }
 
 /* -------------------------------------------------------------
-   END SCREEN & RANKINGS
+   END SCREEN & RANKINGS (Option 3: Balanced Efficiency Index)
    ------------------------------------------------------------- */
+function calculateCourierRating(wordScore, totalSeconds) {
+  const speedBonus = Math.max(0, 1000 - totalSeconds);
+  const finalRating = (wordScore || 0) + speedBonus;
+  return { wordScore, speedBonus, finalRating };
+}
+
+function getEntryRating(e) {
+  if (e.finalRating !== undefined) return e.finalRating;
+  const wordScore = e.score || 0;
+  const speedBonus = Math.max(0, 1000 - (e.totalTime || 0));
+  return wordScore + speedBonus;
+}
+
 async function showEnd() {
   stopTimer();
   burstConfetti();
@@ -1535,15 +1578,19 @@ async function showEnd() {
   $('#end').hidden = false;
 
   const totalTime = roundTimes.reduce((a, b) => a + b, 0);
-  $('#who').textContent = `${pname || 'Courier'} · Final Score: ⭐ ${score}`;
+  const ratingData = calculateCourierRating(score, totalTime);
+  const { wordScore, speedBonus, finalRating } = ratingData;
+
+  $('#who').textContent = `${pname || 'Courier'} · Overall Rating: ⭐ ${finalRating} pts`;
 
   $('#stats').innerHTML = `
-    <div class="stat"><span>Total Finish Time</span><b>⏱️ ${formatMMSS(totalTime)}</b></div>
-    <div class="stat"><span>Round 1 Time</span><span>${formatMMSS(roundTimes[0])}</span></div>
-    <div class="stat"><span>Round 2 Time</span><span>${formatMMSS(roundTimes[1])}</span></div>
-    <div class="stat"><span>Round 3 Time</span><span>${formatMMSS(roundTimes[2])}</span></div>
+    <div class="stat"><span>Courier Efficiency Rating</span><b>⭐ ${finalRating} pts</b></div>
+    <div class="stat"><span>Word Delivery Score</span><span>${wordScore} pts</span></div>
+    <div class="stat"><span>Route Speed Bonus</span><span style="color:#2563eb; font-weight:700;">+${speedBonus} pts (1,000 − ${totalTime}s)</span></div>
+    <div class="stat"><span>Total Delivery Time</span><b>⏱️ ${formatMMSS(totalTime)}</b></div>
+    <div class="stat"><span>Round Times</span><span style="font-size:0.86rem;">R1: ${formatMMSS(roundTimes[0])} · R2: ${formatMMSS(roundTimes[1])} · R3: ${formatMMSS(roundTimes[2])}</span></div>
     <div class="stat"><span>Bonus Words Found</span><b>🎁 ${bonusTotal}</b></div>
-    <div class="stat"><span>Final Courier Score</span><b>⭐ ${score} pts</b></div>
+    <div class="stat"><span>Hints Used</span><span>${3 - hintsLeft} / 3</span></div>
   `;
 
   // Submit to shared leaderboard if not already submitted in this session
@@ -1555,7 +1602,10 @@ async function showEnd() {
       name: pname || 'Anonymous Courier',
       totalTime: totalTime,
       roundTimes: roundTimes,
-      score: score,
+      score: wordScore,
+      speedBonus: speedBonus,
+      finalRating: finalRating,
+      hintsUsed: 3 - hintsLeft,
       timestamp: Date.now()
     });
   }
@@ -1567,13 +1617,13 @@ async function showEnd() {
 async function updateEndRankDisplay() {
   const entries = await getLeaderboardEntries();
   const sorted = sortLeaderboard(entries);
-  const myIndex = sorted.findIndex(e => e.id === currentSubmissionId || (e.name === pname && e.totalTime === totalActiveTime && e.score === score));
+  const myIndex = sorted.findIndex(e => e.id === currentSubmissionId || (e.name === pname && e.totalTime === totalActiveTime));
   
   const rankEl = $('#player-rank-display');
   if (myIndex !== -1) {
     const rank = myIndex + 1;
     let medal = '';
-    if (rank === 1) medal = ' 🥇 (Fastest Courier!)';
+    if (rank === 1) medal = ' 🥇 (Grand Champion!)';
     else if (rank === 2) medal = ' 🥈 (Runner-Up)';
     else if (rank === 3) medal = ' 🥉 (3rd Place)';
     rankEl.textContent = `Rank #${rank} of ${sorted.length}${medal}`;
@@ -1679,13 +1729,15 @@ async function resetSharedLeaderboard() {
   refreshLeaderboardUI();
 }
 
-// Ranking rule: Total finish time (fastest first, ascending). Tiebreaker: Score (highest first, descending).
+// Ranking rule: Option 3 - Courier Efficiency Rating (Highest First). Tiebreaker: Total finish time (Fastest First).
 function sortLeaderboard(entries) {
   return [...entries].sort((a, b) => {
-    if (a.totalTime !== b.totalTime) {
-      return a.totalTime - b.totalTime; // Fastest first
+    const ratingA = getEntryRating(a);
+    const ratingB = getEntryRating(b);
+    if (ratingB !== ratingA) {
+      return ratingB - ratingA; // Highest overall rating wins!
     }
-    return (b.score || 0) - (a.score || 0); // Higher score tiebreaker
+    return (a.totalTime || 0) - (b.totalTime || 0); // Tiebreaker: fastest finish time
   });
 }
 
@@ -1720,13 +1772,14 @@ async function refreshLeaderboardUI() {
       const isCurrentPlayer = (entry.id && entry.id === currentSubmissionId) || 
                               (pname && entry.name === pname && entry.totalTime === totalActiveTime);
       const rowClass = 'lb-item' + (isCurrentPlayer ? ' me' : '');
+      const rating = getEntryRating(entry);
 
       return `
         <div class="${rowClass}">
           <span class="lb-rank">${rankBadge}</span>
           <span class="lb-name" title="${entry.name}">${escapeHtml(entry.name || 'Anonymous')}</span>
           <span class="lb-time">${formatMMSS(entry.totalTime || 0)}</span>
-          <span class="lb-score">⭐ ${entry.score || 0}</span>
+          <span class="lb-score">⭐ ${rating}</span>
         </div>
       `;
     }).join('');
@@ -1792,6 +1845,8 @@ $('#go').onclick = () => {
   currentSubmissionId = null;
   roundTimes = [0, 0, 0];
   totalActiveTime = 0;
+  hintsLeft = 3;
+  updateHintButton();
   
   $('#start').hidden = true;
   $('#play').hidden = false;
@@ -1825,6 +1880,8 @@ $('#again').onclick = () => {
   ri = 0; score = 0; bonusTotal = 0;
   roundTimes = [0, 0, 0];
   totalActiveTime = 0;
+  hintsLeft = 3;
+  updateHintButton();
   sessionSubmitted = false;
   currentSubmissionId = null;
   stopConfetti();
