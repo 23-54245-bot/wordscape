@@ -68,11 +68,7 @@ body {
   min-height: 100dvh;
   font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
   color: var(--ink);
-  background: 
-    linear-gradient(180deg, rgba(10, 22, 45, 0.68) 0%, rgba(13, 27, 56, 0.82) 100%),
-    url('Streamline-bg.jpg') center center / cover no-repeat fixed,
-    var(--bg-gradient);
-  background-attachment: fixed;
+  background-color: #0b1528;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -80,15 +76,64 @@ body {
   position: relative;
 }
 
+/* Full-screen background art layer (iOS & desktop reliable) */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: 
+    linear-gradient(180deg, rgba(9, 18, 36, 0.35) 0%, rgba(11, 22, 45, 0.62) 100%),
+    url('Streamline-bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
 main {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 460px;
-  padding: 16px 14px 28px;
+  max-width: 480px;
+  padding: 56px 14px 28px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Fixed upper-right controls */
+.fixed-top-right {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-lb-btn {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+}
+.top-lb-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+.top-lb-btn:active {
+  transform: translateY(2px);
 }
 
 /* Glassmorphic main cards */
@@ -188,8 +233,9 @@ button, .btn, .sm-btn, .icon-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 2px;
+  flex-wrap: wrap;
 }
 .pill {
   background: var(--card-bg);
@@ -197,25 +243,25 @@ button, .btn, .sm-btn, .icon-btn {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--card-border);
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 7px 13px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: var(--ink);
 }
 .icon-btn {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: transform 0.15s;
 }
@@ -439,6 +485,7 @@ button, .btn, .sm-btn, .icon-btn {
   color: var(--ink);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
 }
@@ -446,6 +493,26 @@ button, .btn, .sm-btn, .icon-btn {
 .sm-btn:active {
   transform: translateY(2px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* Secondary outline button */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 999px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+.btn-secondary:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 /* Shake animation */
@@ -458,18 +525,18 @@ button, .btn, .sm-btn, .icon-btn {
   80% { transform: translateX(5px); }
 }
 
-/* Round Complete Modal */
+/* Modals */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(8, 16, 32, 0.75);
+  background: rgba(8, 16, 32, 0.78);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  z-index: 50;
+  padding: 16px;
+  z-index: 60;
   animation: fadeIn 0.2s ease-out;
 }
 @keyframes fadeIn {
@@ -480,16 +547,110 @@ button, .btn, .sm-btn, .icon-btn {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 28px;
-  padding: 24px 22px;
+  padding: 24px 20px;
   width: 100%;
-  max-width: 380px;
-  text-align: center;
+  max-width: 440px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
 }
 @keyframes popUp {
   0% { transform: scale(0.85); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* Leaderboard specific styles */
+.lb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.lb-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lb-sub {
+  font-size: 0.84rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.lb-list {
+  overflow-y: auto;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--tile-border);
+  flex: 1;
+  margin-bottom: 14px;
+}
+.lb-item {
+  display: grid;
+  grid-template-columns: 44px 1fr 70px 65px;
+  align-items: center;
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.94rem;
+  transition: background 0.15s;
+}
+.lb-item:last-child { border-bottom: none; }
+.lb-item.me {
+  background: rgba(255, 122, 24, 0.15);
+  font-weight: 800;
+  border-left: 4px solid var(--accent);
+}
+.lb-rank {
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.lb-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 6px;
+}
+.lb-time {
+  font-family: monospace, system-ui;
+  font-weight: 700;
+  font-size: 0.96rem;
+  text-align: right;
+  color: #2563eb;
+}
+.lb-score {
+  text-align: right;
+  font-weight: 800;
+  color: var(--accent);
+}
+.lb-head-row {
+  font-weight: 800;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid var(--tile-border);
+}
+.admin-reset-btn {
+  background: #fee2e2;
+  border: 1px dashed #ef4444;
+  color: #b91c1c;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
 /* End stats table */
@@ -497,19 +658,19 @@ button, .btn, .sm-btn, .icon-btn {
   background: rgba(255,255,255,0.45);
   border-radius: 18px;
   padding: 8px 16px;
-  margin: 16px 0;
+  margin: 14px 0;
   border: 1px solid var(--card-border);
 }
 .stat {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 4px;
+  padding: 9px 4px;
   border-bottom: 1px dashed var(--tile-border);
-  font-size: 1.02rem;
+  font-size: 0.98rem;
 }
 .stat:last-child { border-bottom: none; }
-.stat b { font-size: 1.15rem; color: var(--accent); }
+.stat b { font-size: 1.1rem; color: var(--accent); }
 
 /* Confetti canvas */
 #confetti-canvas {
@@ -526,17 +687,55 @@ button, .btn, .sm-btn, .icon-btn {
 </head>
 <body>
 
+<div class="bg-layer"></div>
 <canvas id="confetti-canvas"></canvas>
+
+<!-- Permanent Upper-Right Controls (Accessible anytime on all screens) -->
+<div class="fixed-top-right">
+  <button class="top-lb-btn" id="floating-lb-btn" title="View Rankings">
+    <span>🏆</span>
+    <span>Leaderboard</span>
+  </button>
+  <button class="icon-btn" id="mute-btn" title="Toggle Sound">🔊</button>
+</div>
+
+<!-- Shared Seminar Leaderboard Modal -->
+<div id="leaderboard-modal" class="modal-overlay" hidden>
+  <div class="modal-card">
+    <div class="lb-header">
+      <h2 class="lb-title">🏆 Courier Leaderboard</h2>
+      <button class="icon-btn" id="close-lb-btn" title="Close">✕</button>
+    </div>
+    
+    <div class="lb-sub">
+      <span id="lb-status">🔄 Auto-updating every 5s</span>
+      <button class="sm-btn" id="manual-refresh-btn" style="padding: 4px 10px; font-size: 0.78rem;">Refresh ↻</button>
+    </div>
+
+    <!-- Host Admin Reset Button (Only visible when ?admin=streamline is in URL) -->
+    <button id="admin-reset-btn" class="admin-reset-btn" hidden>🗑️ Reset Seminar Leaderboard (Host Only)</button>
+
+    <div class="lb-list">
+      <div class="lb-item lb-head-row">
+        <span style="text-align:center;">#</span>
+        <span>Courier</span>
+        <span style="text-align:right;">Time</span>
+        <span style="text-align:right;">Score</span>
+      </div>
+      <div id="lb-entries"></div>
+    </div>
+
+    <button class="btn" id="close-lb-main-btn">Back to Game</button>
+  </div>
+</div>
 
 <!-- Instant Round Clear Modal -->
 <div id="round-modal" class="modal-overlay" hidden>
-  <div class="modal-card">
+  <div class="modal-card" style="text-align:center;">
     <div style="font-size: 3rem; margin-bottom: 4px;">🚚✨📦</div>
     <h2 id="modal-title" style="margin: 4px 0 8px; font-weight: 800; font-size: 1.6rem; color: var(--accent);">Route Complete!</h2>
-    <p id="modal-note" style="color: var(--ink-light); font-size: 0.96rem; line-height: 1.45; margin: 8px 0 16px;"></p>
-    <div style="background: rgba(16, 185, 129, 0.12); border: 1px dashed rgba(16, 185, 129, 0.4); border-radius: 14px; padding: 10px 14px; margin-bottom: 18px; font-weight: 700; color: #059669; font-size: 1rem;">
-      ✨ All packages delivered on this route!
-    </div>
+    <p id="modal-note" style="color: var(--ink-light); font-size: 0.96rem; line-height: 1.45; margin: 8px 0 14px;"></p>
+    <div id="modal-round-time" style="background: rgba(37, 99, 235, 0.1); border-radius: 12px; padding: 8px 12px; margin-bottom: 14px; font-weight: 700; color: #2563eb; font-size: 0.95rem;"></div>
     <button class="btn" id="modal-next-btn">Next Route ➜</button>
   </div>
 </div>
@@ -547,16 +746,19 @@ button, .btn, .sm-btn, .icon-btn {
     <div class="big-icon">📦🚚✨</div>
     <h1>STREAMLINED</h1>
     <p class="sub" style="font-weight:600; color:var(--ink);"><b>Word Delivery Challenge</b></p>
-    <p class="sub">Letters are randomized each round! Swipe across the wheel to deliver every package across 3 high-speed routes.</p>
+    <p class="sub">Deliver packages across 3 rounds as fast as possible! Your finish time and score will be ranked on the live seminar leaderboard.</p>
     
     <div style="background: rgba(255, 122, 24, 0.08); border: 1px dashed rgba(255, 122, 24, 0.4); border-radius: 16px; padding: 12px; margin-bottom: 14px; font-size: 0.88rem; color: var(--ink-light); text-align: center;">
-      🎯 <b>Pro-Tip:</b> Drag & swipe through letters to connect them, or tap them with mouse or keyboard!
+      ⏱️ <b>Speed Challenge:</b> The timer starts as soon as you hit "Start Delivering"!
     </div>
 
-    <input id="name" placeholder="Enter courier name" maxlength="30" autocomplete="off" autofocus>
+    <input id="name" placeholder="Enter your full name" maxlength="30" autocomplete="off" autofocus>
     <button class="btn" id="go">
-      <span>Start Route</span>
+      <span>Start Delivering</span>
       <span>➜</span>
+    </button>
+    <button class="btn-secondary" id="view-lb-start" style="margin-top: 10px;">
+      <span>🏆 View Leaderboard & Rankings</span>
     </button>
   </section>
 
@@ -564,9 +766,9 @@ button, .btn, .sm-btn, .icon-btn {
   <section id="play" hidden>
     <div class="top-bar">
       <span class="pill" id="rd">Round 1/3</span>
-      <span class="pill" id="bonus-pill" title="Bonus words found">🎁 <span id="bonus-count">0</span></span>
+      <span class="pill" id="live-timer" style="color:#2563eb; font-family: monospace, system-ui;">⏱️ 00:00</span>
       <span class="pill" id="sc" style="color:var(--accent);">⭐ 0</span>
-      <button class="icon-btn" id="mute-btn" title="Toggle Sound">🔊</button>
+      <span class="pill" id="bonus-pill" title="Bonus words found">🎁 <span id="bonus-count">0</span></span>
     </div>
 
     <div class="card" style="margin-top: 6px;">
@@ -615,18 +817,42 @@ button, .btn, .sm-btn, .icon-btn {
     <div class="big-icon">🏆📦🎉</div>
     <h1>Delivery Complete!</h1>
     <p class="sub" id="who"></p>
+
+    <!-- Prominent Player Rank Banner -->
+    <div id="rank-banner" style="background: linear-gradient(135deg, rgba(255,122,24,0.18), rgba(234,88,12,0.18)); border: 2px solid var(--accent); border-radius: 18px; padding: 12px; text-align: center; margin: 12px 0;">
+      <div style="font-size: 0.85rem; text-transform: uppercase; font-weight: 800; color: var(--accent);">Your Standing</div>
+      <div id="player-rank-display" style="font-size: 1.8rem; font-weight: 800; color: var(--ink); margin: 2px 0;">Calculating...</div>
+    </div>
     
     <div class="stat-box" id="stats"></div>
+
+    <button class="btn" id="view-lb-end" style="margin-bottom: 10px;">
+      <span>🏆 View Full Leaderboard</span>
+    </button>
     
-    <p class="sub" style="margin: 12px 0 16px;">Outstanding logistics performance! Screenshot this report for your team.</p>
-    <button class="btn" id="again">
-      <span>New Shipment Route</span>
-      <span>↺</span>
+    <button class="btn-secondary" id="again">
+      <span>Play Again ↺</span>
     </button>
   </section>
 </main>
 
 <script>
+/* =============================================================
+   SHARED LEADERBOARD CONFIGURATION (Firebase Realtime DB)
+   =============================================================
+   Instructions to connect your shared database:
+   1. Go to https://console.firebase.google.com and create a free project.
+   2. Click "Build" > "Realtime Database" > "Create Database".
+   3. Choose "Start in test mode" (allows read and write).
+   4. Copy your Database URL (e.g., https://my-wordscape-default-rtdb.firebaseio.com).
+   5. Paste your URL into FIREBASE_DB_URL below!
+   
+   * Note: If left blank or if network is unreachable, it automatically
+     falls back to LocalStorage with demo data so the game never breaks.
+   ============================================================= */
+const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+const ADMIN_KEY = 'streamline'; // Access reset by adding ?admin=streamline to the URL
+
 /* -------------------------------------------------------------
    ROUND DATA & GAME STATE
    ------------------------------------------------------------- */
@@ -658,6 +884,51 @@ const $ = s => document.querySelector(s);
 let ri = 0, score = 0, pname = '', R = null, sel = [], order = [], bonusTotal = 0;
 let isDragging = false, currentPointer = null;
 let soundEnabled = true;
+
+/* -------------------------------------------------------------
+   TIMER & TIME RECORDING SYSTEM
+   ------------------------------------------------------------- */
+let gameTimerInterval = null;
+let currentRoundStart = 0;
+let roundTimes = [0, 0, 0]; // [Round 1 sec, Round 2 sec, Round 3 sec]
+let totalActiveTime = 0;
+let sessionSubmitted = false; // Prevent duplicate submissions in same session
+let currentSubmissionId = null;
+
+function formatMMSS(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function startTimer() {
+  stopTimer();
+  currentRoundStart = Date.now();
+  updateLiveTimer();
+  gameTimerInterval = setInterval(updateLiveTimer, 250);
+}
+
+function updateLiveTimer() {
+  if (!currentRoundStart) return;
+  const currentElapsed = Math.floor((Date.now() - currentRoundStart) / 1000);
+  const total = roundTimes.reduce((a, b) => a + b, 0) + currentElapsed;
+  $('#live-timer').textContent = '⏱️ ' + formatMMSS(total);
+}
+
+function pauseRoundTimer() {
+  if (currentRoundStart) {
+    const elapsed = Math.max(1, Math.floor((Date.now() - currentRoundStart) / 1000));
+    roundTimes[ri] = elapsed;
+    currentRoundStart = 0;
+  }
+  clearInterval(gameTimerInterval);
+  gameTimerInterval = null;
+}
+
+function stopTimer() {
+  pauseRoundTimer();
+  totalActiveTime = roundTimes.reduce((a, b) => a + b, 0);
+}
 
 /* -------------------------------------------------------------
    WEB AUDIO SOUND ENGINE (Procedural, 100% self-contained)
@@ -720,12 +991,11 @@ class SoundEngine {
 const audio = new SoundEngine();
 
 /* -------------------------------------------------------------
-   CONFETTI CANNON (Lightweight & auto-stopping)
+   CONFETTI CANNON
    ------------------------------------------------------------- */
 const confettiCanvas = $('#confetti-canvas');
 const ctxConfetti = confettiCanvas.getContext('2d');
 let confettiPieces = [];
-let confettiTimer = null;
 
 function resizeConfetti() {
   confettiCanvas.width = window.innerWidth;
@@ -866,7 +1136,7 @@ function build(r) {
 const isFound = p => p.keys.every(k => R.revealed.has(k));
 
 /* -------------------------------------------------------------
-   ROUND MANAGEMENT & RANDOMIZED WHEEL INITIALIZATION
+   ROUND MANAGEMENT & RANDOMIZED WHEEL
    ------------------------------------------------------------- */
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -880,7 +1150,6 @@ function randomizeRoundLetters(letters) {
   const n = letters.length;
   let arr = [...Array(n).keys()];
   let attempts = 0;
-  // Ensure the letters are not arranged in obvious alphabetical or original word order
   do {
     shuffleArray(arr);
     attempts++;
@@ -893,7 +1162,6 @@ function startRound() {
   R = build(r);
   R.r = r;
   sel = [];
-  // Randomize letters so the solution word is not obvious!
   order = randomizeRoundLetters(r.letters);
   
   $('#rd').textContent = `Round ${ri + 1} / ${ROUNDS.length}`;
@@ -902,6 +1170,9 @@ function startRound() {
   say(`Find all ${r.words.length} hidden words to deliver!`, 'var(--ink)');
   updateProgress();
   renderAll();
+
+  // Start / resume round timer
+  startTimer();
 }
 
 function updateProgress() {
@@ -1032,7 +1303,7 @@ function drawLines() {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Glow
+  // Outer glow
   ctx.strokeStyle = 'rgba(255, 122, 24, 0.4)';
   ctx.lineWidth = 14;
   ctx.beginPath();
@@ -1138,7 +1409,7 @@ wheelContainer.addEventListener('pointercancel', endDrag);
 wheelContainer.addEventListener('touchmove', e => { if (isDragging) e.preventDefault(); }, { passive: false });
 
 /* -------------------------------------------------------------
-   SUBMISSION & ROUND FINISH (Zero-Delay Modal)
+   SUBMISSION & ROUND LOGIC
    ------------------------------------------------------------- */
 function submit() {
   const w = sel.map(i => R.r.letters[i]).join('');
@@ -1196,15 +1467,25 @@ function submit() {
 }
 
 function finishRound() {
+  // Pause active round timer and record round time
+  pauseRoundTimer();
   audio.roundWin();
   burstConfetti();
-  
-  // Show clean round-complete modal for immediate, responsive progression
-  const modal = $('#round-modal');
-  $('#modal-title').textContent = `Route ${ri + 1} Cleared!`;
-  $('#modal-note').textContent = R.r.note;
-  $('#modal-next-btn').textContent = ri < ROUNDS.length - 1 ? 'Next Route ➜' : 'See Final Results 🏆';
-  modal.hidden = false;
+
+  const isFinalRound = (ri === ROUNDS.length - 1);
+  if (isFinalRound) {
+    // Grand finale: stop timer completely and submit to shared leaderboard
+    stopTimer();
+    showEnd();
+  } else {
+    // Show intermediate modal
+    const modal = $('#round-modal');
+    $('#modal-title').textContent = `Route ${ri + 1} Cleared!`;
+    $('#modal-note').textContent = R.r.note;
+    $('#modal-round-time').textContent = `⏱️ Route ${ri + 1} Time: ${formatMMSS(roundTimes[ri])}`;
+    $('#modal-next-btn').textContent = 'Next Route ➜';
+    modal.hidden = false;
+  }
 }
 
 function advanceNextRoute() {
@@ -1243,25 +1524,275 @@ function shuffle() {
   drawLines();
 }
 
-function showEnd() {
+/* -------------------------------------------------------------
+   END SCREEN & RANKINGS
+   ------------------------------------------------------------- */
+async function showEnd() {
+  stopTimer();
   burstConfetti();
   $('#round-modal').hidden = true;
   $('#play').hidden = true;
   $('#end').hidden = false;
-  $('#who').textContent = (pname ? `${pname} · ` : '') + `Final Score ⭐ ${score}`;
+
+  const totalTime = roundTimes.reduce((a, b) => a + b, 0);
+  $('#who').textContent = `${pname || 'Courier'} · Final Score: ⭐ ${score}`;
+
   $('#stats').innerHTML = `
-    <div class="stat"><span>Rounds Cleared</span><b>${ROUNDS.length} / ${ROUNDS.length}</b></div>
-    <div class="stat"><span>Bonus Words Found</span><b>${bonusTotal}</b></div>
-    <div class="stat"><span>Final Courier Score</span><b>${score} ⭐</b></div>
+    <div class="stat"><span>Total Finish Time</span><b>⏱️ ${formatMMSS(totalTime)}</b></div>
+    <div class="stat"><span>Round 1 Time</span><span>${formatMMSS(roundTimes[0])}</span></div>
+    <div class="stat"><span>Round 2 Time</span><span>${formatMMSS(roundTimes[1])}</span></div>
+    <div class="stat"><span>Round 3 Time</span><span>${formatMMSS(roundTimes[2])}</span></div>
+    <div class="stat"><span>Bonus Words Found</span><b>🎁 ${bonusTotal}</b></div>
+    <div class="stat"><span>Final Courier Score</span><b>⭐ ${score} pts</b></div>
   `;
+
+  // Submit to shared leaderboard if not already submitted in this session
+  if (!sessionSubmitted) {
+    sessionSubmitted = true;
+    currentSubmissionId = 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    await submitToLeaderboard({
+      id: currentSubmissionId,
+      name: pname || 'Anonymous Courier',
+      totalTime: totalTime,
+      roundTimes: roundTimes,
+      score: score,
+      timestamp: Date.now()
+    });
+  }
+
+  // Update player rank display
+  updateEndRankDisplay();
+}
+
+async function updateEndRankDisplay() {
+  const entries = await getLeaderboardEntries();
+  const sorted = sortLeaderboard(entries);
+  const myIndex = sorted.findIndex(e => e.id === currentSubmissionId || (e.name === pname && e.totalTime === totalActiveTime && e.score === score));
+  
+  const rankEl = $('#player-rank-display');
+  if (myIndex !== -1) {
+    const rank = myIndex + 1;
+    let medal = '';
+    if (rank === 1) medal = ' 🥇 (Fastest Courier!)';
+    else if (rank === 2) medal = ' 🥈 (Runner-Up)';
+    else if (rank === 3) medal = ' 🥉 (3rd Place)';
+    rankEl.textContent = `Rank #${rank} of ${sorted.length}${medal}`;
+  } else {
+    rankEl.textContent = `Finish Time: ${formatMMSS(totalActiveTime)}`;
+  }
 }
 
 /* -------------------------------------------------------------
-   EVENT LISTENERS & FAST-TAP CONTROLS
+   SHARED LEADERBOARD API & STORAGE
+   ------------------------------------------------------------- */
+const LOCAL_STORAGE_KEY = 'streamlined_wordscape_seminar_leaderboard_v1';
+
+// Seed demo entries so rankings are visible even offline or before Firebase is set up
+const DEMO_LEADERBOARD = [
+  { id: 'd1', name: 'Alex M. (Logistics Lead)', totalTime: 104, score: 320, timestamp: Date.now() - 3600000 },
+  { id: 'd2', name: 'Jordan T. (Operations)', totalTime: 132, score: 295, timestamp: Date.now() - 7200000 },
+  { id: 'd3', name: 'Sam K. (Fleet Coordinator)', totalTime: 168, score: 280, timestamp: Date.now() - 10800000 },
+  { id: 'd4', name: 'Taylor R. (Route Dispatch)', totalTime: 215, score: 310, timestamp: Date.now() - 14400000 }
+];
+
+function getLocalLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEMO_LEADERBOARD));
+      return [...DEMO_LEADERBOARD];
+    }
+    return JSON.parse(raw);
+  } catch(e) {
+    return [...DEMO_LEADERBOARD];
+  }
+}
+
+function saveLocalLeaderboard(entries) {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(entries));
+  } catch(e) {}
+}
+
+// Fetch all leaderboard entries from Firebase REST API or fallback to LocalStorage
+async function getLeaderboardEntries() {
+  if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
+    try {
+      const endpoint = FIREBASE_DB_URL.replace(/\/$/, '') + '/leaderboard.json';
+      const res = await fetch(endpoint, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (!data) return [];
+        // Firebase returns an object of objects
+        return Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      }
+    } catch(e) {
+      console.warn('Firebase unreachable, falling back to local storage:', e);
+    }
+  }
+  return getLocalLeaderboard();
+}
+
+// Submit a new finished game entry
+async function submitToLeaderboard(entry) {
+  if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
+    try {
+      const endpoint = FIREBASE_DB_URL.replace(/\/$/, '') + '/leaderboard.json';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.name) entry.id = json.name;
+        return;
+      }
+    } catch(e) {
+      console.warn('Firebase submit error, saving locally:', e);
+    }
+  }
+  
+  // Local fallback
+  const list = getLocalLeaderboard();
+  list.push(entry);
+  saveLocalLeaderboard(list);
+}
+
+// Host Admin Reset: wipe all entries
+async function resetSharedLeaderboard() {
+  if (!confirm('⚠️ Are you sure you want to completely RESET the seminar leaderboard? This cannot be undone.')) {
+    return;
+  }
+  
+  if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
+    try {
+      const endpoint = FIREBASE_DB_URL.replace(/\/$/, '') + '/leaderboard.json';
+      await fetch(endpoint, { method: 'DELETE' });
+    } catch(e) {
+      console.warn('Failed to delete Firebase DB:', e);
+    }
+  }
+  
+  localStorage.removeItem(LOCAL_STORAGE_KEY);
+  alert('Leaderboard reset successfully!');
+  refreshLeaderboardUI();
+}
+
+// Ranking rule: Total finish time (fastest first, ascending). Tiebreaker: Score (highest first, descending).
+function sortLeaderboard(entries) {
+  return [...entries].sort((a, b) => {
+    if (a.totalTime !== b.totalTime) {
+      return a.totalTime - b.totalTime; // Fastest first
+    }
+    return (b.score || 0) - (a.score || 0); // Higher score tiebreaker
+  });
+}
+
+// Render the leaderboard list inside the modal
+async function refreshLeaderboardUI() {
+  const entriesEl = $('#lb-entries');
+  const statusEl = $('#lb-status');
+  statusEl.textContent = 'Refreshing...';
+
+  try {
+    const raw = await getLeaderboardEntries();
+    const sorted = sortLeaderboard(raw);
+    
+    if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
+      statusEl.textContent = '⚡ Connected to Live Seminar DB';
+    } else {
+      statusEl.textContent = '📂 Local/Demo Mode (Auto-updates)';
+    }
+
+    if (sorted.length === 0) {
+      entriesEl.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 0.95rem;">No couriers have finished yet. Be the first! 🚚</div>';
+      return;
+    }
+
+    entriesEl.innerHTML = sorted.map((entry, index) => {
+      const rank = index + 1;
+      let rankBadge = `#${rank}`;
+      if (rank === 1) rankBadge = '🥇';
+      else if (rank === 2) rankBadge = '🥈';
+      else if (rank === 3) rankBadge = '🥉';
+
+      const isCurrentPlayer = (entry.id && entry.id === currentSubmissionId) || 
+                              (pname && entry.name === pname && entry.totalTime === totalActiveTime);
+      const rowClass = 'lb-item' + (isCurrentPlayer ? ' me' : '');
+
+      return `
+        <div class="${rowClass}">
+          <span class="lb-rank">${rankBadge}</span>
+          <span class="lb-name" title="${entry.name}">${escapeHtml(entry.name || 'Anonymous')}</span>
+          <span class="lb-time">${formatMMSS(entry.totalTime || 0)}</span>
+          <span class="lb-score">⭐ ${entry.score || 0}</span>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    entriesEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--bad);">Could not load leaderboard. Playing in offline mode.</div>';
+    statusEl.textContent = '⚠️ Offline Mode';
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
+}
+
+let lbAutoRefreshTimer = null;
+let timerPausedForLeaderboard = false;
+
+function openLeaderboard() {
+  if (currentRoundStart) {
+    timerPausedForLeaderboard = true;
+    pauseRoundTimer();
+  } else {
+    timerPausedForLeaderboard = false;
+  }
+  $('#leaderboard-modal').hidden = false;
+  refreshLeaderboardUI();
+  clearInterval(lbAutoRefreshTimer);
+  lbAutoRefreshTimer = setInterval(refreshLeaderboardUI, 5000); // Auto-refresh every 5 seconds
+}
+
+function closeLeaderboard() {
+  $('#leaderboard-modal').hidden = true;
+  clearInterval(lbAutoRefreshTimer);
+  lbAutoRefreshTimer = null;
+  if (timerPausedForLeaderboard && !$('#play').hidden) {
+    startTimer();
+    timerPausedForLeaderboard = false;
+  }
+}
+
+// Check for admin URL parameter (e.g. ?admin=streamline)
+function checkAdminAccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const adminParam = urlParams.get('admin');
+  if (adminParam && adminParam.toLowerCase() === ADMIN_KEY.toLowerCase()) {
+    const adminBtn = $('#admin-reset-btn');
+    if (adminBtn) {
+      adminBtn.hidden = false;
+      adminBtn.onclick = resetSharedLeaderboard;
+    }
+  }
+}
+
+/* -------------------------------------------------------------
+   EVENT LISTENERS & CONTROLS
    ------------------------------------------------------------- */
 $('#go').onclick = () => {
   audio.init();
-  pname = $('#name').value.trim();
+  const inputName = $('#name').value.trim();
+  pname = inputName || 'Courier';
+  sessionSubmitted = false;
+  currentSubmissionId = null;
+  roundTimes = [0, 0, 0];
+  totalActiveTime = 0;
+  
   $('#start').hidden = true;
   $('#play').hidden = false;
   startRound();
@@ -1279,8 +1810,24 @@ $('#clr').onclick = () => {
 
 $('#modal-next-btn').onclick = advanceNextRoute;
 
+// Leaderboard buttons (Floating upper-right and in-screen buttons)
+$('#floating-lb-btn').onclick = openLeaderboard;
+$('#view-lb-start').onclick = openLeaderboard;
+$('#view-lb-end').onclick = openLeaderboard;
+$('#close-lb-btn').onclick = closeLeaderboard;
+$('#close-lb-main-btn').onclick = closeLeaderboard;
+$('#manual-refresh-btn').onclick = () => {
+  audio.letterPick(0);
+  refreshLeaderboardUI();
+};
+
 $('#again').onclick = () => {
   ri = 0; score = 0; bonusTotal = 0;
+  roundTimes = [0, 0, 0];
+  totalActiveTime = 0;
+  sessionSubmitted = false;
+  currentSubmissionId = null;
+  stopConfetti();
   $('#end').hidden = true;
   $('#start').hidden = false;
 };
@@ -1294,6 +1841,10 @@ $('#mute-btn').onclick = () => {
 
 // Keyboard support
 document.addEventListener('keydown', e => {
+  if (!$('#leaderboard-modal').hidden) {
+    if (e.key === 'Escape') closeLeaderboard();
+    return;
+  }
   if ($('#play').hidden || e.target.tagName === 'INPUT') return;
   audio.init();
   if (e.key === 'Enter') {
@@ -1330,6 +1881,9 @@ document.addEventListener('keydown', e => {
 window.addEventListener('resize', () => {
   if (R && !$('#play').hidden) renderGrid();
 });
+
+// Run admin check on startup
+checkAdminAccess();
 </script>
 </body>
 </html>
