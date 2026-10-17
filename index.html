@@ -603,6 +603,9 @@ button, .btn, .sm-btn, .icon-btn {
   font-size: 0.94rem;
   transition: background 0.15s;
 }
+.lb-item.is-admin {
+  grid-template-columns: 36px 1fr 65px 60px 34px;
+}
 .lb-item:last-child { border-bottom: none; }
 .lb-item.me {
   background: rgba(255, 122, 24, 0.15);
@@ -652,6 +655,23 @@ button, .btn, .sm-btn, .icon-btn {
   margin-bottom: 10px;
   width: 100%;
 }
+.admin-delete-btn {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.admin-delete-btn:hover { background: #fca5a5; }
+.admin-delete-btn:active { transform: scale(0.9); }
 
 /* End stats table */
 .stat-box {
@@ -716,7 +736,7 @@ button, .btn, .sm-btn, .icon-btn {
     <button id="admin-reset-btn" class="admin-reset-btn" hidden>🗑️ Reset Seminar Leaderboard (Host Only)</button>
 
     <div class="lb-list">
-      <div class="lb-item lb-head-row">
+      <div id="lb-header-row" class="lb-item lb-head-row">
         <span style="text-align:center;">#</span>
         <span>Courier</span>
         <span style="text-align:right;">Time</span>
@@ -1673,8 +1693,10 @@ async function getLeaderboardEntries() {
       if (res.ok) {
         const data = await res.json();
         if (!data) return [];
-        // Firebase returns an object of objects
-        return Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        // Firebase returns an object keyed by push IDs.
+        // We store the Firebase key as _fbKey (for individual deletion)
+        // and keep the original entry.id (submission ID) intact.
+        return Object.keys(data).map(key => ({ _fbKey: key, ...data[key] }));
       }
     } catch(e) {
       console.warn('Firebase unreachable, falling back to local storage:', e);
@@ -1729,7 +1751,30 @@ async function resetSharedLeaderboard() {
   refreshLeaderboardUI();
 }
 
-// Ranking rule: Option 3 - Courier Efficiency Rating (Highest First). Tiebreaker: Total finish time (Fastest First).
+// Host Admin: Delete a SINGLE player entry by Firebase push key
+async function deleteEntry(fbKey, playerName) {
+  if (!confirm(`🗑️ Delete "${playerName}" from the leaderboard? This cannot be undone.`)) return;
+
+  if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
+    try {
+      const endpoint = FIREBASE_DB_URL.replace(/\/$/, '') + '/leaderboard/' + fbKey + '.json';
+      await fetch(endpoint, { method: 'DELETE' });
+    } catch(e) {
+      console.warn('Failed to delete Firebase entry:', e);
+      alert('Error: Could not delete from Firebase.');
+      return;
+    }
+  } else {
+    // localStorage fallback: filter by id or name match
+    const list = getLocalLeaderboard();
+    const filtered = list.filter(e => e.id !== fbKey && !(e.name === playerName && e._fbKey === fbKey));
+    saveLocalLeaderboard(filtered);
+  }
+
+  refreshLeaderboardUI();
+}
+
+
 function sortLeaderboard(entries) {
   return [...entries].sort((a, b) => {
     const ratingA = getEntryRating(a);
@@ -1745,16 +1790,38 @@ function sortLeaderboard(entries) {
 async function refreshLeaderboardUI() {
   const entriesEl = $('#lb-entries');
   const statusEl = $('#lb-status');
+  const headerRow = $('#lb-header-row');
   statusEl.textContent = 'Refreshing...';
+
+  if (headerRow) {
+    if (isAdmin) {
+      headerRow.className = 'lb-item lb-head-row is-admin';
+      headerRow.innerHTML = `
+        <span style="text-align:center;">#</span>
+        <span>Courier</span>
+        <span style="text-align:right;">Time</span>
+        <span style="text-align:right;">Rating</span>
+        <span style="text-align:center;">Del</span>
+      `;
+    } else {
+      headerRow.className = 'lb-item lb-head-row';
+      headerRow.innerHTML = `
+        <span style="text-align:center;">#</span>
+        <span>Courier</span>
+        <span style="text-align:right;">Time</span>
+        <span style="text-align:right;">Rating</span>
+      `;
+    }
+  }
 
   try {
     const raw = await getLeaderboardEntries();
     const sorted = sortLeaderboard(raw);
     
     if (FIREBASE_DB_URL && FIREBASE_DB_URL.trim() !== '') {
-      statusEl.textContent = '⚡ Connected to Live Seminar DB';
+      statusEl.textContent = '⚡ Connected to Live Seminar DB' + (isAdmin ? ' (Admin Mode)' : '');
     } else {
-      statusEl.textContent = '📂 Local/Demo Mode (Auto-updates)';
+      statusEl.textContent = '📂 Local/Demo Mode (Auto-updates)' + (isAdmin ? ' (Admin Mode)' : '');
     }
 
     if (sorted.length === 0) {
@@ -1771,8 +1838,13 @@ async function refreshLeaderboardUI() {
 
       const isCurrentPlayer = (entry.id && entry.id === currentSubmissionId) || 
                               (pname && entry.name === pname && entry.totalTime === totalActiveTime);
-      const rowClass = 'lb-item' + (isCurrentPlayer ? ' me' : '');
+      const rowClass = 'lb-item' + (isAdmin ? ' is-admin' : '') + (isCurrentPlayer ? ' me' : '');
       const rating = getEntryRating(entry);
+      const targetKey = entry._fbKey || entry.id || '';
+
+      const deleteCol = isAdmin ? `
+        <button class="admin-delete-btn" data-del-key="${escapeHtml(targetKey)}" data-del-name="${escapeHtml(entry.name || 'Anonymous')}" title="Delete player">🗑️</button>
+      ` : '';
 
       return `
         <div class="${rowClass}">
@@ -1780,9 +1852,22 @@ async function refreshLeaderboardUI() {
           <span class="lb-name" title="${entry.name}">${escapeHtml(entry.name || 'Anonymous')}</span>
           <span class="lb-time">${formatMMSS(entry.totalTime || 0)}</span>
           <span class="lb-score">⭐ ${rating}</span>
+          ${deleteCol}
         </div>
       `;
     }).join('');
+
+    // Attach click listeners to all delete buttons
+    if (isAdmin) {
+      entriesEl.querySelectorAll('.admin-delete-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const key = btn.getAttribute('data-del-key');
+          const name = btn.getAttribute('data-del-name');
+          deleteEntry(key, name);
+        };
+      });
+    }
   } catch(e) {
     entriesEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--bad);">Could not load leaderboard. Playing in offline mode.</div>';
     statusEl.textContent = '⚠️ Offline Mode';
@@ -1822,10 +1907,12 @@ function closeLeaderboard() {
 }
 
 // Check for admin URL parameter (e.g. ?admin=streamline)
+let isAdmin = false;
 function checkAdminAccess() {
   const urlParams = new URLSearchParams(window.location.search);
   const adminParam = urlParams.get('admin');
   if (adminParam && adminParam.toLowerCase() === ADMIN_KEY.toLowerCase()) {
+    isAdmin = true;
     const adminBtn = $('#admin-reset-btn');
     if (adminBtn) {
       adminBtn.hidden = false;
