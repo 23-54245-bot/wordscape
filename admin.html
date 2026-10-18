@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>STREAMLINED: Host Control Tower</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #ff8a1f;
+  --accent-glow: rgba(255, 138, 31, 0.35);
+  --good: #10b981;
+  --bad: #ef4444;
+  --warn: #f59e0b;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
+  background-color: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--navy-light);
+  border-bottom: 2px solid var(--card-border);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  width: 100%;
+  flex: 1;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--navy-light);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+.switch-row:last-child { border-bottom: none; }
+.switch-label { font-weight: 700; }
+.switch-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Toggle button */
+.toggle-btn {
+  background: #334155;
+  color: #94a3b8;
+  border: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 90px;
+  text-align: center;
+}
+.toggle-btn.active {
+  background: var(--good);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+button, input { font: inherit; }
+.btn {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  border: 0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:hover { opacity: 0.92; }
+.btn:active { transform: scale(0.98); }
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+.btn-danger { background: var(--bad); }
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--card-border);
+  color: var(--text);
+}
+
+/* Couriers Table */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  background: var(--navy-light);
+  margin-top: 12px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.92rem;
+}
+th {
+  background: #182234;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--card-border);
+  white-space: nowrap;
+}
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.badge-good { background: rgba(16, 185, 129, 0.2); color: var(--good); }
+.badge-wait { background: rgba(245, 158, 11, 0.2); color: var(--warn); }
+
+/* Fullscreen Projector Overlay */
+#projector-view {
+  position: fixed;
+  inset: 0;
+  background: #090e17;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  padding: 30px;
+  overflow: auto;
+}
+#projector-view.active { display: flex; }
+.proj-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #1e293b;
+  padding-bottom: 16px;
+}
+.proj-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.proj-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+.proj-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 140px 140px;
+  align-items: center;
+  background: #151f32;
+  border-radius: 16px;
+  padding: 14px 22px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid #24324a;
+}
+.proj-row:nth-child(1) { border-color: #f5b301; background: linear-gradient(90deg, #1f2c44, #2a2012); }
+.proj-row:nth-child(2) { border-color: #94a3b8; }
+.proj-row:nth-child(3) { border-color: #b45309; }
+.proj-rank { font-size: 1.6rem; color: #f5b301; font-weight: 800; }
+.proj-name { color: #fff; }
+.proj-score { text-align: right; color: var(--accent); }
+.proj-time { text-align: right; color: #60a5fa; font-family: monospace; }
+
+/* Podium Overlay */
+#podium-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 120;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+#podium-modal.active { display: flex; }
+.podium-box {
+  max-width: 650px;
+  width: 100%;
+  animation: popUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+#confetti-canvas-admin {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 130;
+}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas-admin"></canvas>
+
+<header>
+  <div class="brand">
+    <img src="assets/logo.png" alt="STREAMLINED" style="height:36px;object-fit:contain">
+    <span style="font-size:1.1rem;color:var(--text-muted);border-left:2px solid var(--card-border);padding-left:12px;margin-left:4px">Host Control Tower</span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="btn btn-outline" id="open-proj-btn">📺 Projector Mode</button>
+    <button class="btn" id="export-csv-btn">📥 Export CSV</button>
+  </div>
+</header>
+
+<div class="container">
+  <!-- STATS AT A GLANCE -->
+  <div class="grid-cards">
+    <div class="card">
+      <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">TOTAL REGISTERED COURIERS</div>
+      <div style="font-size:2.4rem;font-weight:800;color:var(--accent);margin-top:4px" id="stat-total">0</div>
+      <div class="switch-sub" id="stat-sub">Waiting for attendees</div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">STAGE PROGRESSION</div>
+      <div style="display:flex;gap:14px;margin-top:10px;font-size:1rem;font-weight:700">
+        <div>S1: <span id="stat-s1" style="color:var(--good)">0</span></div>
+        <div>S2: <span id="stat-s2" style="color:var(--accent)">0</span></div>
+        <div>S3: <span id="stat-s3" style="color:#60a5fa">0</span></div>
+        <div>Fin: <span id="stat-fin" style="color:#f5b301">0</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">LIVE SEMINAR CODE</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="seminar-code-input" value="STORKS2026" style="background:#0f172a;border:1px solid var(--card-border);color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;flex:1;text-transform:uppercase">
+        <button class="btn btn-sm" id="save-code-btn">Update</button>
+      </div>
+      <div class="switch-sub" style="margin-top:4px">Required for couriers to unlock the Bonus Stop.</div>
+    </div>
+  </div>
+
+  <!-- STAGE GATES & RELEASE SWITCHES -->
+  <div class="grid-cards">
+    <div class="card" style="grid-column: 1 / -1">
+      <h2>🎛️ Stage Release Switches</h2>
+      <p style="font-size:0.88rem;color:var(--text-muted);margin:0 0 14px">Flipping a switch opens the checkpoint live on all players’ devices immediately.</p>
+      
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">Gate 1: Release Stage 2 (Journey & Obstacles)</div>
+          <div class="switch-sub">Opens stops 4, 5, 6 (Broken Delivery Scenarios)</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-sm btn-outline" onclick="copyLink(2)">🔗 Copy Link (?stage=2)</button>
+          <button class="toggle-btn" id="gate-1-btn" onclick="toggleGate(1)">LOCKED</button>
+        </div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">Gate 2: Release Stage 3 (Investigation & Resolution)</div>
+          <div class="switch-sub">Opens stops 8, 9, 10 (Detective Cases)</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-sm btn-outline" onclick="copyLink(3)">🔗 Copy Link (?stage=3)</button>
+          <button class="toggle-btn" id="gate-2-btn" onclick="toggleGate(2)">LOCKED</button>
+        </div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">Gate 3: Release Bonus Stop (Final Delivery Live Game)</div>
+          <div class="switch-sub">Opens stop 12 for attendees entering the live seminar code</div>
+        </div>
+        <div>
+          <button class="toggle-btn" id="gate-3-btn" onclick="toggleGate(3)">LOCKED</button>
+        </div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">Evaluation & Digital Pass Release</div>
+          <div class="switch-sub">Presents the Google Form QR code and Digital Certificate pass</div>
+        </div>
+        <div>
+          <button class="toggle-btn" id="gate-4-btn" onclick="toggleGate(4)">LOCKED</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURIERS LEADERBOARD & PLAYER ROSTER TABLE -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <h2>🚚 Live Couriers Roster & Results</h2>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input id="search-input" placeholder="Search courier or ID..." style="background:#0f172a;border:1px solid var(--card-border);color:#fff;padding:8px 12px;border-radius:10px;font-size:0.88rem">
+        <button class="btn btn-sm btn-danger" id="wipe-all-btn">Reset All Couriers</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th># Rank</th>
+            <th>Courier Name</th>
+            <th>Player ID</th>
+            <th>Current Stop</th>
+            <th>Stage 1</th>
+            <th>Stage 2</th>
+            <th>Stage 3</th>
+            <th>Bonus</th>
+            <th>Grand Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="couriers-tbody">
+          <tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">No couriers have registered yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN PROJECTOR VIEW -->
+<div id="projector-view">
+  <div class="proj-header">
+    <div class="proj-title">STREAMLINED · Grand Leaderboard 🏆</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" id="start-ceremony-btn" style="background:#f5b301;color:#1e293b">🎉 Start Podium Ceremony</button>
+      <button class="btn btn-outline" id="close-proj-btn">✕ Close Projector</button>
+    </div>
+  </div>
+  <div class="proj-list" id="proj-tbody"></div>
+</div>
+
+<!-- PODIUM CEREMONY MODAL -->
+<div id="podium-modal">
+  <div class="podium-box">
+    <div style="font-size:3rem">🏆</div>
+    <h1 style="color:#f5b301;font-size:2.4rem;margin:8px 0">CHAMPIONSHIP PODIUM</h1>
+    <div id="podium-content" style="margin:20px 0"></div>
+    <button class="btn btn-outline" onclick="closePodium()">Close Ceremony</button>
+  </div>
+</div>
+
+<script>
+const CONTROL_KEY = 'streamlined_control_v6';
+const STORAGE_PREFIX = 'streamlined_courier_';
+let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
+let seminarCode = 'STORKS2026';
+
+function loadControl() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
+    if (raw.gates) gates = raw.gates;
+    if (raw.seminarCode) seminarCode = raw.seminarCode;
+    $('#seminar-code-input').value = seminarCode;
+  } catch(e) {}
+  updateGateButtons();
+}
+
+function saveControl() {
+  const payload = { gates: gates, seminarCode: seminarCode, updatedAt: Date.now() };
+  localStorage.setItem(CONTROL_KEY, JSON.stringify(payload));
+}
+
+function updateGateButtons() {
+  [1, 2, 3, 4].forEach(g => {
+    const btn = document.getElementById(`gate-${g}-btn`);
+    if (btn) {
+      if (gates[g]) {
+        btn.className = 'toggle-btn active';
+        btn.textContent = 'OPEN';
+      } else {
+        btn.className = 'toggle-btn';
+        btn.textContent = 'LOCKED';
+      }
+    }
+  });
+}
+
+function toggleGate(g) {
+  gates[g] = gates[g] ? 0 : 1;
+  saveControl();
+  updateGateButtons();
+  refreshCouriers();
+}
+
+function copyLink(stage) {
+  const url = window.location.origin + window.location.pathname.replace('admin.html', 'index.html') + `?stage=${stage}`;
+  navigator.clipboard.writeText(url).then(() => {
+    alert(`Copied link for Stage ${stage} to clipboard:\n${url}`);
+  }).catch(() => {
+    prompt(`Stage ${stage} link:`, url);
+  });
+}
+
+$('#save-code-btn').onclick = () => {
+  seminarCode = $('#seminar-code-input').value.trim().toUpperCase() || 'STORKS2026';
+  saveControl();
+  alert(`Seminar code updated to: ${seminarCode}`);
+};
+
+/* =============================================================
+   COURIER DATA SCANNING & RENDERING
+   ============================================================= */
+function getAllCouriers() {
+  const list = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith(STORAGE_PREFIX)) {
+      try {
+        const item = JSON.parse(localStorage.getItem(key));
+        if (item && item.name) {
+          list.push({ key: key, ...item });
+        }
+      } catch(e) {}
+    }
+  }
+  return list;
+}
+
+function calculateScore(c) {
+  if (!c.results) return 0;
+  return c.results.reduce((a, r) => a + (r && r.pts || 0), 0);
+}
+
+function refreshCouriers() {
+  const couriers = getAllCouriers();
+  const search = $('#search-input').value.toLowerCase().trim();
+
+  // Stats
+  $('#stat-total').textContent = couriers.length;
+  let s1 = 0, s2 = 0, s3 = 0, fin = 0;
+
+  couriers.forEach(c => {
+    const cleared = (c.results || []).filter(r => r && !r.gate).length;
+    if (cleared >= 3) s1++;
+    if (cleared >= 6) s2++;
+    if (cleared >= 9) s3++;
+    if (cleared >= 10) fin++;
+  });
+  $('#stat-s1').textContent = s1;
+  $('#stat-s2').textContent = s2;
+  $('#stat-s3').textContent = s3;
+  $('#stat-fin').textContent = fin;
+
+  // Filter & sort
+  const filtered = couriers.filter(c => 
+    c.name.toLowerCase().includes(search) || (c.pid || '').toLowerCase().includes(search)
+  ).sort((a, b) => calculateScore(b) - calculateScore(a));
+
+  const tbody = $('#couriers-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">No matching couriers found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((c, idx) => {
+    const totalScore = calculateScore(c);
+    const stopIdx = c.cur || 0;
+    const res = c.results || [];
+    const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
+    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
+    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
+    const rBon = (res[12]?.pts||0);
+
+    return `
+      <tr>
+        <td style="font-weight:800;color:var(--accent)">#${idx + 1}</td>
+        <td style="font-weight:700">${escapeHtml(c.name)}</td>
+        <td><code>${escapeHtml(c.pid || '—')}</code></td>
+        <td>Stop ${stopIdx}</td>
+        <td>${r1 > 0 ? `<span class="badge badge-good">⭐ ${r1}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td>${r2 > 0 ? `<span class="badge badge-good">⭐ ${r2}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td>${r3 > 0 ? `<span class="badge badge-good">⭐ ${r3}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td>${rBon > 0 ? `<span class="badge badge-good">⭐ ${rBon}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td style="font-weight:800;color:var(--accent);font-size:1.05rem">⭐ ${totalScore}</td>
+        <td>
+          <button class="btn btn-sm btn-outline" onclick="grantLatePass('${c.key}')" title="Unlock next stage immediately">Late Pass</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteCourier('${c.key}', '${escapeHtml(c.name)}')" title="Delete record">🗑️</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
+}
+
+function deleteCourier(key, name) {
+  if (!confirm(`Delete courier "${name}" from the database? This cannot be undone.`)) return;
+  localStorage.removeItem(key);
+  refreshCouriers();
+}
+
+function grantLatePass(key) {
+  try {
+    const c = JSON.parse(localStorage.getItem(key));
+    if (c) {
+      c.cur = Math.min(12, (c.cur || 0) + 4);
+      localStorage.setItem(key, JSON.stringify(c));
+      alert(`Granted Late Pass to ${c.name}. Advanced to stop ${c.cur}.`);
+      refreshCouriers();
+    }
+  } catch(e) {}
+}
+
+$('#wipe-all-btn').onclick = () => {
+  const check = prompt('Type RESET in uppercase to wipe all registered players:');
+  if (check === 'RESET') {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith(STORAGE_PREFIX)) keysToRemove.push(k);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    refreshCouriers();
+    alert('All couriers have been reset.');
+  }
+};
+
+$('#search-input').oninput = refreshCouriers;
+
+/* =============================================================
+   PROJECTOR MODE & PODIUM CEREMONY
+   ============================================================= */
+$('#open-proj-btn').onclick = () => {
+  $('#projector-view').classList.add('active');
+  renderProjector();
+};
+$('#close-proj-btn').onclick = () => {
+  $('#projector-view').classList.remove('active');
+};
+
+function renderProjector() {
+  const couriers = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a)).slice(0, 10);
+  const el = $('#proj-tbody');
+  if (couriers.length === 0) {
+    el.innerHTML = '<div style="text-align:center;font-size:1.6rem;color:var(--text-muted);margin-top:60px">No couriers on the leaderboard yet.</div>';
+    return;
+  }
+  el.innerHTML = couriers.map((c, i) => {
+    let medal = `#${i + 1}`;
+    if (i === 0) medal = '🥇';
+    else if (i === 1) medal = '🥈';
+    else if (i === 2) medal = '🥉';
+
+    return `
+      <div class="proj-row">
+        <span class="proj-rank">${medal}</span>
+        <span class="proj-name">${escapeHtml(c.name)}</span>
+        <span class="proj-time">ID: ${escapeHtml(c.pid || '—')}</span>
+        <span class="proj-score">⭐ ${calculateScore(c)} pts</span>
+      </div>
+    `;
+  }).join('');
+}
+
+setInterval(() => {
+  if ($('#projector-view').classList.contains('active')) {
+    renderProjector();
+  }
+}, 3000);
+
+// Podium sequence
+$('#start-ceremony-btn').onclick = () => {
+  const top3 = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a)).slice(0, 3);
+  if (top3.length === 0) return alert('No couriers available for podium.');
+
+  $('#podium-modal').classList.add('active');
+  startAdminConfetti();
+
+  const c1 = top3[0] || { name: '—', pid: '—' };
+  const c2 = top3[1] || { name: '—', pid: '—' };
+  const c3 = top3[2] || { name: '—', pid: '—' };
+
+  $('#podium-content').innerHTML = `
+    <div style="display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:24px 0">
+      <div style="background:#1e293b;border:2px solid #94a3b8;border-radius:18px;padding:16px;width:170px">
+        <div style="font-size:2rem">🥈</div>
+        <div style="font-weight:800;font-size:1.2rem;margin:6px 0">${escapeHtml(c2.name)}</div>
+        <div style="color:var(--text-muted);font-size:0.85rem">${escapeHtml(c2.pid || '')}</div>
+        <div style="color:var(--accent);font-weight:800;margin-top:6px">⭐ ${calculateScore(c2)} pts</div>
+      </div>
+      <div style="background:#2a2012;border:3px solid #f5b301;border-radius:20px;padding:22px;width:210px">
+        <div style="font-size:2.8rem">🥇</div>
+        <div style="font-weight:800;font-size:1.4rem;color:#f5b301;margin:6px 0">${escapeHtml(c1.name)}</div>
+        <div style="color:var(--text-muted);font-size:0.9rem">${escapeHtml(c1.pid || '')}</div>
+        <div style="color:#f5b301;font-weight:800;font-size:1.3rem;margin-top:6px">⭐ ${calculateScore(c1)} pts</div>
+      </div>
+      <div style="background:#1e293b;border:2px solid #b45309;border-radius:18px;padding:14px;width:160px">
+        <div style="font-size:1.8rem">🥉</div>
+        <div style="font-weight:800;font-size:1.15rem;margin:6px 0">${escapeHtml(c3.name)}</div>
+        <div style="color:var(--text-muted);font-size:0.85rem">${escapeHtml(c3.pid || '')}</div>
+        <div style="color:var(--accent);font-weight:800;margin-top:6px">⭐ ${calculateScore(c3)} pts</div>
+      </div>
+    </div>
+  `;
+};
+
+function closePodium() {
+  $('#podium-modal').classList.remove('active');
+  stopAdminConfetti();
+}
+
+/* =============================================================
+   CSV EXPORT
+   ============================================================= */
+$('#export-csv-btn').onclick = () => {
+  const couriers = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a));
+  let csv = 'Rank,Name,PlayerID,Stage1_Score,Stage2_Score,Stage3_Score,Bonus_Score,GrandTotal_Score,StopsCompleted\n';
+
+  couriers.forEach((c, idx) => {
+    const res = c.results || [];
+    const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
+    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
+    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
+    const rBon = (res[12]?.pts||0);
+    const total = calculateScore(c);
+    const stopsCount = res.filter(r => r && !r.gate).length;
+
+    csv += `${idx + 1},"${c.name.replace(/"/g, '""')}","${c.pid || ''}",${r1},${r2},${r3},${rBon},${total},${stopsCount}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `STREAMLINED_Seminar_Leaderboard_${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+/* =============================================================
+   CONFETTI (ADMIN)
+   ============================================================= */
+const cvsAdmin = document.getElementById('confetti-canvas-admin');
+const ctxAdmin = cvsAdmin.getContext('2d');
+let adminPieces = [], adminConfettiActive = false;
+
+function resizeAdminCvs() {
+  cvsAdmin.width = window.innerWidth;
+  cvsAdmin.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeAdminCvs);
+resizeAdminCvs();
+
+function startAdminConfetti() {
+  const colors = ['#f5b301', '#ff8a1f', '#3b82f6', '#10b981', '#ec4899'];
+  adminPieces = [];
+  for (let i = 0; i < 110; i++) {
+    adminPieces.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight * 0.45,
+      vx: (Math.random() - 0.5) * 18,
+      vy: (Math.random() - 0.8) * 18,
+      size: Math.random() * 9 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 10,
+      life: 1
+    });
+  }
+  if (!adminConfettiActive) animAdminConfetti();
+}
+function stopAdminConfetti() {
+  adminPieces = [];
+  ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
+}
+function animAdminConfetti() {
+  if (adminPieces.length === 0) {
+    adminConfettiActive = false;
+    ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
+    return;
+  }
+  adminConfettiActive = true;
+  ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
+  adminPieces = adminPieces.filter(p => p.life > 0);
+  adminPieces.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.38; p.vx *= 0.98;
+    p.rotation += p.vRot; p.life -= 0.016;
+    ctxAdmin.save();
+    ctxAdmin.translate(p.x, p.y);
+    ctxAdmin.rotate((p.rotation * Math.PI) / 180);
+    ctxAdmin.fillStyle = p.color;
+    ctxAdmin.globalAlpha = Math.max(0, p.life);
+    ctxAdmin.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+    ctxAdmin.restore();
+  });
+  requestAnimationFrame(animAdminConfetti);
+}
+
+// Start
+loadControl();
+refreshCouriers();
+</script>
+</body>
+</html>
+
