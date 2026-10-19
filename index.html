@@ -335,6 +335,75 @@ input {
 }
 input:focus { outline: none; border-color: var(--acc); }
 
+
+/* Flip n Match (Memory Card Pairs) */
+#fm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin: 14px auto;
+  perspective: 1000px;
+}
+.fm-card {
+  aspect-ratio: 1;
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 16px;
+}
+.fm-card.flipped, .fm-card.matched {
+  transform: rotateY(180deg);
+}
+.fm-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 0 rgba(15, 23, 42, 0.35), 0 8px 18px rgba(0,0,0,0.25);
+}
+.fm-card-back {
+  background: linear-gradient(145deg, #1d4ed8 0%, #1e40af 100%);
+  border: 3px solid #60a5fa;
+  color: #facc15;
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-shadow: 0 3px 0 #854d0e, 0 4px 10px rgba(0,0,0,0.6);
+  transition: filter 0.15s;
+}
+.fm-card-back:hover {
+  filter: brightness(1.1);
+}
+.fm-card-front {
+  background: #ffffff;
+  border: 3.5px solid #ffffff;
+  transform: rotateY(180deg);
+  overflow: hidden;
+  padding: 6px;
+}
+.fm-card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.fm-card.matched .fm-card-front {
+  border-color: #10b981;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.75);
+  animation: matchPop 0.4s ease;
+}
+@keyframes matchPop {
+  0% { transform: rotateY(180deg) scale(1); }
+  50% { transform: rotateY(180deg) scale(1.12); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
 /* Wordscape specific styles */
 #grid-container {
   display: flex;
@@ -562,6 +631,40 @@ input:focus { outline: none; border-color: var(--acc); }
   </div>
   <div id="dt-r"></div>
   <div class="row"><button class="sm" id="dt-a">Restart Case</button></div>
+ </section>
+
+ 
+ <!-- GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS) -->
+ <section id="g6" hidden>
+  <div style="background:var(--card-bg);border-radius:20px;padding:12px 18px;margin-bottom:12px;box-shadow:0 4px 14px rgba(0,0,0,0.18);border:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:1.4rem">🗂️</span>
+        <span style="font-weight:800;font-size:1.25rem;letter-spacing:0.5px">12 Cards</span>
+        <span style="font-size:1.4rem">🗂️</span>
+      </div>
+      <div>
+        <span id="fm-s" class="score">⭐ 0</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:1rem;font-weight:700">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span>⏱️</span>
+        <span style="color:var(--mut)">Time:</span>
+        <span id="fm-t" style="font-family:monospace;font-size:1.05rem">00:00:00</span>
+      </div>
+      <div>
+        <span style="color:var(--mut)">Tries:</span>
+        <span id="fm-m" style="color:var(--acc);font-size:1.1rem;font-weight:800">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="fm-grid"></div>
+  <div id="fm-r"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="sm" id="fm-a">Restart Round</button>
+  </div>
  </section>
 
  <!-- BONUS LIVE GAME / QUIZ STOP -->
@@ -795,9 +898,10 @@ const I = [
   { t:'game', k:'sf', n:'Spot & Fix', e:'🔎', cap:167 },
   { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:167 },
   { t:'gate', g:1 },
-  { t:'game', k:'bd', sc:0, n:'Scenario 1', e:'🛠️', cap:267 },
-  { t:'game', k:'bd', sc:1, n:'Scenario 2', e:'🛠️', cap:267 },
-  { t:'game', k:'bd', sc:2, n:'Scenario 3', e:'🛠️', cap:267 },
+  { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
+  { t:'game', k:'bd', sc:0, n:'Scenario 1', e:'🛠️', cap:200 },
+  { t:'game', k:'bd', sc:1, n:'Scenario 2', e:'🛠️', cap:200 },
+  { t:'game', k:'bd', sc:2, n:'Scenario 3', e:'🛠️', cap:200 },
   { t:'gate', g:2 },
   { t:'game', k:'dt', cs:0, n:'Case 1', e:'🕵️', cap:400 },
   { t:'game', k:'dt', cs:1, n:'Case 2', e:'🕵️', cap:400 },
@@ -808,32 +912,33 @@ const I = [
 ];
 
 const GN = { 1:'Stage 2 (Journey & Obstacles)', 2:'Stage 3 (Investigation)', 3:'the Bonus Live Game' };
-const PILL = { 0:'🍼 STAGE 1 · CREATION', 4:'🌩️ STAGE 2 · JOURNEY', 8:'🔎 STAGE 3 · INVESTIGATION', 12:'🏠 FINAL DELIVERY' };
+const PILL = { 0:'🍼 STAGE 1 · CREATION', 4:'🌩️ STAGE 2 · JOURNEY', 9:'🔎 STAGE 3 · INVESTIGATION', 13:'🏠 FINAL DELIVERY' };
 const CUE = {
   0: 'The baby is born. Can you prepare it for delivery?',
-  4: 'The baby’s journey hits obstacles. Can you fix the broken delivery?',
-  8: 'The baby is delayed. Can you investigate and resolve the case?',
-  12: 'The baby must reach its family. Complete the final delivery!'
+  4: 'The baby’s journey hits obstacles. Match the courier tags and fix the broken delivery!',
+  9: 'The baby is delayed. Can you investigate and resolve the case?',
+  13: 'The baby must reach its family. Complete the final delivery!'
 };
 const BEAT = {
   2: 'The baby is ready for the journey.',
-  6: 'The delivery survived the obstacles.',
-  10: 'The delay is solved. The family is close.'
+  4: 'Courier identity tags paired!',
+  7: 'The delivery survived the obstacles.',
+  11: 'The delay is solved. The family is close.'
 };
 const GL = { 1:'Dispatch Gate', 2:'Roadblock Gate', 3:'Last-Mile Gate' };
 const SC = [
   ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['👧', 2, 'tulip'],
-  ['🐺', 4, 'wolves'], ['🐦', 5, 'junior'], ['👧', 6, 'tulip'],
-  ['🐦', 8, 'junior'], ['👧', 9, 'tulip'], ['🐺', 10, 'wolves'],
-  ['🏡', 12, 'family'], ['👶', 13, 'baby']
+  ['🃏', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['👧', 7, 'tulip'],
+  ['🐦', 9, 'junior'], ['👧', 10, 'tulip'], ['🐺', 11, 'wolves'],
+  ['🏡', 13, 'family'], ['👶', 14, 'baby']
 ];
 
 const ASSETS = {
   baby: 'assets/baby.png', junior: 'assets/junior.png', tulip: 'assets/tulip.png',
-  wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png',
+  wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png', toady: 'assets/toady.png',
   zone1: 'assets/zone1.jpg', zone2: 'assets/zone2.jpg', zone3: 'assets/zone3.jpg', zone4: 'assets/zone4.jpg'
 };
-const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'👧', wolves:'🐺', machine:'🏭', family:'🏡' };
+const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'👧', wolves:'🐺', machine:'🏭', family:'🏡', toady:'🐦' };
 function loadAssets() {
   Object.entries(ASSETS).forEach(([k, u]) => {
     const im = new Image();
@@ -845,9 +950,9 @@ const pic = (k, s=56) => okA[k] ? `<img src="${okA[k]}" alt="${k}" style="width:
 
 const STORY = {
   0: { w:['machine', 'junior', 'baby'], t:'A new baby has just come out of the Baby Making Machine! Junior and Tulip must prepare Diamond Destiny for her journey.' },
-  4: { w:['junior','tulip','wolves'], t:'Junior and Tulip are carrying the baby when the Alpha & Beta wolves block the mountain crossing!' },
-  8: { w:['junior','tulip'], t:'The delivery is delayed at the dispatch tower. Junior and Tulip must investigate the evidence to uncover the bottleneck.' },
-  12: { w:['baby','family'], t:'At last the baby reaches Nate Gardner’s family home, and the storks’ true delivery mission is restored!' }
+  4: { w:['junior','tulip','wolves','toady'], t:'Junior and Tulip face roadblocks on the highway! Match the courier identity cards and resolve the dispatch breakdowns.' },
+  9: { w:['junior','tulip'], t:'The delivery is delayed at the dispatch tower. Junior and Tulip must investigate the evidence to uncover the bottleneck.' },
+  13: { w:['baby','family'], t:'At last the baby reaches Nate Gardner’s family home, and the storks’ true delivery mission is restored!' }
 };
 const story = i => {
   if (!CUE[i]) return '';
@@ -859,13 +964,14 @@ const DESC = {
   wp: 'Unscramble logistics vocabulary across 3 anagram routes (STREAM, LOADER, DELIVER).',
   sf: 'Find the 5 packaging and dispatch errors in the poster image, then select each fix.',
   mz: 'Pilot courier through the depot maze to the nursery while gathering 3 bonus parcels.',
+  fm: 'Flip and match 6 character card pairs in the fewest tries and fastest time.',
   bd: 'Sequence the process operations in correct logistics order, then resolve active roadblocks.',
   dt: 'Scrutinize delivery logs, timestamps, and witness statements to solve the dispatch failure.',
   bn: 'Enter the live seminar attendance code and answer the final delivery handoff challenge.'
 };
 
 const TT = ['Junior Dispatch Courier', 'Senior Sorter', 'Quality Inspector', 'Route Dispatcher', 'Chief Logistics Director'];
-const title = () => TT[cur >= 13 ? 4 : cur >= 11 ? 3 : cur >= 7 ? 2 : cur >= 3 ? 1 : 0];
+const title = () => TT[cur >= 14 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
 
 const N = I.length, H = N * 105 + 240;
 const P = I.map((_, i) => ({ x: 180 + 105 * Math.sin(i * 1.25 + 0.3), y: H - 100 - i * 105 }));
@@ -993,8 +1099,8 @@ function draw() {
       <circle cx="335" cy="88" r="35"/>
     </g>
     <!-- Rolling sunny green hills around Family Home zone -->
-    <path d="M -20,${P[12].y + 45} Q 90,${P[12].y - 35} 200,${P[12].y + 40} T ${vbW + 20},${P[12].y + 25} L ${vbW + 20},${P[11].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(34, 197, 94, 0.4)"/>
-    <path d="M -20,${P[12].y + 65} Q 130,${P[12].y + 15} 250,${P[12].y + 70} T ${vbW + 20},${P[12].y + 55} L ${vbW + 20},${P[11].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(21, 128, 61, 0.55)"/>
+    <path d="M -20,${P[13].y + 45} Q 90,${P[13].y - 35} 200,${P[13].y + 40} T ${vbW + 20},${P[13].y + 25} L ${vbW + 20},${P[13].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(34, 197, 94, 0.4)"/>
+    <path d="M -20,${P[13].y + 65} Q 130,${P[13].y + 15} 250,${P[13].y + 70} T ${vbW + 20},${P[12].y + 55} L ${vbW + 20},${P[11].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(21, 128, 61, 0.55)"/>
 
     <!-- Investigation Zone: Soft mystical fog banks and star sparkles -->
     <g fill="rgba(255,255,255,0.14)">
@@ -1217,7 +1323,7 @@ function draw() {
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
   $('#hs').textContent = '⭐ ' + total;
-  $('#hb').style.width = Math.round((cleared / 10) * 100) + '%';
+  $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
 }
 
 function focusCur() {
@@ -1280,6 +1386,9 @@ function launch(i) {
   } else if (it.k === 'bd') {
     $('#g3').hidden = false;
     bdStart(it.sc || 0);
+  } else if (it.k === 'fm') {
+    $('#g6').hidden = false;
+    fmStart();
   } else if (it.k === 'dt') {
     $('#g4').hidden = false;
     dtStart(it.cs || 0);
@@ -1293,6 +1402,7 @@ function leave() {
   activeStopIndex = null;
   if (wpTimer) clearInterval(wpTimer);
   if (sf && sf.to) clearTimeout(sf.to);
+  if (fmTimer) fmTimer.stop();
   $$('#play section').forEach(s => s.hidden = true);
   V('#mapv');
   draw();
@@ -2181,3 +2291,147 @@ checkUrlParams();
 </script>
 </body>
 </html>
+
+
+/* =============================================================
+   GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS)
+   ============================================================= */
+const FM_CARDS = [
+  { id: 'baby', name: 'Baby Diamond', img: 'assets/baby.png' },
+  { id: 'junior', name: 'Junior', img: 'assets/junior.png' },
+  { id: 'tulip', name: 'Tulip', img: 'assets/tulip.png' },
+  { id: 'wolves', name: 'Wolves', img: 'assets/wolves.png' },
+  { id: 'toady', name: 'Pigeon Toady', img: 'assets/toady.png' },
+  { id: 'family', name: 'Nate Family', img: 'assets/family.png' }
+];
+
+let fmState = {
+  deck: [],
+  flipped: [],
+  matched: 0,
+  tries: 0,
+  busy: false,
+  score: 0,
+  done: false
+};
+
+function FmTimer(el) {
+  let t0 = 0, iv = null, elapsed = 0;
+  const f = () => {
+    elapsed = Date.now() - t0;
+    const m = Math.floor(elapsed / 60000);
+    const s = Math.floor((elapsed % 60000) / 1000);
+    const cs = Math.floor((elapsed % 1000) / 10);
+    if (el) el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0') + ':' + String(cs).padStart(2, '0');
+    return elapsed;
+  };
+  return {
+    start() { t0 = Date.now(); clearInterval(iv); iv = setInterval(f, 33); f(); },
+    stop() { clearInterval(iv); return f(); },
+    reset() { clearInterval(iv); if (el) el.textContent = '00:00:00'; }
+  };
+}
+
+const fmTimer = FmTimer($('#fm-t'));
+
+function fmStart() {
+  fmTimer.reset();
+  $('#fm-r').innerHTML = '';
+  $('#fm-m').textContent = '0';
+  $('#fm-s').textContent = '⭐ 0';
+
+  // Create 12 cards (2 of each from 6 character types)
+  const fullDeck = shuf([...FM_CARDS, ...FM_CARDS].map((c, idx) => ({ ...c, uid: idx })));
+
+  fmState = {
+    deck: fullDeck,
+    flipped: [],
+    matched: 0,
+    tries: 0,
+    busy: false,
+    score: 0,
+    done: false
+  };
+
+  const grid = $('#fm-grid');
+  grid.innerHTML = fullDeck.map((card, i) => `
+    <div class="fm-card" id="fm-c-${i}" onclick="fmCardClick(${i})">
+      <div class="fm-card-face fm-card-back">?</div>
+      <div class="fm-card-face fm-card-front">
+        <img src="${card.img}" alt="${card.name}">
+      </div>
+    </div>
+  `).join('');
+
+  fmTimer.start();
+}
+
+function fmCardClick(idx) {
+  if (fmState.done || fmState.busy) return;
+  const card = fmState.deck[idx];
+  const el = $('#fm-c-' + idx);
+
+  // If already flipped or matched, ignore
+  if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
+
+  // Flip card
+  audio.letterPick(fmState.flipped.length);
+  el.classList.add('flipped');
+  fmState.flipped.push({ idx, card, el });
+
+  if (fmState.flipped.length === 2) {
+    fmState.tries++;
+    $('#fm-m').textContent = fmState.tries;
+    fmState.busy = true;
+
+    const [c1, c2] = fmState.flipped;
+    if (c1.card.id === c2.card.id) {
+      // MATCH!
+      setTimeout(() => {
+        audio.wordSuccess();
+        c1.el.classList.add('matched');
+        c2.el.classList.add('matched');
+        fmState.matched += 2;
+        fmState.flipped = [];
+        fmState.busy = false;
+
+        // Check Win
+        if (fmState.matched === 12) {
+          fmEnd();
+        }
+      }, 350);
+    } else {
+      // MISMATCH
+      setTimeout(() => {
+        audio.error();
+        shake(c1.el);
+        shake(c2.el);
+      }, 250);
+
+      setTimeout(() => {
+        c1.el.classList.remove('flipped');
+        c2.el.classList.remove('flipped');
+        fmState.flipped = [];
+        fmState.busy = false;
+      }, 850);
+    }
+  }
+}
+
+function fmEnd() {
+  fmState.done = true;
+  const elapsedMs = fmTimer.stop();
+  const elapsedSec = Math.floor(elapsedMs / 1000);
+
+  // Scoring: Max 200 pts
+  // Perfect is 6 tries. Speed under 30s.
+  const speedBonus = Math.max(0, 45 - elapsedSec) * 2;
+  const tryPenalty = Math.max(0, fmState.tries - 6) * 5;
+  const finalScore = Math.max(60, Math.min(200, 160 + speedBonus - tryPenalty));
+
+  $('#fm-s').textContent = '⭐ ' + finalScore;
+  res($('#fm-r'), 'All 6 Pairs Matched! 🗂️', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
+  onStopCompleted(finalScore, 200);
+}
+
+$('#fm-a').onclick = fmStart;

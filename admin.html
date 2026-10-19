@@ -500,9 +500,9 @@ function refreshCouriers() {
   couriers.forEach(c => {
     const cleared = (c.results || []).filter(r => r && !r.gate).length;
     if (cleared >= 3) s1++;
-    if (cleared >= 6) s2++;
-    if (cleared >= 9) s3++;
-    if (cleared >= 10) fin++;
+    if (cleared >= 7) s2++;
+    if (cleared >= 10) s3++;
+    if (cleared >= 11) fin++;
   });
   $('#stat-s1').textContent = s1;
   $('#stat-s2').textContent = s2;
@@ -525,9 +525,9 @@ function refreshCouriers() {
     const stopIdx = c.cur || 0;
     const res = c.results || [];
     const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
-    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
-    const rBon = (res[12]?.pts||0);
+    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
+    const r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
+    const rBon = (res[13]?.pts||0);
 
     return `
       <tr>
@@ -681,9 +681,9 @@ $('#export-csv-btn').onclick = () => {
   couriers.forEach((c, idx) => {
     const res = c.results || [];
     const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
-    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
-    const rBon = (res[12]?.pts||0);
+    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
+    const r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
+    const rBon = (res[13]?.pts||0);
     const total = calculateScore(c);
     const stopsCount = res.filter(r => r && !r.gate).length;
 
