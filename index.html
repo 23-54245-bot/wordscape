@@ -1127,28 +1127,7 @@ function draw() {
     </g>
   `;
 
-  // 2. Decorative Scenery & Character Illustrations along the path
-  SC.forEach(([e, i, k]) => {
-    const sideX = P[i].x > 190 ? 46 : 334;
-    if (k && okA[k]) {
-      h += `
-        <g filter="url(#shadow-3d)">
-          <circle cx="${sideX}" cy="${P[i].y}" r="28" fill="#ffffff" stroke="#ff8a1f" stroke-width="2.5"/>
-          <clipPath id="clip-${k}-${i}">
-            <circle cx="${sideX}" cy="${P[i].y}" r="26"/>
-          </clipPath>
-          <image href="${okA[k]}" x="${sideX - 26}" y="${P[i].y - 26}" width="52" height="52" preserveAspectRatio="xMidYMid slice" clip-path="url(#clip-${k}-${i})"/>
-        </g>
-      `;
-    } else {
-      h += `
-        <g filter="url(#shadow-3d)">
-          <circle cx="${sideX}" cy="${P[i].y}" r="26" fill="rgba(255,255,255,0.7)"/>
-          <text x="${sideX}" y="${P[i].y + 11}" font-size="32" text-anchor="middle">${e}</text>
-        </g>
-      `;
-    }
-  });
+
 
   // Top Welcome Banner Ribbon
   h += `
