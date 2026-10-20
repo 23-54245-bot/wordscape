@@ -16,6 +16,8 @@
   --text-muted: #94a3b8;
   --accent: #ff8a1f;
   --accent-glow: rgba(255, 138, 31, 0.35);
+  --glass-bg: rgba(30, 41, 59, 0.58);
+  --glass-border: rgba(203, 213, 225, 0.16);
   --good: #10b981;
   --bad: #ef4444;
   --warn: #f59e0b;
@@ -25,7 +27,11 @@
 body {
   margin: 0;
   font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
-  background-color: var(--navy);
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(56, 189, 248, 0.14), transparent 34%),
+    radial-gradient(ellipse at 88% 8%, rgba(255, 138, 31, 0.12), transparent 30%),
+    linear-gradient(145deg, #0b1220, #111c30 55%, #0c1525);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   display: flex;
@@ -33,8 +39,11 @@ body {
 }
 
 header {
-  background: var(--navy-light);
-  border-bottom: 2px solid var(--card-border);
+  background: rgba(15, 23, 42, 0.68);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
@@ -67,11 +76,13 @@ header {
 }
 
 .card {
-  background: var(--navy-light);
-  border: 1px solid var(--card-border);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
 }
 .card h2 {
   margin: 0 0 12px;
@@ -145,7 +156,7 @@ button, input { font: inherit; }
   overflow-x: auto;
   border-radius: 14px;
   border: 1px solid var(--card-border);
-  background: var(--navy-light);
+  background: rgba(15, 23, 42, 0.46);
   margin-top: 12px;
 }
 table {
@@ -155,7 +166,7 @@ table {
   font-size: 0.92rem;
 }
 th {
-  background: #182234;
+  background: rgba(15, 23, 42, 0.62);
   color: var(--text-muted);
   font-weight: 700;
   padding: 12px 14px;
@@ -168,6 +179,24 @@ td {
   white-space: nowrap;
 }
 tr:hover td { background: rgba(255, 255, 255, 0.02); }
+.preview-card {
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.glass-input {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+.glass-input:focus {
+  outline: 2px solid rgba(96, 165, 250, 0.55);
+  outline-offset: 1px;
+}
 
 .badge {
   display: inline-block;
@@ -265,7 +294,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
 <header>
   <div class="brand">
-    <img src="assets/logo.png" alt="STREAMLINED" style="height:36px;object-fit:contain">
+    <img src="assets/logo.png?v=3" alt="STREAMLINED" style="height:36px;object-fit:contain;mix-blend-mode:screen">
     <span style="font-size:1.1rem;color:var(--text-muted);border-left:2px solid var(--card-border);padding-left:12px;margin-left:4px">Host Control Tower</span>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
@@ -294,7 +323,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     <div class="card">
       <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">LIVE SEMINAR CODE</div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="seminar-code-input" value="STORKS2026" style="background:#0f172a;border:1px solid var(--card-border);color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;flex:1;text-transform:uppercase">
+        <input id="seminar-code-input" class="glass-input" value="STORKS2026" style="font-weight:700;flex:1;text-transform:uppercase">
         <button class="btn btn-sm" id="save-code-btn">Update</button>
       </div>
       <div class="switch-sub" style="margin-top:4px">Required for couriers to unlock the Bonus Stop.</div>
@@ -361,42 +390,42 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
       <a href="index.html?admin=1" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">🗺️ Open Map in Admin Mode ↗</a>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px">
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 1 · STREAM</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 1 (Stage 1)</div>
         <a href="index.html?admin=1&play=0" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 2 · LOADER</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 2 (Stage 1)</div>
         <a href="index.html?admin=1&play=1" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 3 · DELIVER</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 3 (Stage 1)</div>
         <a href="index.html?admin=1&play=2" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 4 · Flip n Match</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">12-card memory pairs (Stage 2)</div>
         <a href="index.html?admin=1&play=4" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 5 · Spot & Fix</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Inspect 5 logistics defects</div>
         <a href="index.html?admin=1&play=5" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 6 · Delivery Maze</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Van to house avoiding obstacles</div>
         <a href="index.html?admin=1&play=6" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🛠️ Stop 7 · Fix Delivery</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Delivery route detour scenario</div>
         <a href="index.html?admin=1&play=7" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
       </div>
-      <div style="background:#0f172a;border:1px solid var(--card-border);border-radius:14px;padding:14px">
+      <div class="preview-card">
         <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🏠 Stop 11 · Final Delivery</div>
         <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Live seminar code & quiz bonus</div>
         <a href="index.html?admin=1&play=13" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
@@ -409,7 +438,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
       <h2>🚚 Live Couriers Roster & Results</h2>
       <div style="display:flex;gap:10px;align-items:center">
-        <input id="search-input" placeholder="Search courier or ID..." style="background:#0f172a;border:1px solid var(--card-border);color:#fff;padding:8px 12px;border-radius:10px;font-size:0.88rem">
+        <input id="search-input" class="glass-input" placeholder="Search courier or ID..." style="font-size:0.88rem">
         <button class="btn btn-sm btn-danger" id="wipe-all-btn">Reset All Couriers</button>
       </div>
     </div>
@@ -817,4 +846,3 @@ refreshCouriers();
 </script>
 </body>
 </html>
-
