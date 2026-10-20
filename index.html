@@ -671,60 +671,93 @@ input:focus { outline: none; border-color: var(--acc); }
 }
 
 /* ── Avatar Picker ── */
+.avatar-picker-title {
+  margin: 18px 0 4px;
+  color: #f8fafc;
+  font-size: 1.45rem;
+  text-align: center;
+}
+.avatar-category {
+  margin: 12px 0 0;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+}
 .avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 12px 0 16px;
+  display: flex;
+  gap: 14px;
+  margin: 8px -20px 12px;
+  padding: 8px 24px 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
 }
 .av-btn {
+  position: relative;
+  flex: 0 0 104px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  gap: 8px;
+  background: transparent;
+  border: 0;
   border-radius: 14px;
-  padding: 8px 4px 6px;
+  padding: 4px 0 8px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+  scroll-snap-align: center;
+  transition: transform 0.18s, opacity 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
 .av-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
 }
 .av-btn img {
-  width: 62px;
-  height: 62px;
+  width: 96px;
+  height: 96px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: #0f172a;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  background: #111827;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
 }
 .av-btn span {
-  font-size: 0.7rem;
+  max-width: 100%;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #cbd5e1;
+  color: #e2e8f0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
   text-align: center;
   line-height: 1.2;
 }
 .av-btn.selected {
-  border-color: var(--acc);
-  background: rgba(255, 138, 31, 0.22);
-  box-shadow: 0 0 18px rgba(255, 138, 31, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  transform: scale(1.06);
+  transform: translateY(-2px);
 }
 .av-btn.selected img {
   border-color: var(--acc);
+  box-shadow: 0 0 0 4px rgba(255, 138, 31, 0.24), 0 8px 24px rgba(255, 138, 31, 0.35);
 }
 .av-btn.selected span {
-  color: var(--acc);
+  color: #ffd08a;
+}
+.av-btn.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 2px solid #111827;
+  border-radius: 50%;
+  background: var(--acc);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 #av-err {
   color: #ef4444;
@@ -924,9 +957,10 @@ select option {
  <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric" required>
  <p id="account-err" role="alert" style="display:none;color:#fecaca;font-size:0.85rem;text-align:left;margin:-6px 0 10px"></p>
 
- <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left;margin-top:12px">CHOOSE YOUR CHARACTER</label>
+ <h2 class="avatar-picker-title">Choose an Avatar</h2>
+ <p class="avatar-category">Your Couriers</p>
  <div class="avatar-grid" id="avatar-grid">
-   <div style="grid-column:1/-1;text-align:center;color:var(--mut);font-size:0.85rem;padding:14px">Loading characters...</div>
+   <div style="text-align:center;color:var(--mut);font-size:0.85rem;padding:14px">Loading characters...</div>
  </div>
  <p id="av-err">Please pick a character first!</p>
  <button class="btn" id="go">Start Delivering 🚀</button>
@@ -1313,7 +1347,9 @@ function restoreAvatar(avatar) {
     item.name.toLowerCase() === avatar.name.toLowerCase() || item.img === avatar.img
   ) || avatar;
   document.querySelectorAll('.av-btn').forEach((button, index) => {
-    button.classList.toggle('selected', avatars[index] === chosenAvatar);
+    const selected = avatars[index] === chosenAvatar;
+    button.classList.toggle('selected', selected);
+    button.setAttribute('aria-pressed', String(selected));
   });
 }
 
@@ -2996,7 +3032,11 @@ let chosenAvatar = null;
 
 function pickAvatar(idx, avatars) {
   chosenAvatar = avatars[idx];
-  document.querySelectorAll('.av-btn').forEach((b, i) => b.classList.toggle('selected', i === idx));
+  document.querySelectorAll('.av-btn').forEach((b, i) => {
+    const selected = i === idx;
+    b.classList.toggle('selected', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
   const err = document.getElementById('av-err');
   if (err) err.style.display = 'none';
 }
@@ -3011,11 +3051,12 @@ function buildAvatarGrid(avatars) {
   const grid = document.getElementById('avatar-grid');
   if (!grid) return;
   grid.innerHTML = avatars.map((av, i) => `
-    <button class="av-btn" onclick="pickAvatar(${i}, window._avatars)" type="button">
+    <button class="av-btn" onclick="pickAvatar(${i}, window._avatars)" type="button" aria-pressed="false">
       <img src="${av.img}" alt="${av.name}" loading="lazy">
       <span>${av.name}</span>
     </button>
   `).join('');
+  if (chosenAvatar) restoreAvatar(chosenAvatar);
 }
 
 fetch('assets/avatars.json?v=' + Date.now())
