@@ -735,6 +735,156 @@ input:focus { outline: none; border-color: var(--acc); }
   flex-shrink: 0;
 }
 
+/* Game-wide glass surfaces */
+:root {
+  --ink: #f8fafc;
+  --card: #142238;
+  --card-bg: rgba(17, 31, 53, 0.66);
+  --mut: #b9c9dc;
+  --cell: rgba(255, 255, 255, 0.1);
+  --cell-blank: rgba(255, 255, 255, 0.08);
+  --cell-border: rgba(147, 197, 253, 0.48);
+  --line: rgba(203, 213, 225, 0.2);
+  --tile-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(148, 163, 184, 0.1));
+  --tile-border: rgba(226, 232, 240, 0.35);
+  --tile-shadow: 0 5px 14px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --wheel-bg: radial-gradient(circle, rgba(226, 240, 255, 0.2) 30%, rgba(30, 54, 84, 0.52) 100%);
+}
+
+.card,
+.bar,
+.mbox,
+.lb-modal-card,
+#g6 > .game-hud {
+  background: rgba(17, 31, 53, 0.62);
+  border: 1px solid rgba(203, 213, 225, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+header {
+  background: rgba(12, 24, 43, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px) saturate(155%);
+  -webkit-backdrop-filter: blur(22px) saturate(155%);
+}
+
+.nm,
+.ttl { color: #f8fafc; }
+.ttl { color: #ffd08a; }
+.sub,
+.msg,
+.link,
+.switch-sub { color: var(--mut); }
+
+.btn.alt,
+.sm,
+.pad button,
+.opt,
+.clue,
+select,
+input,
+#wheel button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.22);
+  color: #f8fafc;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px) saturate(135%);
+  -webkit-backdrop-filter: blur(12px) saturate(135%);
+}
+
+.btn.alt:hover,
+.sm:hover,
+.pad button:hover,
+.opt:hover:not(:disabled),
+.clue:hover {
+  background: rgba(255, 255, 255, 0.17);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.opt:disabled { opacity: 0.5; }
+input::placeholder { color: #b9c9dc; }
+input:focus,
+select:focus {
+  outline: 2px solid rgba(96, 165, 250, 0.7);
+  outline-offset: 2px;
+}
+select option {
+  background: #142238;
+  color: #f8fafc;
+}
+
+.score {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff4dc;
+  border: 1px solid rgba(255, 214, 153, 0.55);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pbar {
+  background: rgba(5, 13, 27, 0.55);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+#modal,
+#leaderboard-modal {
+  background: rgba(5, 12, 24, 0.58);
+  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+}
+
+.lb-list {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.lb-item { border-bottom-color: rgba(255, 255, 255, 0.1); }
+.lb-head-row {
+  background: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.16);
+}
+
+.fm-card-back {
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.72), rgba(30, 64, 175, 0.62));
+  border-color: rgba(147, 197, 253, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.fm-card-front {
+  background: rgba(226, 240, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.cell,
+.c:not(.w) {
+  background: rgba(226, 240, 255, 0.22);
+  border-color: rgba(191, 219, 254, 0.6);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cell.on {
+  background: linear-gradient(145deg, rgba(255, 140, 43, 0.96), rgba(234, 88, 12, 0.92));
+}
+.c.w {
+  background: rgba(8, 18, 34, 0.74);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card,
+  .bar,
+  .mbox,
+  .lb-modal-card,
+  #g6 > .game-hud { background: rgba(17, 31, 53, 0.94); }
+  header { background: rgba(12, 24, 43, 0.96); }
+}
+
 </style>
 </head>
 <body>
@@ -869,7 +1019,7 @@ input:focus { outline: none; border-color: var(--acc); }
  
  <!-- GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS) -->
  <section id="g6" hidden>
-  <div style="background:var(--card-bg);border-radius:20px;padding:12px 18px;margin-bottom:12px;box-shadow:0 4px 14px rgba(0,0,0,0.18);border:1px solid var(--line)">
+  <div class="game-hud" style="border-radius:20px;padding:12px 18px;margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:1.4rem">🗂️</span>
