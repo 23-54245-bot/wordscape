@@ -898,9 +898,10 @@ select option {
  <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Baby’s Journey Home · Logistics Master Challenge</p>
 
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">COURIER FULL NAME</label>
- <input id="nm" placeholder="e.g. Jedeann Cabaluna" maxlength="40">
+ <input id="nm" placeholder="e.g. Jedeann Cabaluna" maxlength="40" required>
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
- <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric">
+ <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric" required>
+ <p id="account-err" role="alert" style="display:none;color:#fecaca;font-size:0.85rem;text-align:left;margin:-6px 0 10px"></p>
 
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left;margin-top:12px">CHOOSE YOUR CHARACTER</label>
  <div class="avatar-grid" id="avatar-grid">
@@ -1269,7 +1270,70 @@ function loadState() {
     const data = JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || '{}');
     if (data.results) R = data.results;
     if (typeof data.cur === 'number') cur = data.cur;
+    if (data.avatar) restoreAvatar(data.avatar);
+    return data;
   } catch(e) {}
+  return null;
+}
+
+/* =============================================================
+   FIREBASE REAL-TIME DATABASE SYNC
+   ============================================================= */
+const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+function restoreAvatar(avatar) {
+  if (!avatar || !avatar.name) return;
+  const avatars = window._avatars || [];
+  chosenAvatar = avatars.find(item =>
+    item.name.toLowerCase() === avatar.name.toLowerCase() || item.img === avatar.img
+  ) || avatar;
+  document.querySelectorAll('.av-btn').forEach((button, index) => {
+    button.classList.toggle('selected', avatars[index] === chosenAvatar);
+  });
+}
+
+async function restoreAccount(localState) {
+  const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Account lookup failed (${response.status})`);
+  const remote = await response.json();
+  if (!remote) return false;
+  if (normalizeId(remote.name || '', remote.pid || '') !== courierKey) {
+    throw new Error('The saved account identity does not match this name and player ID.');
+  }
+
+  const localUpdatedAt = Number(localState && localState.updatedAt) || 0;
+  const remoteUpdatedAt = Number(remote.updatedAt) || 0;
+  if (remoteUpdatedAt >= localUpdatedAt) {
+    if (Array.isArray(remote.results)) R = remote.results;
+    if (typeof remote.cur === 'number') cur = remote.cur;
+    if (remote.avatar) restoreAvatar(remote.avatar);
+  }
+  return true;
+}
+
+async function syncToFirebase(payload) {
+  if (!FIREBASE_DB_URL || !courierKey) return;
+  try {
+    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
+    const body = {
+      name: payload.name || 'Courier',
+      pid: payload.pid || '',
+      score: totalScore,
+      stops: stopsCleared,
+      cur: payload.cur || 0,
+      avatar: (payload.avatar && payload.avatar.name) ? payload.avatar : (chosenAvatar || null),
+      results: payload.results || [],
+      updatedAt: payload.updatedAt || Date.now()
+    };
+    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) {
+    console.warn('Firebase sync error:', e);
+  }
 }
 
 function saveState() {
@@ -1279,6 +1343,7 @@ function saveState() {
     pid: pid,
     cur: cur,
     results: R,
+    avatar: chosenAvatar,
     updatedAt: Date.now()
   };
   try {
@@ -2848,21 +2913,47 @@ fetch('assets/avatars.json?v=' + Date.now())
     buildAvatarGrid(fallback);
   });
 
-$('#go').onclick = () => {
+$('#go').onclick = async () => {
   audio.init();
+  const accountErr = document.getElementById('account-err');
+  const inputName = $('#nm').value.trim();
+  const inputPid = $('#pid').value.trim();
+  if (!inputName || !inputPid) {
+    if (accountErr) {
+      accountErr.textContent = 'Enter both your courier name and player ID to open your account.';
+      accountErr.style.display = 'block';
+    }
+    return;
+  }
+  if (accountErr) accountErr.style.display = 'none';
+  user = inputName;
+  pid = inputPid;
+  courierKey = normalizeId(user, pid);
+
+  const localState = loadState();
+  const loginButton = $('#go');
+  loginButton.disabled = true;
+  try {
+    await restoreAccount(localState);
+  } catch (error) {
+    console.warn('Account restore error:', error);
+    if (accountErr) {
+      accountErr.textContent = 'Could not verify your account. Check your connection and try again.';
+      accountErr.style.display = 'block';
+    }
+    loginButton.disabled = false;
+    return;
+  }
+
   if (!chosenAvatar) {
     const err = document.getElementById('av-err');
     if (err) { err.style.display = 'block'; err.scrollIntoView({behavior:'smooth',block:'center'}); }
+    loginButton.disabled = false;
     return;
   }
-  const inputName = $('#nm').value.trim();
-  const inputPid = $('#pid').value.trim();
-  user = inputName || 'Courier';
-  pid = inputPid || 'ID-001';
-  courierKey = normalizeId(user, pid);
 
   applyAvatar();
-  loadState();
+  saveState();
   adv();
   V('#mapv');
   draw();
@@ -2872,6 +2963,7 @@ $('#go').onclick = () => {
     <p>A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.</p>
     ${bt('Start Delivery Mission 🚀', 'X();focusCur()')}
   `);
+  loginButton.disabled = false;
 };
 
 $('#rs-btn').onclick = () => {
@@ -3086,28 +3178,6 @@ $('#fm-a').onclick = fmStart;
 /* =============================================================
    LIVE LEADERBOARD SYSTEM (FIREBASE + LOCAL STORAGE SYNC)
    ============================================================= */
-const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
-
-async function syncToFirebase(payload) {
-  if (!FIREBASE_DB_URL || !courierKey) return;
-  try {
-    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
-    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
-    const body = {
-      name: payload.name || 'Courier',
-      pid: payload.pid || '',
-      score: totalScore,
-      stops: stopsCleared,
-      updatedAt: payload.updatedAt || Date.now()
-    };
-    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  } catch(e) {}
-}
-
 async function getLeaderboardEntries() {
   const map = new Map();
 

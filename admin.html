@@ -491,6 +491,9 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
 <script>
 const CONTROL_KEY = 'streamlined_control_v6';
+const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+let remoteCouriers = {};
+
 const STORAGE_PREFIX = 'streamlined_courier_';
 let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
 let seminarCode = 'STORKS2026';
@@ -567,7 +570,8 @@ function getAllCouriers() {
 }
 
 function calculateScore(c) {
-  if (!c.results) return 0;
+  if (typeof c.score === 'number' && c.score > 0) return c.score;
+  if (!c.results || !Array.isArray(c.results)) return 0;
   return c.results.reduce((a, r) => a + (r && r.pts || 0), 0);
 }
 
@@ -841,6 +845,29 @@ function animAdminConfetti() {
 }
 
 // Start
+
+// Real-time polling from Firebase Realtime DB
+async function pollFirebaseCouriers() {
+  if (!FIREBASE_DB_URL) return;
+  try {
+    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      remoteCouriers = data || {};
+      refreshCouriers();
+      if ($('#projector-view') && $('#projector-view').classList.contains('active')) {
+        renderProjector();
+      }
+    }
+  } catch(e) {
+    console.warn('Firebase poll error:', e);
+  }
+}
+
+// Poll every 3 seconds for real-time player updates
+setInterval(pollFirebaseCouriers, 3000);
+pollFirebaseCouriers();
+
 loadControl();
 refreshCouriers();
 </script>
