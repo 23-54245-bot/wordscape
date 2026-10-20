@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -467,7 +467,7 @@ input:focus { outline: none; border-color: var(--acc); }
   width: 270px;
   height: 270px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 4;
 }
 #wheel {
   position: absolute;
@@ -509,6 +509,111 @@ input:focus { outline: none; border-color: var(--acc); }
   height: 100vh;
   pointer-events: none;
   z-index: 99;
+}
+/* Leaderboard Modal Styles */
+#leaderboard-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#leaderboard-modal[hidden] {
+  display: none !important;
+}
+.lb-modal-card {
+  background: var(--card-bg, #ffffff);
+  border-radius: 22px;
+  max-width: 440px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.35);
+  border: 1px solid var(--line, rgba(0,0,0,0.1));
+  animation: lbPopUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lbPopUp {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.lb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.lb-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+}
+.lb-sub {
+  font-size: 0.82rem;
+  color: var(--mut);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.lb-list {
+  overflow-y: auto;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--line);
+  flex: 1;
+  min-height: 200px;
+  max-height: 380px;
+}
+.lb-item {
+  display: grid;
+  grid-template-columns: 44px 1fr 75px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.lb-item:last-child { border-bottom: none; }
+.lb-item.me {
+  background: rgba(255, 122, 24, 0.15);
+  font-weight: 800;
+  border-left: 4px solid var(--acc);
+}
+.lb-rank {
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-align: center;
+}
+.lb-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 6px;
+}
+.lb-score {
+  text-align: right;
+  font-weight: 800;
+  color: var(--acc);
+}
+.lb-head-row {
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--mut);
+  background: rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid var(--line);
 }
 [hidden] { display: none !important; }
 
@@ -558,35 +663,6 @@ input:focus { outline: none; border-color: var(--acc); }
   color: #64748b;
 }
 
-#login .av-btn {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-#login .av-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-#login .av-btn span {
-  color: #cbd5e1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-#login .av-btn.selected {
-  border-color: var(--acc);
-  background: rgba(255, 138, 31, 0.22);
-  box-shadow: 0 0 18px rgba(255, 138, 31, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-}
-
-#login .btn {
-  box-shadow: 0 8px 24px rgba(255, 115, 0, 0.35);
-}
-
 /* ── Avatar Picker ── */
 .avatar-grid {
   display: grid;
@@ -599,40 +675,59 @@ input:focus { outline: none; border-color: var(--acc); }
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  background: rgba(255,255,255,0.06);
-  border: 2px solid rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 14px;
   padding: 8px 4px 6px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: border-color 0.18s, background 0.18s, transform 0.15s;
   -webkit-tap-highlight-color: transparent;
+}
+.av-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 .av-btn img {
   width: 62px;
   height: 62px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.15);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   background: #0f172a;
 }
 .av-btn span {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--mut);
+  color: #cbd5e1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
   text-align: center;
   line-height: 1.2;
 }
 .av-btn.selected {
   border-color: var(--acc);
-  background: rgba(255,138,31,0.15);
+  background: rgba(255, 138, 31, 0.22);
+  box-shadow: 0 0 18px rgba(255, 138, 31, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
   transform: scale(1.06);
 }
-.av-btn.selected img { border-color: var(--acc); }
-.av-btn.selected span { color: var(--acc); }
-#av-err { color:#ef4444;font-size:0.82rem;margin:-8px 0 8px;display:none; }
-/* Avatar badge in map header */
+.av-btn.selected img {
+  border-color: var(--acc);
+}
+.av-btn.selected span {
+  color: var(--acc);
+}
+#av-err {
+  color: #ef4444;
+  font-size: 0.82rem;
+  margin: -8px 0 8px;
+  display: none;
+}
 #hav {
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--acc);
@@ -659,7 +754,7 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left;margin-top:12px">CHOOSE YOUR CHARACTER</label>
  <div class="avatar-grid" id="avatar-grid">
-   <div style="grid-column:1/-1;text-align:center;color:var(--mut);font-size:0.85rem;padding:14px">Loading characters…</div>
+   <div style="grid-column:1/-1;text-align:center;color:var(--mut);font-size:0.85rem;padding:14px">Loading characters...</div>
  </div>
  <p id="av-err">Please pick a character first!</p>
  <button class="btn" id="go">Start Delivering 🚀</button>
@@ -677,6 +772,7 @@ input:focus { outline: none; border-color: var(--acc); }
       </div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
+      <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">🏆 Leaderboard</button>
       <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
       <span class="score" id="hs">⭐ 0</span>
     </div>
@@ -688,7 +784,9 @@ input:focus { outline: none; border-color: var(--acc); }
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
  
  <div class="row" style="margin-top:10px">
+   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">🏆 Leaderboard</button>
    <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
+   <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">👑 Level Select</button>
    <button class="sm" id="rs-btn">Reset demo</button>
  </div>
 </div>
@@ -727,7 +825,7 @@ input:focus { outline: none; border-color: var(--acc); }
  <!-- GAME 1: SPOT & FIX THE ERRORS -->
  <section id="g1" hidden>
   <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">⭐ 0</span></div>
-  <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/poster.jpg"><div id="sf-ov"></div></div>
+  <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/spot_errors.jpg"><div id="sf-ov"></div></div>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
   <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button></div>
  </section>
@@ -822,6 +920,29 @@ input:focus { outline: none; border-color: var(--acc); }
 
 <!-- UNIVERSAL MODAL -->
 <div id="modal"><div class="mbox" id="mbox"></div></div>
+
+<!-- COURIER LEADERBOARD MODAL -->
+<div id="leaderboard-modal" hidden>
+  <div class="lb-modal-card">
+    <div class="lb-header">
+      <h2 class="lb-title">🏆 Courier Leaderboard</h2>
+      <button class="sm" id="close-lb-btn" style="padding:4px 10px;font-size:1.1rem">✕</button>
+    </div>
+    <div class="lb-sub">
+      <span id="lb-status">🔄 Auto-updating...</span>
+      <button class="sm" id="refresh-lb-btn" style="padding:3px 10px;font-size:0.8rem">Refresh 🔄</button>
+    </div>
+    <div class="lb-head-row lb-item">
+      <span style="text-align:center">#</span>
+      <span>Courier</span>
+      <span style="text-align:right">Score</span>
+    </div>
+    <div class="lb-list" id="lb-entries"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="close-lb-main-btn">Back to Delivery Map</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =============================================================
@@ -1013,6 +1134,7 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_PREFIX + courierKey, JSON.stringify(payload));
   } catch(e) {}
+  syncToFirebase(payload);
 }
 
 // Listen for live gate releases across tabs
@@ -1029,18 +1151,18 @@ window.addEventListener('storage', e => {
    ============================================================= */
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
-  { t:'game', k:'wp', n:'Word Puzzle', e:'🧩', cap:167 },
-  { t:'game', k:'sf', n:'Spot & Fix', e:'🔎', cap:167 },
-  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:167 },
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'🧩', cap:200 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'🧩', cap:200 },
+  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'🧩', cap:200 },
   { t:'gate', g:1 },
   { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
-  { t:'game', k:'bd', sc:0, n:'Scenario 1', e:'🛠️', cap:200 },
-  { t:'game', k:'bd', sc:1, n:'Scenario 2', e:'🛠️', cap:200 },
-  { t:'game', k:'bd', sc:2, n:'Scenario 3', e:'🛠️', cap:200 },
+  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'🔎', cap:200 },
+  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:200 },
+  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'🛠️', cap:200 },
   { t:'gate', g:2 },
-  { t:'game', k:'dt', cs:0, n:'Case 1', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:1, n:'Case 2', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:2, n:'Case 3', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'🕵️', cap:400 },
   { t:'gate', g:3 },
   { t:'bonus', k:'bn', n:'Final Delivery', e:'🏠', cap:500 },
   { t:'fin', n:'Certificate & Eval', e:'📜' }
@@ -1412,8 +1534,17 @@ function draw() {
       <g class="bob">
   `;
 
-  if (okA.baby) {
-    h += `<image href="${okA.baby}" x="${c.x - 34}" y="${c.y - 84}" width="68" height="68" preserveAspectRatio="xMidYMid meet" filter="url(#shadow-3d)"/>`;
+  const pinImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : okA.baby;
+    if (pinImg) {
+      h += `
+        <defs>
+          <clipPath id="pin-clip-${c.x}-${c.y}">
+            <circle cx="${c.x}" cy="${c.y - 50}" r="28"/>
+          </clipPath>
+        </defs>
+        <circle cx="${c.x}" cy="${c.y - 50}" r="31" fill="#ff8a1f" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
+        <image href="${pinImg}" x="${c.x - 28}" y="${c.y - 78}" width="56" height="56" clip-path="url(#pin-clip-${c.x}-${c.y})" preserveAspectRatio="xMidYMid slice"/>
+      `;
   } else {
     h += `
       <circle cx="${c.x}" cy="${c.y - 54}" r="26" fill="url(#gloss-gold)" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
@@ -1448,9 +1579,20 @@ function focusCur() {
   });
 }
 
+let isAdmin = false;
+
 function tap(i) {
   audio.init();
   const it = I[i], done = !!R[i], cue = story(i);
+  if (isAdmin) {
+    if (it.t === 'gate') {
+      return info(`👑 Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
+    }
+    if (it.t === 'fin') {
+      return evalCard();
+    }
+    return modal(`<h2>👑 Admin Preview: ${it.e || '📦'} ${it.n}</h2>${cue}<p>${DESC[it.k] || ''}</p>` + bt('Launch Level 🚀', `launch(${i})`) + bt('Close', 'X()', 1));
+  }
   if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('🔒 Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
   if (it.t === 'gate') {
     if (done) return info('🔓 ' + GL[it.g], 'This checkpoint has been cleared and released by dispatch.');
@@ -1490,7 +1632,7 @@ function launch(i) {
 
   if (it.k === 'wp') {
     $('#g0').hidden = false;
-    wpStart();
+    wpStart(it.r !== undefined ? it.r : 0);
   } else if (it.k === 'sf') {
     $('#g1').hidden = false;
     sfStart();
@@ -1565,28 +1707,28 @@ const WP_ROUNDS = [
   {
     name: 'Sort & Consolidate Packages',
     letters: 'STREAM',
-    words: ['STREAM','MASTER','SMART','STEAM','STAR','TEAM','REST','RATE','EAST','MAT'],
-    bonus: ['STARE','MEAT','TAME','SEAT','EARS','ARTS','RAMS','MARS','ARM','ART','EAR','SET','SEA']
+    words: ['STREAM','MASTER','SMART','TERMS','TEAM','RATE'],
+    bonus: ['STEAM','MATES','MEATS','TEAMS','STARE','TEARS','TRAMS','MARTS','ARMS','RATS','STAR','MART','TEAR','MATE','MEAT','TAME','SEAT','EAST','EATS','TEAS','SEAR','EARS','ERAS','RAMS','MAST','MATS','ARTS','TARS','STEM','TERM','MARE','REAM','SEAM','SAME','TAMERS']
   },
   {
     name: 'Dispatch Stork Carrier',
     letters: 'LOADER',
-    words: ['LOADER','ORDEAL','RELOAD','LOAD','READ','DEAL','RODE','LORE','LEAD','DARE'],
-    bonus: ['ALDER','OLDER','LARD','LODE','DALE','DOLE','DOER','ROLE','ORE','RED','ROD','LED','EAR']
+    words: ['ORDEAL','LOADER','OLDER','ROAD','LOAD','DEAL'],
+    bonus: ['ALDER','LORD','ROLE','ORAL','REAL','EARL','READ','DEAR','DARE','LEAD','DALE','DOER','REDO','RODE','ODE','ORE','ROD','RED','OAR','ARE','EAR','ERA','ALE','LEA','OLD','DOE','LAD','LED','ROE','OLE','ALOE','DOLE','LODE','LORE','ADORE']
   },
   {
     name: 'Kickstart Sustainable Delivery',
     letters: 'DELIVER',
     words: ['DELIVER','DRIVE','LIVER','LIVED','VEIL','RIDE'],
-    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL']
+    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','REVILED','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL','ELDER','DRIVEL','DELI','EVER','VEER','ELIDE','EIDER','VIED','LIRE','DEVIL']
   }
 ];
 
 let wpRi = 0, wpScore = 0, wpTotalSec = 0, wpTimer = null, wpSel = [], wpOrder = [];
 let wpHintsLeft = 3, wpActiveWordBoard = null, wpDragging = false, wpCurrentPointer = null;
 
-function wpStart() {
-  wpRi = 0;
+function wpStart(routeIdx = 0) {
+  wpRi = routeIdx;
   wpScore = 0;
   wpHintsLeft = 3;
   wpTotalSec = 0;
@@ -1605,7 +1747,8 @@ function startWpRoute() {
     const j = Math.floor(Math.random() * (i + 1));
     [wpOrder[i], wpOrder[j]] = [wpOrder[j], wpOrder[i]];
   }
-  $('#wp-rd').textContent = `Route ${wpRi + 1} / ${WP_ROUNDS.length}`;
+  $('#wp-rd').textContent = `Stop ${wpRi + 1} · ${r.letters}`;
+  $('#wp-msg').textContent = 'Find the hidden words!';
   renderWpGrid();
   renderWpWheel();
   renderWpCur();
@@ -1619,29 +1762,93 @@ function startWpRoute() {
   }, 500);
 }
 
+/* Authentic Crossword Grid Generator */
 function buildWordBoard(r) {
-  const words = r.words;
-  let placed = [];
-  // Build simple crossword grid
-  let y = 0;
-  words.forEach((w, idx) => {
-    placed.push({ word: w, x: 0, y: y, dir: 'H' });
-    y++;
-  });
-  let cells = [];
-  let revealed = new Set();
-  placed.forEach(p => {
-    for (let i = 0; i < p.word.length; i++) {
-      cells.push({ x: p.x + i, y: p.y, l: p.word[i], key: `${p.x + i},${p.y}` });
+  const words = [...r.words].sort((a,b) => b.length - a.length);
+  const g = new Map(), dirs = new Map(), placed = [];
+  const D = d => d ? [0,1] : [1,0];
+  const put = (w,x,y,d) => {
+    const [dx,dy] = D(d);
+    const keys = [];
+    for (let k = 0; k < w.length; k++) {
+      const key = (x + dx * k) + ',' + (y + dy * k);
+      g.set(key, w[k]);
+      (dirs.get(key) || dirs.set(key, []).get(key)).push(d);
+      keys.push(key);
     }
+    placed.push({ word: w, x, y, d, keys });
+  };
+  const can = (w,x,y,d) => {
+    const [dx,dy] = D(d);
+    let cross = 0;
+    if (g.has((x-dx)+','+(y-dy)) || g.has((x+dx*w.length)+','+(y+dy*w.length))) return -1;
+    for (let k = 0; k < w.length; k++) {
+      const cx = x + dx * k, cy = y + dy * k, key = cx + ',' + cy;
+      if (g.has(key)) {
+        if (g.get(key) !== w[k] || dirs.get(key).includes(d)) return -1;
+        cross++;
+      } else if (g.has((cx+dy)+','+(cy+dx)) || g.has((cx-dy)+','+(cy-dx))) {
+        return -1;
+      }
+    }
+    return cross;
+  };
+
+  put(words[0], 0, 0, 0);
+  for (const w of words.slice(1)) {
+    let done = false;
+    for (const p of [...placed]) {
+      if (done) break;
+      for (let i = 0; i < p.word.length && !done; i++) {
+        for (let j = 0; j < w.length && !done; j++) {
+          if (p.word[i] !== w[j]) continue;
+          const d = 1 - p.d;
+          const px = p.x + (p.d ? 0 : i), py = p.y + (p.d ? i : 0);
+          const x = d ? px : px - j, y = d ? py - j : py;
+          if (can(w, x, y, d) === 1) {
+            put(w, x, y, d);
+            done = true;
+          }
+        }
+      }
+    }
+    if (!done) {
+      let my = 0;
+      g.forEach((_, k) => { my = Math.max(my, +k.split(',')[1]); });
+      put(w, 0, my + 2, 0);
+    }
+  }
+
+  let mx = 1e9, my = 1e9, Mx = -1e9, My = -1e9;
+  g.forEach((_, k) => {
+    const [x,y] = k.split(',').map(Number);
+    mx = Math.min(mx, x); my = Math.min(my, y);
+    Mx = Math.max(Mx, x); My = Math.max(My, y);
   });
-  return { r, placed, cells, revealed, rows: y, cols: Math.max(...words.map(w => w.length)) };
+  const cells = [];
+  g.forEach((l, k) => {
+    const [x,y] = k.split(',').map(Number);
+    const key = (x - mx) + ',' + (y - my);
+    cells.push({ key, l, x: x - mx, y: y - my });
+  });
+
+  placed.forEach(p => {
+    p.x -= mx;
+    p.y -= my;
+    p.keys = p.keys.map(k => {
+      const [x,y] = k.split(',').map(Number);
+      return (x - mx) + ',' + (y - my);
+    });
+  });
+
+  return { r, placed, cells, revealed: new Set(), rows: My - my + 1, cols: Mx - mx + 1 };
 }
 
 function renderWpGrid() {
   const g = $('#grid');
   const B = wpActiveWordBoard;
-  const cs = Math.min(42, Math.floor(340 / B.cols));
+  const maxDim = Math.max(B.cols, B.rows);
+  const cs = Math.min(38, Math.floor(310 / maxDim));
   g.style.width = (B.cols * cs) + 'px';
   g.style.height = (B.rows * cs) + 'px';
   g.innerHTML = '';
@@ -1652,32 +1859,45 @@ function renderWpGrid() {
     d.className = 'cell' + (on ? ' on' : '');
     d.style.left = (c.x * cs) + 'px';
     d.style.top = (c.y * cs) + 'px';
-    d.style.width = (cs - 4) + 'px';
-    d.style.height = (cs - 4) + 'px';
-    d.style.fontSize = Math.floor(cs * 0.52) + 'px';
+    d.style.width = (cs - 3) + 'px';
+    d.style.height = (cs - 3) + 'px';
+    d.style.fontSize = Math.floor(cs * 0.54) + 'px';
     if (on) d.textContent = c.l;
     g.appendChild(d);
+  });
+}
+
+function getWpLetterPositions() {
+  const L = wpActiveWordBoard ? wpActiveWordBoard.r.letters : '';
+  const n = L.length;
+  const radius = 95, center = 135;
+  return wpOrder.map((idx, pos) => {
+    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
+    return {
+      idx,
+      x: center + Math.cos(a) * radius,
+      y: center + Math.sin(a) * radius
+    };
   });
 }
 
 function renderWpWheel() {
   const w = $('#wheel');
   w.innerHTML = '';
-  const L = wpActiveWordBoard.r.letters, n = L.length;
-  const radius = 95, center = 135;
-  wpOrder.forEach((idx, pos) => {
-    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
+  const L = wpActiveWordBoard.r.letters;
+  const positions = getWpLetterPositions();
+  positions.forEach(p => {
     const b = document.createElement('button');
-    b.textContent = L[idx];
-    b.style.left = (center + Math.cos(a) * radius - 28) + 'px';
-    b.style.top = (center + Math.sin(a) * radius - 28) + 'px';
-    if (wpSel.includes(idx)) b.classList.add('selected');
+    b.textContent = L[p.idx];
+    b.style.left = (p.x - 28) + 'px';
+    b.style.top = (p.y - 28) + 'px';
+    if (wpSel.includes(p.idx)) b.classList.add('selected');
 
     b.onclick = e => {
       e.stopPropagation();
       audio.init();
-      if (!wpSel.includes(idx)) {
-        wpSel.push(idx);
+      if (!wpSel.includes(p.idx)) {
+        wpSel.push(p.idx);
         audio.letterPick(wpSel.length - 1);
         renderWpWheel();
         renderWpCur();
@@ -1702,28 +1922,95 @@ const wpCtx = wpCanvas.getContext('2d');
 function drawWpLines() {
   wpCtx.clearRect(0, 0, wpCanvas.width, wpCanvas.height);
   if (wpSel.length === 0) return;
-  const L = wpActiveWordBoard.r.letters, n = L.length;
-  const radius = 95, center = 135;
-  const posMap = {};
-  wpOrder.forEach((idx, pos) => {
-    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
-    posMap[idx] = { x: center + Math.cos(a) * radius, y: center + Math.sin(a) * radius };
-  });
+  const positions = getWpLetterPositions();
+  const posMap = new Map(positions.map(p => [p.idx, p]));
 
   wpCtx.save();
   wpCtx.lineCap = 'round';
   wpCtx.lineJoin = 'round';
   wpCtx.strokeStyle = '#ff8a1f';
-  wpCtx.lineWidth = 8;
+  wpCtx.lineWidth = 10;
   wpCtx.beginPath();
   wpSel.forEach((idx, i) => {
-    const p = posMap[idx];
+    const p = posMap.get(idx);
+    if (!p) return;
     if (i === 0) wpCtx.moveTo(p.x, p.y);
     else wpCtx.lineTo(p.x, p.y);
   });
+  if (wpDragging && wpCurrentPointer) {
+    wpCtx.lineTo(wpCurrentPointer.x, wpCurrentPointer.y);
+  }
   wpCtx.stroke();
   wpCtx.restore();
 }
+
+/* Touch & Pointer Swiping on Wheel */
+const wheelWrap = $('#wheel-wrap');
+function getPointerWheelCoords(e) {
+  const rect = wheelWrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
+}
+
+function checkWpLetterHit(coords) {
+  const positions = getWpLetterPositions();
+  for (const p of positions) {
+    if (Math.hypot(coords.x - p.x, coords.y - p.y) < 32) return p.idx;
+  }
+  return null;
+}
+
+wheelWrap.addEventListener('pointerdown', e => {
+  audio.init();
+  wpDragging = true;
+  wheelWrap.setPointerCapture?.(e.pointerId);
+  wpCurrentPointer = getPointerWheelCoords(e);
+  const hit = checkWpLetterHit(wpCurrentPointer);
+  if (hit !== null && !wpSel.includes(hit)) {
+    wpSel = [hit];
+    audio.letterPick(0);
+    renderWpWheel();
+    renderWpCur();
+  }
+  drawWpLines();
+});
+
+wheelWrap.addEventListener('pointermove', e => {
+  if (!wpDragging) return;
+  wpCurrentPointer = getPointerWheelCoords(e);
+  const hit = checkWpLetterHit(wpCurrentPointer);
+  if (hit !== null) {
+    if (!wpSel.includes(hit)) {
+      wpSel.push(hit);
+      audio.letterPick(wpSel.length - 1);
+      renderWpWheel();
+      renderWpCur();
+    } else if (wpSel.length >= 2 && wpSel[wpSel.length - 2] === hit) {
+      wpSel.pop();
+      renderWpWheel();
+      renderWpCur();
+    }
+  }
+  drawWpLines();
+});
+
+function endWpDrag() {
+  if (!wpDragging) return;
+  wpDragging = false;
+  wpCurrentPointer = null;
+  drawWpLines();
+  if (wpSel.length > 0) {
+    wpSubmit();
+  }
+}
+
+wheelWrap.addEventListener('pointerup', endWpDrag);
+wheelWrap.addEventListener('pointercancel', endWpDrag);
+wheelWrap.addEventListener('touchmove', e => { if (wpDragging) e.preventDefault(); }, { passive: false });
 
 function wpSubmit() {
   if (wpSel.length === 0) return;
@@ -1733,13 +2020,12 @@ function wpSubmit() {
 
   if (match) {
     let newlyFound = false;
-    for (let i = 0; i < match.word.length; i++) {
-      const k = `${match.x + i},${match.y}`;
+    match.keys.forEach(k => {
       if (!B.revealed.has(k)) {
         B.revealed.add(k);
         newlyFound = true;
       }
-    }
+    });
     if (newlyFound) {
       audio.wordSuccess();
       wpScore += word.length * 10;
@@ -1771,19 +2057,10 @@ function checkWpClear() {
   const allRevealed = B.cells.every(c => B.revealed.has(c.key));
   if (allRevealed) {
     audio.roundWin();
-    wpRi++;
-    if (wpRi < WP_ROUNDS.length) {
-      modal(`
-        <h2>Route Delivered! 📦</h2>
-        <p>Great job! Route ${wpRi} complete.</p>
-        ${bt('Next Route ➔', 'X();startWpRoute()')}
-      `);
-    } else {
-      clearInterval(wpTimer);
-      const totalPts = Math.min(1000, wpScore + 200);
-      res($('#wp-r'), 'Word Puzzle Cleared! 🎉', totalPts, 1000, 'All 3 anagram wheels delivered!');
-      onStopCompleted(totalPts, 1000);
-    }
+    clearInterval(wpTimer);
+    const totalPts = Math.min(1000, wpScore + 250);
+    res($('#wp-r'), 'Word Puzzle Cleared! 🧩', totalPts, 1000, 'Route 1 delivered successfully!');
+    onStopCompleted(totalPts, 1000);
   }
 }
 
@@ -1807,6 +2084,7 @@ $('#wp-hint').onclick = () => {
   $('#wp-hc').textContent = wpHintsLeft;
   wpScore = Math.max(0, wpScore - 15);
   $('#wp-s').textContent = '⭐ ' + wpScore;
+  audio.letterPick(2);
   renderWpGrid();
   checkWpClear();
 };
@@ -1815,11 +2093,31 @@ $('#wp-hint').onclick = () => {
    GAME 1: SPOT & FIX THE ERRORS
    ============================================================= */
 const HS = [
-  { x: 0.50, y: 0.18, r: 0.16, q: 'The premier courier in the sky should be…', o: ['Junior the delivery stork', 'A supersonic drone', 'A cargo airplane'] },
-  { x: 0.28, y: 0.46, r: 0.14, q: 'The human partner wearing aviator goggles is…', o: ['Tulip, Orphan of Stork Mountain', 'Warehouse safety inspector', 'A customer waiting for delivery'] },
-  { x: 0.55, y: 0.56, r: 0.14, q: 'The precious delivery in the carrier bundle is…', o: ['Diamond Destiny (Baby girl)', 'A returned merchandise package', 'A standard post office letter'] },
-  { x: 0.22, y: 0.82, r: 0.14, q: 'The wild roadblock obstruction on the road is…', o: ['The Alpha & Beta Wolf Pack', 'Warehouse guard dogs', 'Mountain cougars'] },
-  { x: 0.78, y: 0.76, r: 0.14, q: 'The high-tech sorting facility where the journey began is…', o: ['Cornerstone Stork Mountain Depot', 'Amazon Fulfillment Center', 'Post Office Central Hub'] }
+  { 
+    x: 0.18, y: 0.22, r: 0.15, 
+    q: 'Fragile wooden parcel is placed upside-down under heavy crates. How should this be corrected?', 
+    o: ['Rotate upright (arrows pointing UP) and place safely atop the stack', 'Leave upside-down and wrap with extra packing tape', 'Scratch off the fragile label'] 
+  },
+  { 
+    x: 0.32, y: 0.55, r: 0.15, 
+    q: 'Shipping barcode label is torn and unreadable. How should this be corrected?', 
+    o: ['Rescan manifest ID and reprint a clean optical barcode label', 'Write a guessed tracking number with a marker pen', 'Ship the parcel with no barcode'] 
+  },
+  { 
+    x: 0.50, y: 0.65, r: 0.15, 
+    q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?', 
+    o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation'] 
+  },
+  { 
+    x: 0.68, y: 0.48, r: 0.15, 
+    q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?', 
+    o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor'] 
+  },
+  { 
+    x: 0.85, y: 0.40, r: 0.15, 
+    q: 'Departing delivery stork is missing required safety goggles and courier pilot cap. How should this be corrected?', 
+    o: ['Equip high-altitude anti-glare goggles and standard courier flight cap', 'Allow unequipped flight as long as the sky is sunny', 'Instruct courier to fly with eyes closed'] 
+  }
 ];
 let sf, dbg = false;
 const sfT = Timer($('#sf-t'));
@@ -1936,7 +2234,8 @@ function mzDraw() {
     let t = '';
     const k = r + ',' + c;
     if (r === mz.r && c === mz.c) {
-      t = okA.baby ? `<img src="${okA.baby}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
+      const pImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : okA.baby;
+        t = pImg ? `<img src="${pImg}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
     } else if (ch === 'E') {
       t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '🏠';
     } else if (ch === 'S') {
@@ -2352,9 +2651,9 @@ $('#view-profile-btn').onclick = evalCard;
    ============================================================= */
 
 /* ══════════════════════════════════════════════
-   AVATAR PICKER — loads from assets/avatars.json
+   AVATAR PICKER SYSTEM & PERSISTENCE
    ══════════════════════════════════════════════ */
-let chosenAvatar = null; // { name, img }
+let chosenAvatar = null;
 
 function pickAvatar(idx, avatars) {
   chosenAvatar = avatars[idx];
@@ -2380,7 +2679,6 @@ function buildAvatarGrid(avatars) {
   `).join('');
 }
 
-// Load avatars.json and build grid
 fetch('assets/avatars.json?v=' + Date.now())
   .then(r => r.json())
   .then(avatars => {
@@ -2388,14 +2686,13 @@ fetch('assets/avatars.json?v=' + Date.now())
     buildAvatarGrid(avatars);
   })
   .catch(() => {
-    // Fallback hardcoded list if fetch fails (e.g. file:// protocol)
     const fallback = [
-      { name: 'Baby Diamond',  img: 'assets/fm_diamond.jpg' },
-      { name: 'Junior',        img: 'assets/fm_junior.jpg'  },
-      { name: 'Tulip',         img: 'assets/fm_tulip.jpg'   },
-      { name: 'Pigeon Toady',  img: 'assets/fm_toady.jpg'   },
-      { name: 'Nate Gardner',  img: 'assets/fm_nate.jpg'    },
-      { name: 'Hunter',        img: 'assets/fm_hunter.jpg'  }
+      { name: 'Baby Diamond', img: 'assets/fm_diamond.jpg' },
+      { name: 'Hunter',       img: 'assets/fm_hunter.jpg' },
+      { name: 'Junior',       img: 'assets/fm_junior.jpg' },
+      { name: 'Nate Gardner', img: 'assets/fm_nate.jpg' },
+      { name: 'Pigeon Toady', img: 'assets/fm_toady.jpg' },
+      { name: 'Tulip',        img: 'assets/fm_tulip.jpg' }
     ];
     window._avatars = fallback;
     buildAvatarGrid(fallback);
@@ -2438,14 +2735,50 @@ $('#rs-btn').onclick = () => {
 };
 
 // Check for deep-link stage param (e.g. ?stage=2)
+function showAdminLevelSelect() {
+  modal(`
+    <h2>👑 Admin Level Select</h2>
+    <p style="font-size:0.9rem;color:var(--mut);margin-bottom:12px">Jump to and preview any stop directly without playing earlier levels:</p>
+    <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;text-align:left">
+      ${I.map((item, idx) => {
+        if (item.t === 'gate') return `<div style="padding:6px 12px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:0.85rem;color:var(--mut)">🔒 Gate ${item.g}: ${GN[item.g]}</div>`;
+        if (item.t === 'fin') return `<button class="sm" onclick="X();evalCard()" style="text-align:left;padding:8px 12px">📜 Stop ${idx+1}: Digital Pass & Certificate</button>`;
+        return `<button class="sm" onclick="X();launch(${idx})" style="text-align:left;padding:8px 12px">${item.e || '📦'} Stop ${idx+1}: <b>${item.n}</b></button>`;
+      }).join('')}
+    </div>
+    ${bt('Close', 'X()', 1)}
+  `);
+}
+
 function checkUrlParams() {
   const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('admin') === '1' || urlParams.has('play')) {
+    isAdmin = true;
+    user = user || 'Host Admin';
+    pid = pid || 'ADMIN-01';
+    courierKey = normalizeId(user, pid);
+    loadState();
+    adv();
+    V('#mapv');
+    draw();
+  }
   const stageParam = urlParams.get('stage');
   if (stageParam) {
     const s = parseInt(stageParam, 10);
     if (s === 2 && O[1]) cur = Math.max(cur, 4);
     if (s === 3 && O[2]) cur = Math.max(cur, 8);
   }
+  const playParam = urlParams.get('play');
+  if (playParam !== null) {
+    const stopNum = parseInt(playParam, 10);
+    if (!isNaN(stopNum) && stopNum >= 0 && stopNum < I.length) {
+      setTimeout(() => launch(stopNum), 150);
+    }
+  }
+}
+
+if ($('#admin-preview-btn')) {
+  $('#admin-preview-btn').onclick = showAdminLevelSelect;
 }
 
 // Sound toggle
@@ -2598,6 +2931,155 @@ function fmEnd() {
 }
 
 $('#fm-a').onclick = fmStart;
+
+
+/* =============================================================
+   LIVE LEADERBOARD SYSTEM (FIREBASE + LOCAL STORAGE SYNC)
+   ============================================================= */
+const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+async function syncToFirebase(payload) {
+  if (!FIREBASE_DB_URL || !courierKey) return;
+  try {
+    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
+    const body = {
+      name: payload.name || 'Courier',
+      pid: payload.pid || '',
+      score: totalScore,
+      stops: stopsCleared,
+      updatedAt: payload.updatedAt || Date.now()
+    };
+    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) {}
+}
+
+async function getLeaderboardEntries() {
+  const map = new Map();
+
+  // 1. Gather all local couriers
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith(STORAGE_PREFIX)) {
+      try {
+        const item = JSON.parse(localStorage.getItem(k));
+        if (item && item.name) {
+          const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+          const stops = (item.results || []).filter(r => r && !r.gate).length;
+          map.set(item.name.toLowerCase().trim(), {
+            name: item.name,
+            pid: item.pid || '',
+            score: score,
+            stops: stops,
+            isCurrent: courierKey === normalizeId(item.name, item.pid || '')
+          });
+        }
+      } catch(e) {}
+    }
+  }
+
+  // Current session courier
+  if (user && !map.has(user.toLowerCase().trim())) {
+    const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const myStops = (R || []).filter(r => r && !r.gate).length;
+    map.set(user.toLowerCase().trim(), {
+      name: user,
+      pid: pid || '',
+      score: myScore,
+      stops: myStops,
+      isCurrent: true
+    });
+  }
+
+  // 2. Fetch from Firebase
+  if (FIREBASE_DB_URL) {
+    try {
+      const res = await fetch(FIREBASE_DB_URL + '/streamlined_couriers.json', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+          Object.values(data).forEach(entry => {
+            if (entry && entry.name) {
+              const k = entry.name.toLowerCase().trim();
+              const existing = map.get(k);
+              if (!existing || (entry.score || 0) > (existing.score || 0)) {
+                map.set(k, {
+                  name: entry.name,
+                  pid: entry.pid || '',
+                  score: entry.score || 0,
+                  stops: entry.stops || 0,
+                  isCurrent: (existing && existing.isCurrent) || (user && user.toLowerCase().trim() === k)
+                });
+              }
+            }
+          });
+        }
+      }
+    } catch(e) {}
+  }
+
+  return Array.from(map.values()).sort((a, b) => b.score - a.score);
+}
+
+async function refreshLeaderboardUI() {
+  const entriesEl = $('#lb-entries');
+  const statusEl = $('#lb-status');
+  statusEl.textContent = '🔄 Fetching latest ranks...';
+  entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Loading live rankings...</div>';
+
+  try {
+    const list = await getLeaderboardEntries();
+    statusEl.textContent = '⚡ Connected to Seminar Leaderboard';
+
+    if (list.length === 0) {
+      entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first! 🚚</div>';
+      return;
+    }
+
+    entriesEl.innerHTML = list.map((entry, idx) => {
+      const rank = idx + 1;
+      let badge = `#${rank}`;
+      if (rank === 1) badge = '🥇';
+      else if (rank === 2) badge = '🥈';
+      else if (rank === 3) badge = '🥉';
+
+      const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
+      const meClass = isMe ? ' lb-item me' : ' lb-item';
+
+      return `
+        <div class="${meClass}">
+          <span class="lb-rank">${badge}</span>
+          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
+          <span class="lb-score">⭐ ${entry.score}</span>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    statusEl.textContent = '⚠️ Offline / Local Rankings';
+  }
+}
+
+function openLeaderboard() {
+  $('#leaderboard-modal').hidden = false;
+  refreshLeaderboardUI();
+}
+
+function closeLeaderboard() {
+  $('#leaderboard-modal').hidden = true;
+}
+
+$('#map-lb-btn').onclick = openLeaderboard;
+$('#map-lb-bottom-btn').onclick = openLeaderboard;
+$('#close-lb-btn').onclick = closeLeaderboard;
+$('#close-lb-main-btn').onclick = closeLeaderboard;
+$('#refresh-lb-btn').onclick = () => {
+  audio.letterPick(0);
+  refreshLeaderboardUI();
+};
 
 // Start
 loadAssets();
