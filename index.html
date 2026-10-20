@@ -467,7 +467,7 @@ input:focus { outline: none; border-color: var(--acc); }
   width: 270px;
   height: 270px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 4;
 }
 #wheel {
   position: absolute;
@@ -510,6 +510,111 @@ input:focus { outline: none; border-color: var(--acc); }
   pointer-events: none;
   z-index: 99;
 }
+/* Leaderboard Modal Styles */
+#leaderboard-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#leaderboard-modal[hidden] {
+  display: none !important;
+}
+.lb-modal-card {
+  background: var(--card-bg, #ffffff);
+  border-radius: 22px;
+  max-width: 440px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.35);
+  border: 1px solid var(--line, rgba(0,0,0,0.1));
+  animation: lbPopUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lbPopUp {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.lb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.lb-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+}
+.lb-sub {
+  font-size: 0.82rem;
+  color: var(--mut);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.lb-list {
+  overflow-y: auto;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--line);
+  flex: 1;
+  min-height: 200px;
+  max-height: 380px;
+}
+.lb-item {
+  display: grid;
+  grid-template-columns: 44px 1fr 75px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.lb-item:last-child { border-bottom: none; }
+.lb-item.me {
+  background: rgba(255, 122, 24, 0.15);
+  font-weight: 800;
+  border-left: 4px solid var(--acc);
+}
+.lb-rank {
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-align: center;
+}
+.lb-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 6px;
+}
+.lb-score {
+  text-align: right;
+  font-weight: 800;
+  color: var(--acc);
+}
+.lb-head-row {
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--mut);
+  background: rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid var(--line);
+}
 [hidden] { display: none !important; }
 </style>
 </head>
@@ -542,6 +647,7 @@ input:focus { outline: none; border-color: var(--acc); }
       <div class="ttl" id="ht">Junior Dispatch Courier</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
+      <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">🏆 Leaderboard</button>
       <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
       <span class="score" id="hs">⭐ 0</span>
     </div>
@@ -553,6 +659,7 @@ input:focus { outline: none; border-color: var(--acc); }
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
  
  <div class="row" style="margin-top:10px">
+   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">🏆 Leaderboard</button>
    <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
    <button class="sm" id="rs-btn">Reset demo</button>
  </div>
@@ -687,6 +794,29 @@ input:focus { outline: none; border-color: var(--acc); }
 
 <!-- UNIVERSAL MODAL -->
 <div id="modal"><div class="mbox" id="mbox"></div></div>
+
+<!-- COURIER LEADERBOARD MODAL -->
+<div id="leaderboard-modal" hidden>
+  <div class="lb-modal-card">
+    <div class="lb-header">
+      <h2 class="lb-title">🏆 Courier Leaderboard</h2>
+      <button class="sm" id="close-lb-btn" style="padding:4px 10px;font-size:1.1rem">✕</button>
+    </div>
+    <div class="lb-sub">
+      <span id="lb-status">🔄 Auto-updating...</span>
+      <button class="sm" id="refresh-lb-btn" style="padding:3px 10px;font-size:0.8rem">Refresh 🔄</button>
+    </div>
+    <div class="lb-head-row lb-item">
+      <span style="text-align:center">#</span>
+      <span>Courier</span>
+      <span style="text-align:right">Score</span>
+    </div>
+    <div class="lb-list" id="lb-entries"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="close-lb-main-btn">Back to Delivery Map</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =============================================================
@@ -878,6 +1008,7 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_PREFIX + courierKey, JSON.stringify(payload));
   } catch(e) {}
+  syncToFirebase(payload);
 }
 
 // Listen for live gate releases across tabs
@@ -1430,20 +1561,20 @@ const WP_ROUNDS = [
   {
     name: 'Sort & Consolidate Packages',
     letters: 'STREAM',
-    words: ['STREAM','MASTER','SMART','STEAM','STAR','TEAM','REST','RATE','EAST','MAT'],
-    bonus: ['STARE','MEAT','TAME','SEAT','EARS','ARTS','RAMS','MARS','ARM','ART','EAR','SET','SEA']
+    words: ['STREAM','MASTER','SMART','TERMS','TEAM','RATE'],
+    bonus: ['STEAM','MATES','MEATS','TEAMS','STARE','TEARS','TRAMS','MARTS','ARMS','RATS','STAR','MART','TEAR','MATE','MEAT','TAME','SEAT','EAST','EATS','TEAS','SEAR','EARS','ERAS','RAMS','MAST','MATS','ARTS','TARS','STEM','TERM','MARE','REAM','SEAM','SAME','TAMERS']
   },
   {
     name: 'Dispatch Stork Carrier',
     letters: 'LOADER',
-    words: ['LOADER','ORDEAL','RELOAD','LOAD','READ','DEAL','RODE','LORE','LEAD','DARE'],
-    bonus: ['ALDER','OLDER','LARD','LODE','DALE','DOLE','DOER','ROLE','ORE','RED','ROD','LED','EAR']
+    words: ['ORDEAL','LOADER','OLDER','ROAD','LOAD','DEAL'],
+    bonus: ['ALDER','LORD','ROLE','ORAL','REAL','EARL','READ','DEAR','DARE','LEAD','DALE','DOER','REDO','RODE','ODE','ORE','ROD','RED','OAR','ARE','EAR','ERA','ALE','LEA','OLD','DOE','LAD','LED','ROE','OLE','ALOE','DOLE','LODE','LORE','ADORE']
   },
   {
     name: 'Kickstart Sustainable Delivery',
     letters: 'DELIVER',
     words: ['DELIVER','DRIVE','LIVER','LIVED','VEIL','RIDE'],
-    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL']
+    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','REVILED','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL','ELDER','DRIVEL','DELI','EVER','VEER','ELIDE','EIDER','VIED','LIRE','DEVIL']
   }
 ];
 
@@ -1471,6 +1602,7 @@ function startWpRoute() {
     [wpOrder[i], wpOrder[j]] = [wpOrder[j], wpOrder[i]];
   }
   $('#wp-rd').textContent = `Route ${wpRi + 1} / ${WP_ROUNDS.length}`;
+  $('#wp-msg').textContent = 'Find the hidden words!';
   renderWpGrid();
   renderWpWheel();
   renderWpCur();
@@ -1484,29 +1616,93 @@ function startWpRoute() {
   }, 500);
 }
 
+/* Authentic Crossword Grid Generator */
 function buildWordBoard(r) {
-  const words = r.words;
-  let placed = [];
-  // Build simple crossword grid
-  let y = 0;
-  words.forEach((w, idx) => {
-    placed.push({ word: w, x: 0, y: y, dir: 'H' });
-    y++;
-  });
-  let cells = [];
-  let revealed = new Set();
-  placed.forEach(p => {
-    for (let i = 0; i < p.word.length; i++) {
-      cells.push({ x: p.x + i, y: p.y, l: p.word[i], key: `${p.x + i},${p.y}` });
+  const words = [...r.words].sort((a,b) => b.length - a.length);
+  const g = new Map(), dirs = new Map(), placed = [];
+  const D = d => d ? [0,1] : [1,0];
+  const put = (w,x,y,d) => {
+    const [dx,dy] = D(d);
+    const keys = [];
+    for (let k = 0; k < w.length; k++) {
+      const key = (x + dx * k) + ',' + (y + dy * k);
+      g.set(key, w[k]);
+      (dirs.get(key) || dirs.set(key, []).get(key)).push(d);
+      keys.push(key);
     }
+    placed.push({ word: w, x, y, d, keys });
+  };
+  const can = (w,x,y,d) => {
+    const [dx,dy] = D(d);
+    let cross = 0;
+    if (g.has((x-dx)+','+(y-dy)) || g.has((x+dx*w.length)+','+(y+dy*w.length))) return -1;
+    for (let k = 0; k < w.length; k++) {
+      const cx = x + dx * k, cy = y + dy * k, key = cx + ',' + cy;
+      if (g.has(key)) {
+        if (g.get(key) !== w[k] || dirs.get(key).includes(d)) return -1;
+        cross++;
+      } else if (g.has((cx+dy)+','+(cy+dx)) || g.has((cx-dy)+','+(cy-dx))) {
+        return -1;
+      }
+    }
+    return cross;
+  };
+
+  put(words[0], 0, 0, 0);
+  for (const w of words.slice(1)) {
+    let done = false;
+    for (const p of [...placed]) {
+      if (done) break;
+      for (let i = 0; i < p.word.length && !done; i++) {
+        for (let j = 0; j < w.length && !done; j++) {
+          if (p.word[i] !== w[j]) continue;
+          const d = 1 - p.d;
+          const px = p.x + (p.d ? 0 : i), py = p.y + (p.d ? i : 0);
+          const x = d ? px : px - j, y = d ? py - j : py;
+          if (can(w, x, y, d) === 1) {
+            put(w, x, y, d);
+            done = true;
+          }
+        }
+      }
+    }
+    if (!done) {
+      let my = 0;
+      g.forEach((_, k) => { my = Math.max(my, +k.split(',')[1]); });
+      put(w, 0, my + 2, 0);
+    }
+  }
+
+  let mx = 1e9, my = 1e9, Mx = -1e9, My = -1e9;
+  g.forEach((_, k) => {
+    const [x,y] = k.split(',').map(Number);
+    mx = Math.min(mx, x); my = Math.min(my, y);
+    Mx = Math.max(Mx, x); My = Math.max(My, y);
   });
-  return { r, placed, cells, revealed, rows: y, cols: Math.max(...words.map(w => w.length)) };
+  const cells = [];
+  g.forEach((l, k) => {
+    const [x,y] = k.split(',').map(Number);
+    const key = (x - mx) + ',' + (y - my);
+    cells.push({ key, l, x: x - mx, y: y - my });
+  });
+
+  placed.forEach(p => {
+    p.x -= mx;
+    p.y -= my;
+    p.keys = p.keys.map(k => {
+      const [x,y] = k.split(',').map(Number);
+      return (x - mx) + ',' + (y - my);
+    });
+  });
+
+  return { r, placed, cells, revealed: new Set(), rows: My - my + 1, cols: Mx - mx + 1 };
 }
 
 function renderWpGrid() {
   const g = $('#grid');
   const B = wpActiveWordBoard;
-  const cs = Math.min(42, Math.floor(340 / B.cols));
+  const maxDim = Math.max(B.cols, B.rows);
+  const cs = Math.min(38, Math.floor(310 / maxDim));
   g.style.width = (B.cols * cs) + 'px';
   g.style.height = (B.rows * cs) + 'px';
   g.innerHTML = '';
@@ -1517,32 +1713,45 @@ function renderWpGrid() {
     d.className = 'cell' + (on ? ' on' : '');
     d.style.left = (c.x * cs) + 'px';
     d.style.top = (c.y * cs) + 'px';
-    d.style.width = (cs - 4) + 'px';
-    d.style.height = (cs - 4) + 'px';
-    d.style.fontSize = Math.floor(cs * 0.52) + 'px';
+    d.style.width = (cs - 3) + 'px';
+    d.style.height = (cs - 3) + 'px';
+    d.style.fontSize = Math.floor(cs * 0.54) + 'px';
     if (on) d.textContent = c.l;
     g.appendChild(d);
+  });
+}
+
+function getWpLetterPositions() {
+  const L = wpActiveWordBoard ? wpActiveWordBoard.r.letters : '';
+  const n = L.length;
+  const radius = 95, center = 135;
+  return wpOrder.map((idx, pos) => {
+    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
+    return {
+      idx,
+      x: center + Math.cos(a) * radius,
+      y: center + Math.sin(a) * radius
+    };
   });
 }
 
 function renderWpWheel() {
   const w = $('#wheel');
   w.innerHTML = '';
-  const L = wpActiveWordBoard.r.letters, n = L.length;
-  const radius = 95, center = 135;
-  wpOrder.forEach((idx, pos) => {
-    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
+  const L = wpActiveWordBoard.r.letters;
+  const positions = getWpLetterPositions();
+  positions.forEach(p => {
     const b = document.createElement('button');
-    b.textContent = L[idx];
-    b.style.left = (center + Math.cos(a) * radius - 28) + 'px';
-    b.style.top = (center + Math.sin(a) * radius - 28) + 'px';
-    if (wpSel.includes(idx)) b.classList.add('selected');
+    b.textContent = L[p.idx];
+    b.style.left = (p.x - 28) + 'px';
+    b.style.top = (p.y - 28) + 'px';
+    if (wpSel.includes(p.idx)) b.classList.add('selected');
 
     b.onclick = e => {
       e.stopPropagation();
       audio.init();
-      if (!wpSel.includes(idx)) {
-        wpSel.push(idx);
+      if (!wpSel.includes(p.idx)) {
+        wpSel.push(p.idx);
         audio.letterPick(wpSel.length - 1);
         renderWpWheel();
         renderWpCur();
@@ -1567,28 +1776,95 @@ const wpCtx = wpCanvas.getContext('2d');
 function drawWpLines() {
   wpCtx.clearRect(0, 0, wpCanvas.width, wpCanvas.height);
   if (wpSel.length === 0) return;
-  const L = wpActiveWordBoard.r.letters, n = L.length;
-  const radius = 95, center = 135;
-  const posMap = {};
-  wpOrder.forEach((idx, pos) => {
-    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
-    posMap[idx] = { x: center + Math.cos(a) * radius, y: center + Math.sin(a) * radius };
-  });
+  const positions = getWpLetterPositions();
+  const posMap = new Map(positions.map(p => [p.idx, p]));
 
   wpCtx.save();
   wpCtx.lineCap = 'round';
   wpCtx.lineJoin = 'round';
   wpCtx.strokeStyle = '#ff8a1f';
-  wpCtx.lineWidth = 8;
+  wpCtx.lineWidth = 10;
   wpCtx.beginPath();
   wpSel.forEach((idx, i) => {
-    const p = posMap[idx];
+    const p = posMap.get(idx);
+    if (!p) return;
     if (i === 0) wpCtx.moveTo(p.x, p.y);
     else wpCtx.lineTo(p.x, p.y);
   });
+  if (wpDragging && wpCurrentPointer) {
+    wpCtx.lineTo(wpCurrentPointer.x, wpCurrentPointer.y);
+  }
   wpCtx.stroke();
   wpCtx.restore();
 }
+
+/* Touch & Pointer Swiping on Wheel */
+const wheelWrap = $('#wheel-wrap');
+function getPointerWheelCoords(e) {
+  const rect = wheelWrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
+}
+
+function checkWpLetterHit(coords) {
+  const positions = getWpLetterPositions();
+  for (const p of positions) {
+    if (Math.hypot(coords.x - p.x, coords.y - p.y) < 32) return p.idx;
+  }
+  return null;
+}
+
+wheelWrap.addEventListener('pointerdown', e => {
+  audio.init();
+  wpDragging = true;
+  wheelWrap.setPointerCapture?.(e.pointerId);
+  wpCurrentPointer = getPointerWheelCoords(e);
+  const hit = checkWpLetterHit(wpCurrentPointer);
+  if (hit !== null && !wpSel.includes(hit)) {
+    wpSel = [hit];
+    audio.letterPick(0);
+    renderWpWheel();
+    renderWpCur();
+  }
+  drawWpLines();
+});
+
+wheelWrap.addEventListener('pointermove', e => {
+  if (!wpDragging) return;
+  wpCurrentPointer = getPointerWheelCoords(e);
+  const hit = checkWpLetterHit(wpCurrentPointer);
+  if (hit !== null) {
+    if (!wpSel.includes(hit)) {
+      wpSel.push(hit);
+      audio.letterPick(wpSel.length - 1);
+      renderWpWheel();
+      renderWpCur();
+    } else if (wpSel.length >= 2 && wpSel[wpSel.length - 2] === hit) {
+      wpSel.pop();
+      renderWpWheel();
+      renderWpCur();
+    }
+  }
+  drawWpLines();
+});
+
+function endWpDrag() {
+  if (!wpDragging) return;
+  wpDragging = false;
+  wpCurrentPointer = null;
+  drawWpLines();
+  if (wpSel.length > 0) {
+    wpSubmit();
+  }
+}
+
+wheelWrap.addEventListener('pointerup', endWpDrag);
+wheelWrap.addEventListener('pointercancel', endWpDrag);
+wheelWrap.addEventListener('touchmove', e => { if (wpDragging) e.preventDefault(); }, { passive: false });
 
 function wpSubmit() {
   if (wpSel.length === 0) return;
@@ -1598,13 +1874,12 @@ function wpSubmit() {
 
   if (match) {
     let newlyFound = false;
-    for (let i = 0; i < match.word.length; i++) {
-      const k = `${match.x + i},${match.y}`;
+    match.keys.forEach(k => {
       if (!B.revealed.has(k)) {
         B.revealed.add(k);
         newlyFound = true;
       }
-    }
+    });
     if (newlyFound) {
       audio.wordSuccess();
       wpScore += word.length * 10;
@@ -1672,6 +1947,7 @@ $('#wp-hint').onclick = () => {
   $('#wp-hc').textContent = wpHintsLeft;
   wpScore = Math.max(0, wpScore - 15);
   $('#wp-s').textContent = '⭐ ' + wpScore;
+  audio.letterPick(2);
   renderWpGrid();
   checkWpClear();
 };
@@ -2406,6 +2682,155 @@ function fmEnd() {
 }
 
 $('#fm-a').onclick = fmStart;
+
+
+/* =============================================================
+   LIVE LEADERBOARD SYSTEM (FIREBASE + LOCAL STORAGE SYNC)
+   ============================================================= */
+const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+async function syncToFirebase(payload) {
+  if (!FIREBASE_DB_URL || !courierKey) return;
+  try {
+    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
+    const body = {
+      name: payload.name || 'Courier',
+      pid: payload.pid || '',
+      score: totalScore,
+      stops: stopsCleared,
+      updatedAt: payload.updatedAt || Date.now()
+    };
+    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) {}
+}
+
+async function getLeaderboardEntries() {
+  const map = new Map();
+
+  // 1. Gather all local couriers
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith(STORAGE_PREFIX)) {
+      try {
+        const item = JSON.parse(localStorage.getItem(k));
+        if (item && item.name) {
+          const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+          const stops = (item.results || []).filter(r => r && !r.gate).length;
+          map.set(item.name.toLowerCase().trim(), {
+            name: item.name,
+            pid: item.pid || '',
+            score: score,
+            stops: stops,
+            isCurrent: courierKey === normalizeId(item.name, item.pid || '')
+          });
+        }
+      } catch(e) {}
+    }
+  }
+
+  // Current session courier
+  if (user && !map.has(user.toLowerCase().trim())) {
+    const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const myStops = (R || []).filter(r => r && !r.gate).length;
+    map.set(user.toLowerCase().trim(), {
+      name: user,
+      pid: pid || '',
+      score: myScore,
+      stops: myStops,
+      isCurrent: true
+    });
+  }
+
+  // 2. Fetch from Firebase
+  if (FIREBASE_DB_URL) {
+    try {
+      const res = await fetch(FIREBASE_DB_URL + '/streamlined_couriers.json', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+          Object.values(data).forEach(entry => {
+            if (entry && entry.name) {
+              const k = entry.name.toLowerCase().trim();
+              const existing = map.get(k);
+              if (!existing || (entry.score || 0) > (existing.score || 0)) {
+                map.set(k, {
+                  name: entry.name,
+                  pid: entry.pid || '',
+                  score: entry.score || 0,
+                  stops: entry.stops || 0,
+                  isCurrent: (existing && existing.isCurrent) || (user && user.toLowerCase().trim() === k)
+                });
+              }
+            }
+          });
+        }
+      }
+    } catch(e) {}
+  }
+
+  return Array.from(map.values()).sort((a, b) => b.score - a.score);
+}
+
+async function refreshLeaderboardUI() {
+  const entriesEl = $('#lb-entries');
+  const statusEl = $('#lb-status');
+  statusEl.textContent = '🔄 Fetching latest ranks...';
+  entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Loading live rankings...</div>';
+
+  try {
+    const list = await getLeaderboardEntries();
+    statusEl.textContent = '⚡ Connected to Seminar Leaderboard';
+
+    if (list.length === 0) {
+      entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first! 🚚</div>';
+      return;
+    }
+
+    entriesEl.innerHTML = list.map((entry, idx) => {
+      const rank = idx + 1;
+      let badge = `#${rank}`;
+      if (rank === 1) badge = '🥇';
+      else if (rank === 2) badge = '🥈';
+      else if (rank === 3) badge = '🥉';
+
+      const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
+      const meClass = isMe ? ' lb-item me' : ' lb-item';
+
+      return `
+        <div class="${meClass}">
+          <span class="lb-rank">${badge}</span>
+          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
+          <span class="lb-score">⭐ ${entry.score}</span>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    statusEl.textContent = '⚠️ Offline / Local Rankings';
+  }
+}
+
+function openLeaderboard() {
+  $('#leaderboard-modal').hidden = false;
+  refreshLeaderboardUI();
+}
+
+function closeLeaderboard() {
+  $('#leaderboard-modal').hidden = true;
+}
+
+$('#map-lb-btn').onclick = openLeaderboard;
+$('#map-lb-bottom-btn').onclick = openLeaderboard;
+$('#close-lb-btn').onclick = closeLeaderboard;
+$('#close-lb-main-btn').onclick = closeLeaderboard;
+$('#refresh-lb-btn').onclick = () => {
+  audio.letterPick(0);
+  refreshLeaderboardUI();
+};
 
 // Start
 loadAssets();
