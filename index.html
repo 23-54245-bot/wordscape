@@ -196,6 +196,20 @@ header {
   border-bottom: 3px solid #ff9736;
 }
 .hrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+#mapv > header .hrow > div:first-child { min-width: 0; }
+#mapv > header .hrow > div:first-child > div { min-width: 0; }
+#mapv > header .hrow > div:last-child { flex-shrink: 0; }
+.map-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.map-actions .sm {
+  justify-content: center;
+  min-width: 0;
+  padding: 8px 5px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
 .nm { font-weight: 800; font-size: 1.12rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .ttl { font-size: 0.8rem; color: #ffb347; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
 .score {
@@ -836,6 +850,29 @@ select option {
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 460px) {
+  #mapv > header .hrow {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #mapv > header .hrow > div:first-child {
+    flex: 1 1 100%;
+  }
+  #mapv > header .hrow > div:last-child {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 360px) {
+  .map-actions { gap: 4px; }
+  .map-actions .sm {
+    gap: 3px;
+    padding: 8px 2px;
+    font-size: 0.68rem;
+  }
+}
+
 #modal,
 #leaderboard-modal {
   background: rgba(5, 12, 24, 0.58);
@@ -938,11 +975,10 @@ select option {
  <svg id="map" role="img" aria-label="Delivery map"></svg>
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
  
- <div class="row" style="margin-top:10px">
+ <div class="row map-actions" style="margin-top:10px">
    <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">🏆 Leaderboard</button>
    <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
    <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">👑 Level Select</button>
-   <button class="sm" id="rs-btn">Reset demo</button>
  </div>
 </div>
 
@@ -1687,14 +1723,15 @@ function draw() {
   I.forEach((it, i) => {
     const p = P[i], done = !!R[i], isC = i === cur;
 
-    // Stage Milestone Ribbon (Pill) - Positioned safely above node with clear margin
+    // Keep milestone ribbons inside the map and clear of adjacent stop labels.
     if (PILL[i]) {
-      const pillW = PILL[i].length * 7.6 + 32;
-      const pillY = p.y - 82;
+      const pillW = Math.min(vbW - 28, PILL[i].length * 7.6 + 32);
+      const pillX = Math.max(pillW / 2 + 14, Math.min(vbW - pillW / 2 - 14, p.x));
+      const pillY = it.t === 'bonus' ? p.y + 76 : p.y - 82;
       h += `
         <g filter="url(#shadow-3d)">
-          <rect x="${p.x - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
-          <text x="${p.x}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
+          <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="${pillX}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
         </g>
       `;
     }
@@ -3078,16 +3115,6 @@ $('#go').onclick = async () => {
     ${bt('Start Delivery Mission 🚀', 'X();focusCur()')}
   `);
   loginButton.disabled = false;
-};
-
-$('#rs-btn').onclick = () => {
-  if (!confirm('Reset local progress for this courier?')) return;
-  cur = 0;
-  R = [];
-  saveState();
-  adv();
-  draw();
-  focusCur();
 };
 
 // Check for deep-link stage param (e.g. ?stage=2)
