@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -467,7 +467,7 @@ input:focus { outline: none; border-color: var(--acc); }
   width: 270px;
   height: 270px;
   pointer-events: none;
-  z-index: 4;
+  z-index: 2;
 }
 #wheel {
   position: absolute;
@@ -510,111 +510,6 @@ input:focus { outline: none; border-color: var(--acc); }
   pointer-events: none;
   z-index: 99;
 }
-/* Leaderboard Modal Styles */
-#leaderboard-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-#leaderboard-modal[hidden] {
-  display: none !important;
-}
-.lb-modal-card {
-  background: var(--card-bg, #ffffff);
-  border-radius: 22px;
-  max-width: 440px;
-  width: 100%;
-  max-height: 88vh;
-  display: flex;
-  flex-direction: column;
-  padding: 18px;
-  box-shadow: 0 16px 38px rgba(0,0,0,0.35);
-  border: 1px solid var(--line, rgba(0,0,0,0.1));
-  animation: lbPopUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes lbPopUp {
-  0% { transform: scale(0.85); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.lb-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.lb-title {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink);
-}
-.lb-sub {
-  font-size: 0.82rem;
-  color: var(--mut);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.lb-list {
-  overflow-y: auto;
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid var(--line);
-  flex: 1;
-  min-height: 200px;
-  max-height: 380px;
-}
-.lb-item {
-  display: grid;
-  grid-template-columns: 44px 1fr 75px;
-  align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  font-size: 0.92rem;
-  color: var(--ink);
-}
-.lb-item:last-child { border-bottom: none; }
-.lb-item.me {
-  background: rgba(255, 122, 24, 0.15);
-  font-weight: 800;
-  border-left: 4px solid var(--acc);
-}
-.lb-rank {
-  font-weight: 800;
-  font-size: 1.05rem;
-  text-align: center;
-}
-.lb-name {
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 6px;
-}
-.lb-score {
-  text-align: right;
-  font-weight: 800;
-  color: var(--acc);
-}
-.lb-head-row {
-  font-weight: 800;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--mut);
-  background: rgba(0, 0, 0, 0.08);
-  border-bottom: 2px solid var(--line);
-}
 [hidden] { display: none !important; }
 </style>
 </head>
@@ -626,16 +521,13 @@ input:focus { outline: none; border-color: var(--acc); }
 <!-- LOGIN SCREEN -->
 <section id="login" class="card" style="text-align:center">
  <img src="assets/logo.png" alt="STREAMLINED" style="width: 85%; max-width: 290px; display: block; margin: 6px auto 10px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
- <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Babyâ€™s Journey Home Â· Logistics Master Challenge</p>
+ <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Baby’s Journey Home · Logistics Master Challenge</p>
 
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">COURIER FULL NAME</label>
  <input id="nm" placeholder="e.g. Juan Dela Cruz" maxlength="40">
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
  <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric">
- <button class="btn" id="go">Start Delivering ðŸš€</button>
-  <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.1);padding-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-    <button onclick="hostLogin()" style="background:#1e293b;border:2px solid #ff8a1f;color:#ff8a1f;font-weight:700;font-size:0.9rem;padding:9px 18px;border-radius:10px;cursor:pointer">🏰 Host / Admin Login</button>
-    <a href="admin.html" target="_blank" style="background:#0f172a;border:2px solid #334155;color:#94a3b8;font-weight:600;font-size:0.9rem;padding:9px 18px;border-radius:10px;text-decoration:none">📊 Control Tower ↗</a>
+ <button class="btn" id="go">Start Delivering 🚀</button>
 </section>
 
 <!-- MAP SCREEN (HUB DASHBOARD) -->
@@ -647,9 +539,8 @@ input:focus { outline: none; border-color: var(--acc); }
       <div class="ttl" id="ht">Junior Dispatch Courier</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">ðŸ† Leaderboard</button>
-      <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">ðŸ”Š</button>
-      <span class="score" id="hs">â­ 0</span>
+      <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
+      <span class="score" id="hs">⭐ 0</span>
     </div>
   </div>
   <div class="pbar"><i id="hb"></i></div>
@@ -659,9 +550,7 @@ input:focus { outline: none; border-color: var(--acc); }
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
  
  <div class="row" style="margin-top:10px">
-   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">ðŸ† Leaderboard</button>
-   <button class="sm" id="view-profile-btn">ðŸ“œ Digital Pass</button>
-   <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">ðŸ‘‘ Level Select</button>
+   <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
    <button class="sm" id="rs-btn">Reset demo</button>
  </div>
 </div>
@@ -669,15 +558,15 @@ input:focus { outline: none; border-color: var(--acc); }
 <!-- PLAY SCREEN (CONTAINER FOR ALL 5 ENGINES) -->
 <div id="play" hidden>
  <div class="row" style="justify-content:flex-start;margin:0 0 8px">
-   <button class="sm" onclick="leave()">â† Delivery Map</button>
+   <button class="sm" onclick="leave()">← Delivery Map</button>
  </div>
 
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
  <section id="g0" hidden>
    <div class="bar">
      <span id="wp-rd">Route 1/3</span>
-     <span id="wp-t">â±ï¸ 0:00</span>
-     <span id="wp-s">â­ 0</span>
+     <span id="wp-t">⏱️ 0:00</span>
+     <span id="wp-s">⭐ 0</span>
    </div>
    <div id="grid-container">
      <div id="grid"></div>
@@ -689,38 +578,38 @@ input:focus { outline: none; border-color: var(--acc); }
      <div id="wheel"></div>
    </div>
    <div class="row" style="margin-top:12px">
-     <button class="sm" id="wp-hint">ðŸ’¡ Hint (<span id="wp-hc">3</span>) [-15]</button>
-     <button class="sm" id="wp-shuf">ðŸ”€ Shuffle</button>
-     <button class="sm" id="wp-clr">âœ• Clear</button>
-     <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">â†µ Enter</button>
+     <button class="sm" id="wp-hint">💡 Hint (<span id="wp-hc">3</span>) [-15]</button>
+     <button class="sm" id="wp-shuf">🔀 Shuffle</button>
+     <button class="sm" id="wp-clr">✕ Clear</button>
+     <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">↵ Enter</button>
    </div>
    <div id="wp-r"></div>
  </section>
 
  <!-- GAME 1: SPOT & FIX THE ERRORS -->
  <section id="g1" hidden>
-  <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">â­ 0</span></div>
-  <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/spot_errors.jpg"><div id="sf-ov"></div></div>
+  <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">⭐ 0</span></div>
+  <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/poster.jpg"><div id="sf-ov"></div></div>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
   <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button></div>
  </section>
 
  <!-- GAME 2: BABY DELIVERY MAZE -->
  <section id="g2" hidden>
-  <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p">ðŸ“¦ 0/3</span></div>
+  <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p">📦 0/3</span></div>
   <div id="mz"></div>
   <div class="pad">
-    <span></span><button data-d="-1,0">â†‘</button><span></span>
-    <button data-d="0,-1">â†</button><button data-d="1,0">â†“</button><button data-d="0,1">â†’</button>
+    <span></span><button data-d="-1,0">↑</button><span></span>
+    <button data-d="0,-1">←</button><button data-d="1,0">↓</button><button data-d="0,1">→</button>
   </div>
-  <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery ðŸ !</p>
+  <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery 🏠!</p>
   <div id="mz-r"></div>
   <div class="row"><button class="sm" id="mz-a">Restart</button></div>
  </section>
 
  <!-- GAME 3: FIX THE BROKEN DELIVERY (SCENARIOS 1, 2, 3) -->
  <section id="g3" hidden>
-  <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">â­ 0</span></div>
+  <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">⭐ 0</span></div>
   <div class="card"><div id="bd-h"></div><div id="bd-b"></div></div>
   <div id="bd-r"></div>
   <div class="row"><button class="sm" id="bd-a">Restart Scenario</button></div>
@@ -728,13 +617,13 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
  <section id="g4" hidden>
-  <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-s-count">â­ 0</span></div>
+  <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-s-count">⭐ 0</span></div>
   <div class="card" id="dt-brief"><b>The Case:</b> Loading delay investigation.</div>
   <div id="dt-c"></div>
   <div class="card"><b>Suspects</b> (Tap to cross off cleared couriers)<div id="dt-s"></div></div>
   <div class="card"><b>Submit Accusation</b> (2 attempts max)
    <select id="dt-cu"></select><select id="dt-pl"></select><select id="dt-ca"></select>
-   <button class="btn" id="dt-go">Submit Accusation ðŸ”</button>
+   <button class="btn" id="dt-go">Submit Accusation 🔍</button>
    <div class="msg" id="dt-m"></div>
   </div>
   <div id="dt-r"></div>
@@ -747,17 +636,17 @@ input:focus { outline: none; border-color: var(--acc); }
   <div style="background:var(--card-bg);border-radius:20px;padding:12px 18px;margin-bottom:12px;box-shadow:0 4px 14px rgba(0,0,0,0.18);border:1px solid var(--line)">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:1.4rem">ðŸ—‚ï¸</span>
+        <span style="font-size:1.4rem">🗂️</span>
         <span style="font-weight:800;font-size:1.25rem;letter-spacing:0.5px">12 Cards</span>
-        <span style="font-size:1.4rem">ðŸ—‚ï¸</span>
+        <span style="font-size:1.4rem">🗂️</span>
       </div>
       <div>
-        <span id="fm-s" class="score">â­ 0</span>
+        <span id="fm-s" class="score">⭐ 0</span>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:1rem;font-weight:700">
       <div style="display:flex;align-items:center;gap:6px">
-        <span>â±ï¸</span>
+        <span>⏱️</span>
         <span style="color:var(--mut)">Time:</span>
         <span id="fm-t" style="font-family:monospace;font-size:1.05rem">00:00:00</span>
       </div>
@@ -777,9 +666,9 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <!-- BONUS LIVE GAME / QUIZ STOP -->
  <section id="g5" hidden>
-   <div class="bar"><span>âš¡ Live Seminar Bonus</span><span id="bn-t">0:00</span><span id="bn-s">â­ 0</span></div>
+   <div class="bar"><span>⚡ Live Seminar Bonus</span><span id="bn-t">0:00</span><span id="bn-s">⭐ 0</span></div>
    <div class="card">
-     <h2>ðŸ  The Final Delivery</h2>
+     <h2>🏠 The Final Delivery</h2>
      <p>Enter the live seminar code announced by the host to unlock the bonus handoff challenge!</p>
      <input id="bn-code-input" placeholder="Enter Seminar Code (e.g. STORKS2026)" style="text-transform:uppercase">
      <button class="btn" id="bn-unlock-btn">Verify Code & Play</button>
@@ -795,29 +684,6 @@ input:focus { outline: none; border-color: var(--acc); }
 
 <!-- UNIVERSAL MODAL -->
 <div id="modal"><div class="mbox" id="mbox"></div></div>
-
-<!-- COURIER LEADERBOARD MODAL -->
-<div id="leaderboard-modal" hidden>
-  <div class="lb-modal-card">
-    <div class="lb-header">
-      <h2 class="lb-title">ðŸ† Courier Leaderboard</h2>
-      <button class="sm" id="close-lb-btn" style="padding:4px 10px;font-size:1.1rem">âœ•</button>
-    </div>
-    <div class="lb-sub">
-      <span id="lb-status">ðŸ”„ Auto-updating...</span>
-      <button class="sm" id="refresh-lb-btn" style="padding:3px 10px;font-size:0.8rem">Refresh ðŸ”„</button>
-    </div>
-    <div class="lb-head-row lb-item">
-      <span style="text-align:center">#</span>
-      <span>Courier</span>
-      <span style="text-align:right">Score</span>
-    </div>
-    <div class="lb-list" id="lb-entries"></div>
-    <div class="row" style="margin-top:14px">
-      <button class="btn" id="close-lb-main-btn">Back to Delivery Map</button>
-    </div>
-  </div>
-</div>
 
 <script>
 /* =============================================================
@@ -958,7 +824,7 @@ function res(el, title, score, max, extra) {
   el.innerHTML = `
     <div class="card" style="text-align:center;margin-top:14px">
       <h2>${title}</h2>
-      <div class="big">â­ ${score}</div>
+      <div class="big">⭐ ${score}</div>
       <p style="margin:4px 0">Raw score: <b>${score}</b> / ${max}. ${extra || ''}</p>
       <p class="sub" style="margin-bottom:0">Scaled towards your stage point rating.</p>
     </div>
@@ -1009,7 +875,6 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_PREFIX + courierKey, JSON.stringify(payload));
   } catch(e) {}
-  syncToFirebase(payload);
 }
 
 // Listen for live gate releases across tabs
@@ -1026,28 +891,28 @@ window.addEventListener('storage', e => {
    ============================================================= */
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
-  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'ðŸ§©', cap:200 },
-  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'ðŸ§©', cap:200 },
-  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'ðŸ§©', cap:200 },
+  { t:'game', k:'wp', n:'Word Puzzle', e:'🧩', cap:167 },
+  { t:'game', k:'sf', n:'Spot & Fix', e:'🔎', cap:167 },
+  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:167 },
   { t:'gate', g:1 },
-  { t:'game', k:'fm', n:'Flip n Match', e:'ðŸƒ', cap:200 },
-  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'ðŸ”Ž', cap:200 },
-  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'ðŸ‘¶', cap:200 },
-  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'ðŸ› ï¸', cap:200 },
+  { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
+  { t:'game', k:'bd', sc:0, n:'Scenario 1', e:'🛠️', cap:200 },
+  { t:'game', k:'bd', sc:1, n:'Scenario 2', e:'🛠️', cap:200 },
+  { t:'game', k:'bd', sc:2, n:'Scenario 3', e:'🛠️', cap:200 },
   { t:'gate', g:2 },
-  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'ðŸ•µï¸', cap:400 },
-  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'ðŸ•µï¸', cap:400 },
-  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'ðŸ•µï¸', cap:400 },
+  { t:'game', k:'dt', cs:0, n:'Case 1', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:1, n:'Case 2', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:2, n:'Case 3', e:'🕵️', cap:400 },
   { t:'gate', g:3 },
-  { t:'bonus', k:'bn', n:'Final Delivery', e:'ðŸ ', cap:500 },
-  { t:'fin', n:'Certificate & Eval', e:'ðŸ“œ' }
+  { t:'bonus', k:'bn', n:'Final Delivery', e:'🏠', cap:500 },
+  { t:'fin', n:'Certificate & Eval', e:'📜' }
 ];
 
 const GN = { 1:'Stage 2 (Journey & Obstacles)', 2:'Stage 3 (Investigation)', 3:'the Bonus Live Game' };
-const PILL = { 0:'ðŸ¼ STAGE 1 Â· CREATION', 4:'ðŸŒ©ï¸ STAGE 2 Â· JOURNEY', 9:'ðŸ”Ž STAGE 3 Â· INVESTIGATION', 13:'ðŸ  FINAL DELIVERY' };
+const PILL = { 0:'🍼 STAGE 1 · CREATION', 4:'🌩️ STAGE 2 · JOURNEY', 9:'🔎 STAGE 3 · INVESTIGATION', 13:'🏠 FINAL DELIVERY' };
 const CUE = {
   0: 'The baby is born. Can you prepare it for delivery?',
-  4: 'The babyâ€™s journey hits obstacles. Match the courier tags and fix the broken delivery!',
+  4: 'The baby’s journey hits obstacles. Match the courier tags and fix the broken delivery!',
   9: 'The baby is delayed. Can you investigate and resolve the case?',
   13: 'The baby must reach its family. Complete the final delivery!'
 };
@@ -1059,10 +924,10 @@ const BEAT = {
 };
 const GL = { 1:'Dispatch Gate', 2:'Roadblock Gate', 3:'Last-Mile Gate' };
 const SC = [
-  ['ðŸ­', 0, 'machine'], ['ðŸ¦', 1, 'junior'], ['ðŸ‘§', 2, 'tulip'],
-  ['ðŸƒ', 4, 'toady'], ['ðŸº', 5, 'wolves'], ['ðŸ¦', 6, 'junior'], ['ðŸ‘§', 7, 'tulip'],
-  ['ðŸ¦', 9, 'junior'], ['ðŸ‘§', 10, 'tulip'], ['ðŸº', 11, 'wolves'],
-  ['ðŸ¡', 13, 'family'], ['ðŸ‘¶', 14, 'baby']
+  ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['👧', 2, 'tulip'],
+  ['🃏', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['👧', 7, 'tulip'],
+  ['🐦', 9, 'junior'], ['👧', 10, 'tulip'], ['🐺', 11, 'wolves'],
+  ['🏡', 13, 'family'], ['👶', 14, 'baby']
 ];
 
 const ASSETS = {
@@ -1070,7 +935,7 @@ const ASSETS = {
   wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png', toady: 'assets/toady.png',
   zone1: 'assets/zone1.jpg', zone2: 'assets/zone2.jpg', zone3: 'assets/zone3.jpg', zone4: 'assets/zone4.jpg'
 };
-const okA = {}, FB = { baby:'ðŸ‘¶', junior:'ðŸ¦', tulip:'ðŸ‘§', wolves:'ðŸº', machine:'ðŸ­', family:'ðŸ¡', toady:'ðŸ¦' };
+const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'👧', wolves:'🐺', machine:'🏭', family:'🏡', toady:'🐦' };
 function loadAssets() {
   Object.entries(ASSETS).forEach(([k, u]) => {
     const im = new Image();
@@ -1084,7 +949,7 @@ const STORY = {
   0: { w:['machine', 'junior', 'baby'], t:'A new baby has just come out of the Baby Making Machine! Junior and Tulip must prepare Diamond Destiny for her journey.' },
   4: { w:['junior','tulip','wolves','toady'], t:'Junior and Tulip face roadblocks on the highway! Match the courier identity cards and resolve the dispatch breakdowns.' },
   9: { w:['junior','tulip'], t:'The delivery is delayed at the dispatch tower. Junior and Tulip must investigate the evidence to uncover the bottleneck.' },
-  13: { w:['baby','family'], t:'At last the baby reaches Nate Gardnerâ€™s family home, and the storksâ€™ true delivery mission is restored!' }
+  13: { w:['baby','family'], t:'At last the baby reaches Nate Gardner’s family home, and the storks’ true delivery mission is restored!' }
 };
 const story = i => {
   if (!CUE[i]) return '';
@@ -1113,7 +978,7 @@ const X = () => $('#modal').classList.remove('on');
 const bt = (t, f, alt) => `<button class="btn${alt?' alt':''}" onclick="${f}">${t}</button>`;
 const st = n => {
   let s = '';
-  for (let k = 1; k <= 3; k++) s += `<span class="${k <= n ? '' : 'dim'}">â˜…</span>`;
+  for (let k = 1; k <= 3; k++) s += `<span class="${k <= n ? '' : 'dim'}">★</span>`;
   return `<div class="stars">${s}</div>`;
 };
 const info = (t, b) => modal(`<h2>${t}</h2><p>${b}</p>` + bt('OK', 'X()'));
@@ -1265,7 +1130,7 @@ function draw() {
   h += `
     <g filter="url(#shadow-3d)">
       <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
-      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABYâ€™S JOURNEY HOME</text>
+      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY’S JOURNEY HOME</text>
     </g>
   `;
 
@@ -1335,7 +1200,7 @@ function draw() {
           <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
 
           <!-- Lock Icon & Status -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? 'ðŸ”“' : 'ðŸ”’'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '🔓' : '🔒'}</text>
           
           <!-- Checkpoint Name Ribbon -->
           <rect x="${p.x - 55}" y="${p.y + 34}" width="110" height="22" rx="11" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
@@ -1367,7 +1232,7 @@ function draw() {
           <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
           
           <!-- Stop Icon or Number -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : 'ðŸ”’'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '🔒'}</text>
         </g>
       `;
 
@@ -1376,11 +1241,11 @@ function draw() {
         h += `
           <g filter="url(#shadow-3d)">
             <!-- Left Star -->
-            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">â˜…</text>
+            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
             <!-- Center Star (Larger) -->
-            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">â˜…</text>
+            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">★</text>
             <!-- Right Star -->
-            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">â˜…</text>
+            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
           </g>
         `;
       }
@@ -1414,7 +1279,7 @@ function draw() {
   } else {
     h += `
       <circle cx="${c.x}" cy="${c.y - 54}" r="26" fill="url(#gloss-gold)" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
-      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">ðŸ‘¶</text>
+      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">👶</text>
     `;
   }
 
@@ -1433,7 +1298,7 @@ function draw() {
   const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
-  $('#hs').textContent = 'â­ ' + total;
+  $('#hs').textContent = '⭐ ' + total;
   $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
 }
 
@@ -1445,30 +1310,19 @@ function focusCur() {
   });
 }
 
-let isAdmin = false;
-
 function tap(i) {
   audio.init();
   const it = I[i], done = !!R[i], cue = story(i);
-  if (isAdmin) {
-    if (it.t === 'gate') {
-      return info(`ðŸ‘‘ Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
-    }
-    if (it.t === 'fin') {
-      return evalCard();
-    }
-    return modal(`<h2>ðŸ‘‘ Admin Preview: ${it.e || 'ðŸ“¦'} ${it.n}</h2>${cue}<p>${DESC[it.k] || ''}</p>` + bt('Launch Level ðŸš€', `launch(${i})`) + bt('Close', 'X()', 1));
-  }
-  if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('ðŸ”’ Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
+  if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('🔒 Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
   if (it.t === 'gate') {
-    if (done) return info('ðŸ”“ ' + GL[it.g], 'This checkpoint has been cleared and released by dispatch.');
-    if (i === cur) return modal(`<h2>ðŸ”’ ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorizationâ€¦</p>` + bt('Demo Unlock (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
-    return info('ðŸ”’ Gate ' + it.g, 'Clear all previous stops to reach this gate.');
+    if (done) return info('🔓 ' + GL[it.g], 'This checkpoint has been cleared and released by dispatch.');
+    if (i === cur) return modal(`<h2>🔒 ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization…</p>` + bt('Demo Unlock (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
+    return info('🔒 Gate ' + it.g, 'Clear all previous stops to reach this gate.');
   }
   if (it.t === 'bonus') {
-    if (done) return modal(`<h2>âš¡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus (Demo)', `launch(${i})`) + bt('Close', 'X()', 1));
-    if (i === cur) return modal(`<h2>ðŸ  Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
-    return info('ðŸ”’ Final Delivery', 'Clear the earlier stops and gates first.');
+    if (done) return modal(`<h2>⚡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus (Demo)', `launch(${i})`) + bt('Close', 'X()', 1));
+    if (i === cur) return modal(`<h2>🏠 Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
+    return info('🔒 Final Delivery', 'Clear the earlier stops and gates first.');
   }
   if (done) {
     return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Recorded Score: <b>${R[i].pts}</b></p>` + bt('Replay Stop (Practice)', `launch(${i})`) + bt('Close', 'X()', 1));
@@ -1476,7 +1330,7 @@ function tap(i) {
   if (i === cur) {
     return modal(`<h2>${it.e} ${it.n}</h2>${cue}<p>${DESC[it.k]}</p>` + bt('Start Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
   }
-  info('ðŸ”’ ' + it.n, 'Clear the earlier stops in order first.');
+  info('🔒 ' + it.n, 'Clear the earlier stops in order first.');
 }
 
 function openGate(g) {
@@ -1498,7 +1352,7 @@ function launch(i) {
 
   if (it.k === 'wp') {
     $('#g0').hidden = false;
-    wpStart(it.r !== undefined ? it.r : 0);
+    wpStart();
   } else if (it.k === 'sf') {
     $('#g1').hidden = false;
     sfStart();
@@ -1556,7 +1410,7 @@ function onStopCompleted(score, max) {
     evalCard();
   } else {
     modal(`
-      <h2>ðŸ“¦ Delivered!</h2>
+      <h2>📦 Delivered!</h2>
       ${st(stars)}
       <p style="font-size:1.1rem;margin:8px 0"><b>${fresh ? '+' + pts + ' points' : 'Practice round complete!'}</b></p>
       ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
@@ -1573,32 +1427,32 @@ const WP_ROUNDS = [
   {
     name: 'Sort & Consolidate Packages',
     letters: 'STREAM',
-    words: ['STREAM','MASTER','SMART','TERMS','TEAM','RATE'],
-    bonus: ['STEAM','MATES','MEATS','TEAMS','STARE','TEARS','TRAMS','MARTS','ARMS','RATS','STAR','MART','TEAR','MATE','MEAT','TAME','SEAT','EAST','EATS','TEAS','SEAR','EARS','ERAS','RAMS','MAST','MATS','ARTS','TARS','STEM','TERM','MARE','REAM','SEAM','SAME','TAMERS']
+    words: ['STREAM','MASTER','SMART','STEAM','STAR','TEAM','REST','RATE','EAST','MAT'],
+    bonus: ['STARE','MEAT','TAME','SEAT','EARS','ARTS','RAMS','MARS','ARM','ART','EAR','SET','SEA']
   },
   {
     name: 'Dispatch Stork Carrier',
     letters: 'LOADER',
-    words: ['ORDEAL','LOADER','OLDER','ROAD','LOAD','DEAL'],
-    bonus: ['ALDER','LORD','ROLE','ORAL','REAL','EARL','READ','DEAR','DARE','LEAD','DALE','DOER','REDO','RODE','ODE','ORE','ROD','RED','OAR','ARE','EAR','ERA','ALE','LEA','OLD','DOE','LAD','LED','ROE','OLE','ALOE','DOLE','LODE','LORE','ADORE']
+    words: ['LOADER','ORDEAL','RELOAD','LOAD','READ','DEAL','RODE','LORE','LEAD','DARE'],
+    bonus: ['ALDER','OLDER','LARD','LODE','DALE','DOLE','DOER','ROLE','ORE','RED','ROD','LED','EAR']
   },
   {
     name: 'Kickstart Sustainable Delivery',
     letters: 'DELIVER',
     words: ['DELIVER','DRIVE','LIVER','LIVED','VEIL','RIDE'],
-    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','REVILED','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL','ELDER','DRIVEL','DELI','EVER','VEER','ELIDE','EIDER','VIED','LIRE','DEVIL']
+    bonus: ['DIVER','LIVE','EVIL','VILE','DIVE','DERIVE','DIRE','IDLE','RILE','LIED','LEVER','REVEL']
   }
 ];
 
 let wpRi = 0, wpScore = 0, wpTotalSec = 0, wpTimer = null, wpSel = [], wpOrder = [];
 let wpHintsLeft = 3, wpActiveWordBoard = null, wpDragging = false, wpCurrentPointer = null;
 
-function wpStart(routeIdx = 0) {
-  wpRi = routeIdx;
+function wpStart() {
+  wpRi = 0;
   wpScore = 0;
   wpHintsLeft = 3;
   wpTotalSec = 0;
-  $('#wp-s').textContent = 'â­ 0';
+  $('#wp-s').textContent = '⭐ 0';
   $('#wp-hc').textContent = wpHintsLeft;
   $('#wp-r').innerHTML = '';
   startWpRoute();
@@ -1613,8 +1467,7 @@ function startWpRoute() {
     const j = Math.floor(Math.random() * (i + 1));
     [wpOrder[i], wpOrder[j]] = [wpOrder[j], wpOrder[i]];
   }
-  $('#wp-rd').textContent = `Stop ${wpRi + 1} Â· ${r.letters}`;
-  $('#wp-msg').textContent = 'Find the hidden words!';
+  $('#wp-rd').textContent = `Route ${wpRi + 1} / ${WP_ROUNDS.length}`;
   renderWpGrid();
   renderWpWheel();
   renderWpCur();
@@ -1624,97 +1477,33 @@ function startWpRoute() {
   let t0 = Date.now();
   wpTimer = setInterval(() => {
     const s = Math.floor((Date.now() - t0) / 1000) + wpTotalSec;
-    $('#wp-t').textContent = 'â±ï¸ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    $('#wp-t').textContent = '⏱️ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   }, 500);
 }
 
-/* Authentic Crossword Grid Generator */
 function buildWordBoard(r) {
-  const words = [...r.words].sort((a,b) => b.length - a.length);
-  const g = new Map(), dirs = new Map(), placed = [];
-  const D = d => d ? [0,1] : [1,0];
-  const put = (w,x,y,d) => {
-    const [dx,dy] = D(d);
-    const keys = [];
-    for (let k = 0; k < w.length; k++) {
-      const key = (x + dx * k) + ',' + (y + dy * k);
-      g.set(key, w[k]);
-      (dirs.get(key) || dirs.set(key, []).get(key)).push(d);
-      keys.push(key);
-    }
-    placed.push({ word: w, x, y, d, keys });
-  };
-  const can = (w,x,y,d) => {
-    const [dx,dy] = D(d);
-    let cross = 0;
-    if (g.has((x-dx)+','+(y-dy)) || g.has((x+dx*w.length)+','+(y+dy*w.length))) return -1;
-    for (let k = 0; k < w.length; k++) {
-      const cx = x + dx * k, cy = y + dy * k, key = cx + ',' + cy;
-      if (g.has(key)) {
-        if (g.get(key) !== w[k] || dirs.get(key).includes(d)) return -1;
-        cross++;
-      } else if (g.has((cx+dy)+','+(cy+dx)) || g.has((cx-dy)+','+(cy-dx))) {
-        return -1;
-      }
-    }
-    return cross;
-  };
-
-  put(words[0], 0, 0, 0);
-  for (const w of words.slice(1)) {
-    let done = false;
-    for (const p of [...placed]) {
-      if (done) break;
-      for (let i = 0; i < p.word.length && !done; i++) {
-        for (let j = 0; j < w.length && !done; j++) {
-          if (p.word[i] !== w[j]) continue;
-          const d = 1 - p.d;
-          const px = p.x + (p.d ? 0 : i), py = p.y + (p.d ? i : 0);
-          const x = d ? px : px - j, y = d ? py - j : py;
-          if (can(w, x, y, d) === 1) {
-            put(w, x, y, d);
-            done = true;
-          }
-        }
-      }
-    }
-    if (!done) {
-      let my = 0;
-      g.forEach((_, k) => { my = Math.max(my, +k.split(',')[1]); });
-      put(w, 0, my + 2, 0);
-    }
-  }
-
-  let mx = 1e9, my = 1e9, Mx = -1e9, My = -1e9;
-  g.forEach((_, k) => {
-    const [x,y] = k.split(',').map(Number);
-    mx = Math.min(mx, x); my = Math.min(my, y);
-    Mx = Math.max(Mx, x); My = Math.max(My, y);
+  const words = r.words;
+  let placed = [];
+  // Build simple crossword grid
+  let y = 0;
+  words.forEach((w, idx) => {
+    placed.push({ word: w, x: 0, y: y, dir: 'H' });
+    y++;
   });
-  const cells = [];
-  g.forEach((l, k) => {
-    const [x,y] = k.split(',').map(Number);
-    const key = (x - mx) + ',' + (y - my);
-    cells.push({ key, l, x: x - mx, y: y - my });
-  });
-
+  let cells = [];
+  let revealed = new Set();
   placed.forEach(p => {
-    p.x -= mx;
-    p.y -= my;
-    p.keys = p.keys.map(k => {
-      const [x,y] = k.split(',').map(Number);
-      return (x - mx) + ',' + (y - my);
-    });
+    for (let i = 0; i < p.word.length; i++) {
+      cells.push({ x: p.x + i, y: p.y, l: p.word[i], key: `${p.x + i},${p.y}` });
+    }
   });
-
-  return { r, placed, cells, revealed: new Set(), rows: My - my + 1, cols: Mx - mx + 1 };
+  return { r, placed, cells, revealed, rows: y, cols: Math.max(...words.map(w => w.length)) };
 }
 
 function renderWpGrid() {
   const g = $('#grid');
   const B = wpActiveWordBoard;
-  const maxDim = Math.max(B.cols, B.rows);
-  const cs = Math.min(38, Math.floor(310 / maxDim));
+  const cs = Math.min(42, Math.floor(340 / B.cols));
   g.style.width = (B.cols * cs) + 'px';
   g.style.height = (B.rows * cs) + 'px';
   g.innerHTML = '';
@@ -1725,45 +1514,32 @@ function renderWpGrid() {
     d.className = 'cell' + (on ? ' on' : '');
     d.style.left = (c.x * cs) + 'px';
     d.style.top = (c.y * cs) + 'px';
-    d.style.width = (cs - 3) + 'px';
-    d.style.height = (cs - 3) + 'px';
-    d.style.fontSize = Math.floor(cs * 0.54) + 'px';
+    d.style.width = (cs - 4) + 'px';
+    d.style.height = (cs - 4) + 'px';
+    d.style.fontSize = Math.floor(cs * 0.52) + 'px';
     if (on) d.textContent = c.l;
     g.appendChild(d);
-  });
-}
-
-function getWpLetterPositions() {
-  const L = wpActiveWordBoard ? wpActiveWordBoard.r.letters : '';
-  const n = L.length;
-  const radius = 95, center = 135;
-  return wpOrder.map((idx, pos) => {
-    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
-    return {
-      idx,
-      x: center + Math.cos(a) * radius,
-      y: center + Math.sin(a) * radius
-    };
   });
 }
 
 function renderWpWheel() {
   const w = $('#wheel');
   w.innerHTML = '';
-  const L = wpActiveWordBoard.r.letters;
-  const positions = getWpLetterPositions();
-  positions.forEach(p => {
+  const L = wpActiveWordBoard.r.letters, n = L.length;
+  const radius = 95, center = 135;
+  wpOrder.forEach((idx, pos) => {
+    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
     const b = document.createElement('button');
-    b.textContent = L[p.idx];
-    b.style.left = (p.x - 28) + 'px';
-    b.style.top = (p.y - 28) + 'px';
-    if (wpSel.includes(p.idx)) b.classList.add('selected');
+    b.textContent = L[idx];
+    b.style.left = (center + Math.cos(a) * radius - 28) + 'px';
+    b.style.top = (center + Math.sin(a) * radius - 28) + 'px';
+    if (wpSel.includes(idx)) b.classList.add('selected');
 
     b.onclick = e => {
       e.stopPropagation();
       audio.init();
-      if (!wpSel.includes(p.idx)) {
-        wpSel.push(p.idx);
+      if (!wpSel.includes(idx)) {
+        wpSel.push(idx);
         audio.letterPick(wpSel.length - 1);
         renderWpWheel();
         renderWpCur();
@@ -1788,95 +1564,28 @@ const wpCtx = wpCanvas.getContext('2d');
 function drawWpLines() {
   wpCtx.clearRect(0, 0, wpCanvas.width, wpCanvas.height);
   if (wpSel.length === 0) return;
-  const positions = getWpLetterPositions();
-  const posMap = new Map(positions.map(p => [p.idx, p]));
+  const L = wpActiveWordBoard.r.letters, n = L.length;
+  const radius = 95, center = 135;
+  const posMap = {};
+  wpOrder.forEach((idx, pos) => {
+    const a = (pos / n) * Math.PI * 2 - Math.PI / 2;
+    posMap[idx] = { x: center + Math.cos(a) * radius, y: center + Math.sin(a) * radius };
+  });
 
   wpCtx.save();
   wpCtx.lineCap = 'round';
   wpCtx.lineJoin = 'round';
   wpCtx.strokeStyle = '#ff8a1f';
-  wpCtx.lineWidth = 10;
+  wpCtx.lineWidth = 8;
   wpCtx.beginPath();
   wpSel.forEach((idx, i) => {
-    const p = posMap.get(idx);
-    if (!p) return;
+    const p = posMap[idx];
     if (i === 0) wpCtx.moveTo(p.x, p.y);
     else wpCtx.lineTo(p.x, p.y);
   });
-  if (wpDragging && wpCurrentPointer) {
-    wpCtx.lineTo(wpCurrentPointer.x, wpCurrentPointer.y);
-  }
   wpCtx.stroke();
   wpCtx.restore();
 }
-
-/* Touch & Pointer Swiping on Wheel */
-const wheelWrap = $('#wheel-wrap');
-function getPointerWheelCoords(e) {
-  const rect = wheelWrap.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: clientX - rect.left,
-    y: clientY - rect.top
-  };
-}
-
-function checkWpLetterHit(coords) {
-  const positions = getWpLetterPositions();
-  for (const p of positions) {
-    if (Math.hypot(coords.x - p.x, coords.y - p.y) < 32) return p.idx;
-  }
-  return null;
-}
-
-wheelWrap.addEventListener('pointerdown', e => {
-  audio.init();
-  wpDragging = true;
-  wheelWrap.setPointerCapture?.(e.pointerId);
-  wpCurrentPointer = getPointerWheelCoords(e);
-  const hit = checkWpLetterHit(wpCurrentPointer);
-  if (hit !== null && !wpSel.includes(hit)) {
-    wpSel = [hit];
-    audio.letterPick(0);
-    renderWpWheel();
-    renderWpCur();
-  }
-  drawWpLines();
-});
-
-wheelWrap.addEventListener('pointermove', e => {
-  if (!wpDragging) return;
-  wpCurrentPointer = getPointerWheelCoords(e);
-  const hit = checkWpLetterHit(wpCurrentPointer);
-  if (hit !== null) {
-    if (!wpSel.includes(hit)) {
-      wpSel.push(hit);
-      audio.letterPick(wpSel.length - 1);
-      renderWpWheel();
-      renderWpCur();
-    } else if (wpSel.length >= 2 && wpSel[wpSel.length - 2] === hit) {
-      wpSel.pop();
-      renderWpWheel();
-      renderWpCur();
-    }
-  }
-  drawWpLines();
-});
-
-function endWpDrag() {
-  if (!wpDragging) return;
-  wpDragging = false;
-  wpCurrentPointer = null;
-  drawWpLines();
-  if (wpSel.length > 0) {
-    wpSubmit();
-  }
-}
-
-wheelWrap.addEventListener('pointerup', endWpDrag);
-wheelWrap.addEventListener('pointercancel', endWpDrag);
-wheelWrap.addEventListener('touchmove', e => { if (wpDragging) e.preventDefault(); }, { passive: false });
 
 function wpSubmit() {
   if (wpSel.length === 0) return;
@@ -1886,16 +1595,17 @@ function wpSubmit() {
 
   if (match) {
     let newlyFound = false;
-    match.keys.forEach(k => {
+    for (let i = 0; i < match.word.length; i++) {
+      const k = `${match.x + i},${match.y}`;
       if (!B.revealed.has(k)) {
         B.revealed.add(k);
         newlyFound = true;
       }
-    });
+    }
     if (newlyFound) {
       audio.wordSuccess();
       wpScore += word.length * 10;
-      $('#wp-s').textContent = 'â­ ' + wpScore;
+      $('#wp-s').textContent = '⭐ ' + wpScore;
       $('#wp-msg').textContent = `Awesome! Found "${word}" (+${word.length * 10})`;
       renderWpGrid();
       checkWpClear();
@@ -1905,8 +1615,8 @@ function wpSubmit() {
   } else if (B.r.bonus && B.r.bonus.includes(word)) {
     audio.wordSuccess();
     wpScore += 15;
-    $('#wp-s').textContent = 'â­ ' + wpScore;
-    $('#wp-msg').textContent = `ðŸŽ Bonus Word! "${word}" (+15)`;
+    $('#wp-s').textContent = '⭐ ' + wpScore;
+    $('#wp-msg').textContent = `🎁 Bonus Word! "${word}" (+15)`;
   } else {
     audio.error();
     $('#wp-msg').textContent = `"${word}" is not on the board.`;
@@ -1923,10 +1633,19 @@ function checkWpClear() {
   const allRevealed = B.cells.every(c => B.revealed.has(c.key));
   if (allRevealed) {
     audio.roundWin();
-    clearInterval(wpTimer);
-    const totalPts = Math.min(1000, wpScore + 250);
-    res($('#wp-r'), 'Word Puzzle Cleared! ðŸ§©', totalPts, 1000, 'Route 1 delivered successfully!');
-    onStopCompleted(totalPts, 1000);
+    wpRi++;
+    if (wpRi < WP_ROUNDS.length) {
+      modal(`
+        <h2>Route Delivered! 📦</h2>
+        <p>Great job! Route ${wpRi} complete.</p>
+        ${bt('Next Route ➔', 'X();startWpRoute()')}
+      `);
+    } else {
+      clearInterval(wpTimer);
+      const totalPts = Math.min(1000, wpScore + 200);
+      res($('#wp-r'), 'Word Puzzle Cleared! 🎉', totalPts, 1000, 'All 3 anagram wheels delivered!');
+      onStopCompleted(totalPts, 1000);
+    }
   }
 }
 
@@ -1949,8 +1668,7 @@ $('#wp-hint').onclick = () => {
   wpHintsLeft--;
   $('#wp-hc').textContent = wpHintsLeft;
   wpScore = Math.max(0, wpScore - 15);
-  $('#wp-s').textContent = 'â­ ' + wpScore;
-  audio.letterPick(2);
+  $('#wp-s').textContent = '⭐ ' + wpScore;
   renderWpGrid();
   checkWpClear();
 };
@@ -1959,37 +1677,17 @@ $('#wp-hint').onclick = () => {
    GAME 1: SPOT & FIX THE ERRORS
    ============================================================= */
 const HS = [
-  { 
-    x: 0.18, y: 0.22, r: 0.15, 
-    q: 'Fragile wooden parcel is placed upside-down under heavy crates. How should this be corrected?', 
-    o: ['Rotate upright (arrows pointing UP) and place safely atop the stack', 'Leave upside-down and wrap with extra packing tape', 'Scratch off the fragile label'] 
-  },
-  { 
-    x: 0.32, y: 0.55, r: 0.15, 
-    q: 'Shipping barcode label is torn and unreadable. How should this be corrected?', 
-    o: ['Rescan manifest ID and reprint a clean optical barcode label', 'Write a guessed tracking number with a marker pen', 'Ship the parcel with no barcode'] 
-  },
-  { 
-    x: 0.50, y: 0.65, r: 0.15, 
-    q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?', 
-    o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation'] 
-  },
-  { 
-    x: 0.68, y: 0.48, r: 0.15, 
-    q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?', 
-    o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor'] 
-  },
-  { 
-    x: 0.85, y: 0.40, r: 0.15, 
-    q: 'Departing delivery stork is missing required safety goggles and courier pilot cap. How should this be corrected?', 
-    o: ['Equip high-altitude anti-glare goggles and standard courier flight cap', 'Allow unequipped flight as long as the sky is sunny', 'Instruct courier to fly with eyes closed'] 
-  }
+  { x: 0.50, y: 0.18, r: 0.16, q: 'The premier courier in the sky should be…', o: ['Junior the delivery stork', 'A supersonic drone', 'A cargo airplane'] },
+  { x: 0.28, y: 0.46, r: 0.14, q: 'The human partner wearing aviator goggles is…', o: ['Tulip, Orphan of Stork Mountain', 'Warehouse safety inspector', 'A customer waiting for delivery'] },
+  { x: 0.55, y: 0.56, r: 0.14, q: 'The precious delivery in the carrier bundle is…', o: ['Diamond Destiny (Baby girl)', 'A returned merchandise package', 'A standard post office letter'] },
+  { x: 0.22, y: 0.82, r: 0.14, q: 'The wild roadblock obstruction on the road is…', o: ['The Alpha & Beta Wolf Pack', 'Warehouse guard dogs', 'Mountain cougars'] },
+  { x: 0.78, y: 0.76, r: 0.14, q: 'The high-tech sorting facility where the journey began is…', o: ['Cornerstone Stork Mountain Depot', 'Amazon Fulfillment Center', 'Post Office Central Hub'] }
 ];
 let sf, dbg = false;
 const sfT = Timer($('#sf-t'));
 function sfUp() {
   $('#sf-c').textContent = sf.x.size + '/5 fixed';
-  $('#sf-s').textContent = 'â­ ' + Math.max(0, sf.s);
+  $('#sf-s').textContent = '⭐ ' + Math.max(0, sf.s);
 }
 function sfStart() {
   if (sf && sf.to) clearTimeout(sf.to);
@@ -2045,7 +1743,7 @@ $('#sf-i').onclick = e => {
         sf.x.add(i);
         sf.p = null;
         c.classList.add('ok');
-        $('#sf-q').innerHTML = 'âœ… Fixed! Find the next error.';
+        $('#sf-q').innerHTML = '✅ Fixed! Find the next error.';
         sfUp();
         if (sf.x.size === 5) sfEnd();
       } else {
@@ -2068,7 +1766,7 @@ function sfEnd() {
   sf.s = Math.max(0, sf.s + b);
   sfUp();
   $('#sf-q').innerHTML = '';
-  res($('#sf-r'), sf.x.size === 5 ? 'All Errors Fixed! ðŸŽ‰' : 'Timeâ€™s Up', sf.s, 850, `Speed bonus +${b}.`);
+  res($('#sf-r'), sf.x.size === 5 ? 'All Errors Fixed! 🎉' : 'Time’s Up', sf.s, 850, `Speed bonus +${b}.`);
   onStopCompleted(sf.s, 850);
 }
 $('#sf-a').onclick = sfStart;
@@ -2100,18 +1798,18 @@ function mzDraw() {
     let t = '';
     const k = r + ',' + c;
     if (r === mz.r && c === mz.c) {
-      t = okA.baby ? `<img src="${okA.baby}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : 'ðŸ‘¶';
+      t = okA.baby ? `<img src="${okA.baby}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
     } else if (ch === 'E') {
-      t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : 'ðŸ ';
+      t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '🏠';
     } else if (ch === 'S') {
-      t = okA.machine ? `<img src="${okA.machine}" style="width:28px;height:28px;object-fit:contain">` : 'ðŸ­';
+      t = okA.machine ? `<img src="${okA.machine}" style="width:28px;height:28px;object-fit:contain">` : '🏭';
     } else if (PK.includes(k) && !mz.p.has(k)) {
-      t = 'ðŸ“¦';
+      t = '📦';
     }
     return `<div class="c ${ch === '#' ? 'w' : ''}">${t}</div>`;
   }).join('')).join('');
   $('#mz-m').textContent = mz.m + ' moves';
-  $('#mz-p').textContent = 'ðŸ“¦ ' + mz.p.size + '/3';
+  $('#mz-p').textContent = '📦 ' + mz.p.size + '/3';
 }
 
 function mzStart() {
@@ -2145,7 +1843,7 @@ function mzMove(dr, dc) {
     mz.done = true;
     const t = mzT.stop();
     const s = Math.max(0, 100 + 20 * mz.p.size + Math.max(0, 120 - t) - 2 * Math.max(0, mz.m - 20));
-    res($('#mz-r'), 'Baby Delivered Home! ðŸ‘¶', s, 280, `${mz.m} moves (Optimal route: 20 moves).`);
+    res($('#mz-r'), 'Baby Delivered Home! 👶', s, 280, `${mz.m} moves (Optimal route: 20 moves).`);
     onStopCompleted(s, 280);
   }
 }
@@ -2176,34 +1874,34 @@ const BD_SCENARIOS = [
     title: 'Scenario 1: Baby Basket Order #101',
     steps: ['Receive the order', 'Pick the items', 'Pack the order', 'Ship the parcel', 'Deliver to the customer'],
     faults: [
-      { q: 'âš ï¸ Fault 1: The shipping label displays an invalid delivery address.', o: ['Verify address with customer and reprint label', 'Send it anyway to local depot', 'Cancel the order entirely'] },
-      { q: 'âš ï¸ Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute delivery via highway bypass and notify family', 'Wait at the roadblock until cleared', 'Return the package to dispatch depot'] }
+      { q: '⚠️ Fault 1: The shipping label displays an invalid delivery address.', o: ['Verify address with customer and reprint label', 'Send it anyway to local depot', 'Cancel the order entirely'] },
+      { q: '⚠️ Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute delivery via highway bypass and notify family', 'Wait at the roadblock until cleared', 'Return the package to dispatch depot'] }
     ]
   },
   {
     title: 'Scenario 2: Mountain Highway & Wolf Roadblock',
     steps: ['Inspect bundle', 'Load dispatch van', 'Verify flight manifest', 'Deploy courier', 'Navigate roadblock', 'Deliver to doorstep'],
     faults: [
-      { q: 'âš ï¸ Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare distraction and take the ridge bypass', 'Confront the wolves directly', 'Turn back to factory'] },
-      { q: 'âš ï¸ Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Engage auxiliary solar beacon channel', 'Continue blind without communication', 'Drop parcel at nearest tree'] },
-      { q: 'âš ï¸ Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Execute soft suspension recalibration and inspect bundle', 'Ignore the sensor', 'Shake the basket'] }
+      { q: '⚠️ Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare distraction and take the ridge bypass', 'Confront the wolves directly', 'Turn back to factory'] },
+      { q: '⚠️ Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Engage auxiliary solar beacon channel', 'Continue blind without communication', 'Drop parcel at nearest tree'] },
+      { q: '⚠️ Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Execute soft suspension recalibration and inspect bundle', 'Ignore the sensor', 'Shake the basket'] }
     ]
   },
   {
     title: 'Scenario 3: Severe Weather & Route Recalibration',
     steps: ['Order intake', 'Express sorting', 'Security clearance', 'Flight manifest signing', 'Airborne ascent', 'Storm evasion', 'Family doorstep handoff'],
     faults: [
-      { q: 'âš ï¸ Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
-      { q: 'âš ï¸ Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
-      { q: 'âš ï¸ Fault 3: Nateâ€™s family updated the handoff drop coordinates mid-route.', o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
-      { q: 'âš ï¸ Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
+      { q: '⚠️ Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
+      { q: '⚠️ Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
+      { q: '⚠️ Fault 3: Nate’s family updated the handoff drop coordinates mid-route.', o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
+      { q: '⚠️ Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
     ]
   }
 ];
 
 let bd, bdCurScenario = 0;
 const bdT = Timer($('#bd-t'));
-const bdUp = () => $('#bd-s').textContent = 'â­ ' + bd.s;
+const bdUp = () => $('#bd-s').textContent = '⭐ ' + bd.s;
 
 function bdStart(scenIdx = 0) {
   bdCurScenario = scenIdx;
@@ -2279,9 +1977,9 @@ function bdEnd() {
   const t = bdT.stop(), b = Math.max(0, 120 - t);
   bd.s += b;
   bdUp();
-  $('#bd-h').innerHTML = 'âœ… All Process Roadblocks Resolved!';
+  $('#bd-h').innerHTML = '✅ All Process Roadblocks Resolved!';
   $('#bd-b').innerHTML = '';
-  res($('#bd-r'), 'Roadblock Cleared! ðŸšš', bd.s, 300, `Speed bonus +${b}.`);
+  res($('#bd-r'), 'Roadblock Cleared! 🚚', bd.s, 300, `Speed bonus +${b}.`);
   onStopCompleted(bd.s, 300);
 }
 $('#bd-a').onclick = () => bdStart(bdCurScenario);
@@ -2296,11 +1994,11 @@ const DT_CASES = [
     suspects: ['Pia (Packer)', 'Lando (Loader)', 'Dani (Driver)', 'Rico (Dispatcher)'],
     clues: [
       'Packing log: The basket was sealed at 08:40.',
-      'Message log: At 08:55 Rico sent a message to Lando: â€œHold the basket until I release it.â€',
+      'Message log: At 08:55 Rico sent a message to Lando: “Hold the basket until I release it.”',
       'Dock record: Delivery Truck 2 was ready at Bay 3 from 08:30. Rico released the hold at 12:05 and loading began at 12:10.',
       'GPS log: Truck 2 departed at 12:15 and drive time was 1 hr 45 min, standard duration for this route.',
-      'Daniâ€™s statement: Dani waited in the courier break room until summoned at 12:00.',
-      'Landoâ€™s statement: Lando held the parcel specifically following Ricoâ€™s hold order.'
+      'Dani’s statement: Dani waited in the courier break room until summoned at 12:00.',
+      'Lando’s statement: Lando held the parcel specifically following Rico’s hold order.'
     ],
     places: ['Packing station', 'Loading dock', 'Delivery route'],
     causes: ['A hold instruction that delayed loading', 'A truck engine breakdown', 'A wrong address label'],
@@ -2315,9 +2013,9 @@ const DT_CASES = [
       'Scanner log: Sector 4 barcode read accurately upon arrival at intake at 10:15.',
       'Sorting belt report: Conveyor diverter jam occurred at 10:30 at Sorting Belt 2.',
       'Badge log: Jasper was the sole operator stationed at Sorting Belt 2 during the jam.',
-      'Dougâ€™s statement: Doug transported the pallets only after they were marked and palletized.',
-      'Sarahâ€™s inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.',
-      'Tulipâ€™s log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given.'
+      'Doug’s statement: Doug transported the pallets only after they were marked and palletized.',
+      'Sarah’s inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.',
+      'Tulip’s log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given.'
     ],
     places: ['Intake bay', 'Sorting belt 2', 'Airfield hangar'],
     causes: ['Manual diverter override during conveyor jam', 'Forklift collision damage', 'Radio transmission static'],
@@ -2326,14 +2024,14 @@ const DT_CASES = [
   },
   {
     title: 'Case 3: The Sabotaged Dispatch Coordinates',
-    brief: 'Flight navigational coordinates for Nateâ€™s delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!',
+    brief: 'Flight navigational coordinates for Nate’s delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!',
     suspects: ['Pigeon Toady (Informant)', 'Junior (Lead Courier)', 'Tulip (Mechanic)', 'Alpha Wolf (Tracker)', 'Beta Wolf (Scout)'],
     clues: [
       'Security camera: An unidentified figure entered the Control Tower console room at 22:15.',
-      'Console audit: Flight coordinates for Nateâ€™s sector were overwritten with blizzard waypoint data at 22:18.',
-      'Access keycard log: Pigeon Toadyâ€™s executive keycard unlocked the console room door at 22:14.',
-      'Juniorâ€™s alibi: Junior was in the hangar briefing room with Nate until 22:45.',
-      'Tulipâ€™s alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.',
+      'Console audit: Flight coordinates for Nate’s sector were overwritten with blizzard waypoint data at 22:18.',
+      'Access keycard log: Pigeon Toady’s executive keycard unlocked the console room door at 22:14.',
+      'Junior’s alibi: Junior was in the hangar briefing room with Nate until 22:45.',
+      'Tulip’s alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.',
       'Forest ranger report: Alpha and Beta wolves remained north of the valley perimeter all evening.'
     ],
     places: ['Hangar briefing room', 'Control tower console room', 'Crane workshop'],
@@ -2357,7 +2055,7 @@ function dtStart(caseIdx = 0) {
   $('#dt-r').innerHTML = '';
   $('#dt-m').textContent = '';
 
-  $('#dt-c').innerHTML = C.clues.map((c, i) => `<button class="clue" data-i="${i}">ðŸ” Inspect Clue ${i + 1}</button>`).join('');
+  $('#dt-c').innerHTML = C.clues.map((c, i) => `<button class="clue" data-i="${i}">🔍 Inspect Clue ${i + 1}</button>`).join('');
   $$('.clue').forEach(b => b.onclick = () => {
     audio.letterPick(1);
     b.classList.add('open');
@@ -2387,7 +2085,7 @@ $('#dt-go').onclick = () => {
     dt.done = true;
     const t = dtT.stop();
     const s = Math.max(0, 150 + 50 + 50 + Math.max(0, 200 - t) - 40 * dt.w);
-    res($('#dt-r'), 'Case Solved! ðŸ•µï¸', s, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
+    res($('#dt-r'), 'Case Solved! 🕵️', s, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
     $('#dt-m').textContent = '';
     onStopCompleted(s, 450);
   } else {
@@ -2397,7 +2095,7 @@ $('#dt-go').onclick = () => {
       dt.done = true;
       dtT.stop();
       $('#dt-m').textContent = '';
-      res($('#dt-r'), 'Case Closed by Superior ðŸ“', 120, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
+      res($('#dt-r'), 'Case Closed by Superior 📁', 120, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
       onStopCompleted(120, 450);
     } else {
       $('#dt-m').textContent = 'Inconclusive deduction (-40 pts). 1 accusation remaining!';
@@ -2453,7 +2151,7 @@ function renderBnQuiz(idx) {
   if (idx >= BN_QUESTIONS.length) {
     clearInterval(bnTimer);
     const bonusPts = 500;
-    res($('#bn-r'), 'Final Delivery Complete! ðŸ†', bonusPts, 500, 'Mission fulfilled! The baby has arrived home.');
+    res($('#bn-r'), 'Final Delivery Complete! 🏆', bonusPts, 500, 'Mission fulfilled! The baby has arrived home.');
     onStopCompleted(bonusPts, 500);
     return;
   }
@@ -2487,18 +2185,18 @@ function evalCard() {
   const grade = total >= 2500 ? 'A+' : total >= 2000 ? 'A' : total >= 1500 ? 'B+' : 'B';
 
   modal(`
-    <h2>ðŸ† Mission Accomplished!</h2>
-    <p style="font-size:1.15rem"><b>Delivered! Nateâ€™s family welcomes the baby home.</b></p>
+    <h2>🏆 Mission Accomplished!</h2>
+    <p style="font-size:1.15rem"><b>Delivered! Nate’s family welcomes the baby home.</b></p>
     <div style="background:var(--cell);border-radius:18px;padding:14px;border:2px solid var(--acc);margin:12px 0">
       <div style="font-size:0.8rem;text-transform:uppercase;color:var(--mut);font-weight:800">Certified Courier Pass</div>
       <div style="font-size:1.3rem;font-weight:800;color:var(--ink);margin:4px 0">${user || 'Juan Dela Cruz'}</div>
-      <div style="font-weight:700;color:var(--acc);font-size:0.95rem">${title()} Â· Grade ${grade}</div>
-      <div style="font-size:1.2rem;font-weight:800;margin-top:6px">Grand Score: â­ ${total} pts</div>
+      <div style="font-weight:700;color:var(--acc);font-size:0.95rem">${title()} · Grade ${grade}</div>
+      <div style="font-size:1.2rem;font-weight:800;margin-top:6px">Grand Score: ⭐ ${total} pts</div>
     </div>
     <p>Please complete your seminar evaluation to receive your accredited completion certificate:</p>
     <div id="qr"></div>
     <div class="link">${EVAL_URL}</div>
-    <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation â†—</a>
+    <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation ↗</a>
     ${bt('Back to Delivery Map', 'X()', 1)}
   `);
 
@@ -2510,37 +2208,6 @@ function evalCard() {
 }
 
 $('#view-profile-btn').onclick = evalCard;
-
-/* =============================================================
-   HOST / ADMIN LOGIN
-   ============================================================= */
-const HOST_PASS = 'streamlined2024'; // Change this password as needed
-
-function hostLogin() {
-  const pw = prompt('🏰 Host Admin Password:');
-  if (pw === null) return; // cancelled
-  if (pw === HOST_PASS) {
-    isAdmin = true;
-    user = 'Host Admin';
-    pid = 'ADMIN-01';
-    courierKey = normalizeId(user, pid);
-    loadState();
-    adv();
-    V('#mapv');
-    draw();
-    setTimeout(() => {
-      modal(`<h2>🏰 Host Mode Active</h2>
-        <p>All stops are unlocked for preview. Tap any stop to preview or launch it.<br><br>
-        Use <b>👑 Level Select</b> at the bottom of the map to jump to any level directly.</p>
-        ${bt('Open Level Select 👑', 'X();showAdminLevelSelect()')}
-        ${bt('Go to Map 🗺️', 'X()', 1)}
-      `);
-    }, 100);
-  } else {
-    alert('❌ Wrong password. Ask your facilitator for the host password.');
-  }
-}
-
 
 /* =============================================================
    INITIALIZATION & LOGIN FLOW
@@ -2559,9 +2226,9 @@ $('#go').onclick = () => {
   draw();
 
   modal(`
-    <h2>ðŸ¼ A Baby is Born!</h2>
+    <h2>🍼 A Baby is Born!</h2>
     <p>A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.</p>
-    ${bt('Start Delivery Mission ðŸš€', 'X();focusCur()')}
+    ${bt('Start Delivery Mission 🚀', 'X();focusCur()')}
   `);
 };
 
@@ -2576,56 +2243,20 @@ $('#rs-btn').onclick = () => {
 };
 
 // Check for deep-link stage param (e.g. ?stage=2)
-function showAdminLevelSelect() {
-  modal(`
-    <h2>ðŸ‘‘ Admin Level Select</h2>
-    <p style="font-size:0.9rem;color:var(--mut);margin-bottom:12px">Jump to and preview any stop directly without playing earlier levels:</p>
-    <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;text-align:left">
-      ${I.map((item, idx) => {
-        if (item.t === 'gate') return `<div style="padding:6px 12px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:0.85rem;color:var(--mut)">ðŸ”’ Gate ${item.g}: ${GN[item.g]}</div>`;
-        if (item.t === 'fin') return `<button class="sm" onclick="X();evalCard()" style="text-align:left;padding:8px 12px">ðŸ“œ Stop ${idx+1}: Digital Pass & Certificate</button>`;
-        return `<button class="sm" onclick="X();launch(${idx})" style="text-align:left;padding:8px 12px">${item.e || 'ðŸ“¦'} Stop ${idx+1}: <b>${item.n}</b></button>`;
-      }).join('')}
-    </div>
-    ${bt('Close', 'X()', 1)}
-  `);
-}
-
 function checkUrlParams() {
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('admin') === '1' || urlParams.has('play')) {
-    isAdmin = true;
-    user = user || 'Host Admin';
-    pid = pid || 'ADMIN-01';
-    courierKey = normalizeId(user, pid);
-    loadState();
-    adv();
-    V('#mapv');
-    draw();
-  }
   const stageParam = urlParams.get('stage');
   if (stageParam) {
     const s = parseInt(stageParam, 10);
     if (s === 2 && O[1]) cur = Math.max(cur, 4);
     if (s === 3 && O[2]) cur = Math.max(cur, 8);
   }
-  const playParam = urlParams.get('play');
-  if (playParam !== null) {
-    const stopNum = parseInt(playParam, 10);
-    if (!isNaN(stopNum) && stopNum >= 0 && stopNum < I.length) {
-      setTimeout(() => launch(stopNum), 150);
-    }
-  }
-}
-
-if ($('#admin-preview-btn')) {
-  $('#admin-preview-btn').onclick = showAdminLevelSelect;
 }
 
 // Sound toggle
 $('#mute-btn').onclick = () => {
   soundEnabled = !soundEnabled;
-  $('#mute-btn').textContent = soundEnabled ? 'ðŸ”Š' : 'ðŸ”‡';
+  $('#mute-btn').textContent = soundEnabled ? '🔊' : '🔇';
   if (soundEnabled) audio.letterPick(0);
 };
 
@@ -2675,7 +2306,7 @@ function fmStart() {
   fmTimer.reset();
   $('#fm-r').innerHTML = '';
   $('#fm-m').textContent = '0';
-  $('#fm-s').textContent = 'â­ 0';
+  $('#fm-s').textContent = '⭐ 0';
 
   // Create 12 cards (2 of each from 6 character types)
   const fullDeck = shuf([...FM_CARDS, ...FM_CARDS].map((c, idx) => ({ ...c, uid: idx })));
@@ -2766,161 +2397,12 @@ function fmEnd() {
   const tryPenalty = Math.max(0, fmState.tries - 6) * 5;
   const finalScore = Math.max(60, Math.min(200, 160 + speedBonus - tryPenalty));
 
-  $('#fm-s').textContent = 'â­ ' + finalScore;
-  res($('#fm-r'), 'All 6 Pairs Matched! ðŸ—‚ï¸', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
+  $('#fm-s').textContent = '⭐ ' + finalScore;
+  res($('#fm-r'), 'All 6 Pairs Matched! 🗂️', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
   onStopCompleted(finalScore, 200);
 }
 
 $('#fm-a').onclick = fmStart;
-
-
-/* =============================================================
-   LIVE LEADERBOARD SYSTEM (FIREBASE + LOCAL STORAGE SYNC)
-   ============================================================= */
-const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
-
-async function syncToFirebase(payload) {
-  if (!FIREBASE_DB_URL || !courierKey) return;
-  try {
-    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
-    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
-    const body = {
-      name: payload.name || 'Courier',
-      pid: payload.pid || '',
-      score: totalScore,
-      stops: stopsCleared,
-      updatedAt: payload.updatedAt || Date.now()
-    };
-    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  } catch(e) {}
-}
-
-async function getLeaderboardEntries() {
-  const map = new Map();
-
-  // 1. Gather all local couriers
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k.startsWith(STORAGE_PREFIX)) {
-      try {
-        const item = JSON.parse(localStorage.getItem(k));
-        if (item && item.name) {
-          const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
-          const stops = (item.results || []).filter(r => r && !r.gate).length;
-          map.set(item.name.toLowerCase().trim(), {
-            name: item.name,
-            pid: item.pid || '',
-            score: score,
-            stops: stops,
-            isCurrent: courierKey === normalizeId(item.name, item.pid || '')
-          });
-        }
-      } catch(e) {}
-    }
-  }
-
-  // Current session courier
-  if (user && !map.has(user.toLowerCase().trim())) {
-    const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
-    const myStops = (R || []).filter(r => r && !r.gate).length;
-    map.set(user.toLowerCase().trim(), {
-      name: user,
-      pid: pid || '',
-      score: myScore,
-      stops: myStops,
-      isCurrent: true
-    });
-  }
-
-  // 2. Fetch from Firebase
-  if (FIREBASE_DB_URL) {
-    try {
-      const res = await fetch(FIREBASE_DB_URL + '/streamlined_couriers.json', { cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && typeof data === 'object') {
-          Object.values(data).forEach(entry => {
-            if (entry && entry.name) {
-              const k = entry.name.toLowerCase().trim();
-              const existing = map.get(k);
-              if (!existing || (entry.score || 0) > (existing.score || 0)) {
-                map.set(k, {
-                  name: entry.name,
-                  pid: entry.pid || '',
-                  score: entry.score || 0,
-                  stops: entry.stops || 0,
-                  isCurrent: (existing && existing.isCurrent) || (user && user.toLowerCase().trim() === k)
-                });
-              }
-            }
-          });
-        }
-      }
-    } catch(e) {}
-  }
-
-  return Array.from(map.values()).sort((a, b) => b.score - a.score);
-}
-
-async function refreshLeaderboardUI() {
-  const entriesEl = $('#lb-entries');
-  const statusEl = $('#lb-status');
-  statusEl.textContent = 'ðŸ”„ Fetching latest ranks...';
-  entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Loading live rankings...</div>';
-
-  try {
-    const list = await getLeaderboardEntries();
-    statusEl.textContent = 'âš¡ Connected to Seminar Leaderboard';
-
-    if (list.length === 0) {
-      entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first! ðŸšš</div>';
-      return;
-    }
-
-    entriesEl.innerHTML = list.map((entry, idx) => {
-      const rank = idx + 1;
-      let badge = `#${rank}`;
-      if (rank === 1) badge = 'ðŸ¥‡';
-      else if (rank === 2) badge = 'ðŸ¥ˆ';
-      else if (rank === 3) badge = 'ðŸ¥‰';
-
-      const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
-      const meClass = isMe ? ' lb-item me' : ' lb-item';
-
-      return `
-        <div class="${meClass}">
-          <span class="lb-rank">${badge}</span>
-          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? 'â­ (You)' : ''}</span>
-          <span class="lb-score">â­ ${entry.score}</span>
-        </div>
-      `;
-    }).join('');
-  } catch(e) {
-    statusEl.textContent = 'âš ï¸ Offline / Local Rankings';
-  }
-}
-
-function openLeaderboard() {
-  $('#leaderboard-modal').hidden = false;
-  refreshLeaderboardUI();
-}
-
-function closeLeaderboard() {
-  $('#leaderboard-modal').hidden = true;
-}
-
-$('#map-lb-btn').onclick = openLeaderboard;
-$('#map-lb-bottom-btn').onclick = openLeaderboard;
-$('#close-lb-btn').onclick = closeLeaderboard;
-$('#close-lb-main-btn').onclick = closeLeaderboard;
-$('#refresh-lb-btn').onclick = () => {
-  audio.letterPick(0);
-  refreshLeaderboardUI();
-};
 
 // Start
 loadAssets();
