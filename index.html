@@ -199,17 +199,6 @@ header {
 #mapv > header .hrow > div:first-child { min-width: 0; }
 #mapv > header .hrow > div:first-child > div { min-width: 0; }
 #mapv > header .hrow > div:last-child { flex-shrink: 0; }
-.map-actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.map-actions .sm {
-  justify-content: center;
-  min-width: 0;
-  padding: 8px 5px;
-  font-size: 0.78rem;
-  white-space: nowrap;
-}
 .nm { font-weight: 800; font-size: 1.12rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .ttl { font-size: 0.8rem; color: #ffb347; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
 .score {
@@ -864,15 +853,6 @@ select option {
   }
 }
 
-@media (max-width: 360px) {
-  .map-actions { gap: 4px; }
-  .map-actions .sm {
-    gap: 3px;
-    padding: 8px 2px;
-    font-size: 0.68rem;
-  }
-}
-
 #modal,
 #leaderboard-modal {
   background: rgba(5, 12, 24, 0.58);
@@ -974,12 +954,6 @@ select option {
 
  <svg id="map" role="img" aria-label="Delivery map"></svg>
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
- 
- <div class="row map-actions" style="margin-top:10px">
-   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">🏆 Leaderboard</button>
-   <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
-   <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">👑 Level Select</button>
- </div>
 </div>
 
 <!-- PLAY SCREEN (CONTAINER FOR ALL 5 ENGINES) -->
@@ -1508,7 +1482,10 @@ const STORY = {
 const story = i => {
   if (!CUE[i]) return '';
   const s = STORY[i];
-  return `<div style="display:flex;gap:12px;justify-content:center;align-items:center;margin:10px 0">${s.w.map(k=>pic(k, 60)).join('')}</div><p style="font-size:0.95rem;line-height:1.4">${s.t}</p><p class="sub" style="color:var(--acc2);font-size:0.92rem"><b>${CUE[i]}</b></p>`;
+  const scene = s
+    ? `<div style="display:flex;gap:12px;justify-content:center;align-items:center;margin:10px 0">${s.w.map(k=>pic(k, 60)).join('')}</div><p style="font-size:0.95rem;line-height:1.4">${s.t}</p>`
+    : '';
+  return `${scene}<p class="sub" style="color:var(--acc2);font-size:0.92rem"><b>${CUE[i]}</b></p>`;
 };
 
 const DESC = {
@@ -3008,8 +2985,6 @@ function evalCard() {
   }
 }
 
-$('#view-profile-btn').onclick = evalCard;
-
 /* =============================================================
    INITIALIZATION & LOGIN FLOW
    ============================================================= */
@@ -3119,21 +3094,6 @@ $('#go').onclick = async () => {
 };
 
 // Check for deep-link stage param (e.g. ?stage=2)
-function showAdminLevelSelect() {
-  modal(`
-    <h2>👑 Admin Level Select</h2>
-    <p style="font-size:0.9rem;color:var(--mut);margin-bottom:12px">Jump to and preview any stop directly without playing earlier levels:</p>
-    <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;text-align:left">
-      ${I.map((item, idx) => {
-        if (item.t === 'gate') return `<div style="padding:6px 12px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:0.85rem;color:var(--mut)">🔒 Gate ${item.g}: ${GN[item.g]}</div>`;
-        if (item.t === 'fin') return `<button class="sm" onclick="X();evalCard()" style="text-align:left;padding:8px 12px">📜 Stop ${idx+1}: Digital Pass & Certificate</button>`;
-        return `<button class="sm" onclick="X();launch(${idx})" style="text-align:left;padding:8px 12px">${item.e || '📦'} Stop ${idx+1}: <b>${item.n}</b></button>`;
-      }).join('')}
-    </div>
-    ${bt('Close', 'X()', 1)}
-  `);
-}
-
 function checkUrlParams() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('admin') === '1' || urlParams.has('play')) {
@@ -3160,10 +3120,6 @@ function checkUrlParams() {
       setTimeout(() => launch(stopNum), 150);
     }
   }
-}
-
-if ($('#admin-preview-btn')) {
-  $('#admin-preview-btn').onclick = showAdminLevelSelect;
 }
 
 // Sound toggle
@@ -3448,7 +3404,6 @@ function closeLeaderboard() {
 }
 
 $('#map-lb-btn').onclick = openLeaderboard;
-$('#map-lb-bottom-btn').onclick = openLeaderboard;
 $('#close-lb-btn').onclick = closeLeaderboard;
 $('#close-lb-main-btn').onclick = closeLeaderboard;
 $('#refresh-lb-btn').onclick = () => {
