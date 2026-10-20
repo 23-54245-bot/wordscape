@@ -1385,38 +1385,62 @@ window.addEventListener('storage', e => {
    ============================================================= */
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
-  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'🧩', cap:200 },
-  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'🧩', cap:200 },
-  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'🧩', cap:200 },
+  // STAGE 1: WORD PUZZLE (Crossword Sorting)
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)',   e:'🧩', cap:250 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER (Medium)', e:'🧩', cap:250 },
+  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER (Hard)',  e:'🧩', cap:250 },
   { t:'gate', g:1 },
-  { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
-  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'🔎', cap:200 },
-  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:200 },
-  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'🛠️', cap:200 },
+
+  // STAGE 2: BABY DELIVERY MAZE (3 Canyon Routes)
+  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:280 },
+  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:320 },
+  { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)',   e:'👶', cap:360 },
   { t:'gate', g:2 },
-  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'🕵️', cap:400 },
+
+  // STAGE 3: FLIP N MATCH (Scaling Deck Sizes)
+  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:250 },
+  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:300 },
+  { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)',   e:'🃏', cap:350 },
   { t:'gate', g:3 },
-  { t:'bonus', k:'bn', n:'Final Delivery', e:'🏠', cap:500 },
-  { t:'fin', n:'Certificate & Eval', e:'📜' }
+
+  // STAGE 4: SPOT & FIX THE ERRORS (Defect Inspection)
+  { t:'game', k:'sf', lv:0, n:'Spot & Fix: 3 Errors (Easy)',   e:'🔎', cap:300 },
+  { t:'game', k:'sf', lv:1, n:'Spot & Fix: 4 Errors (Medium)', e:'🔎', cap:350 },
+  { t:'game', k:'sf', lv:2, n:'Spot & Fix: 5 Errors (Hard)',   e:'🔎', cap:400 },
+  { t:'gate', g:4 },
+
+  // FINAL STAGE: HOME ARRIVAL
+  { t:'bonus', k:'bn', n:'Final Delivery Challenge', e:'🏠', cap:500 },
+  { t:'fin',           n:'Certificate & Eval',       e:'📜' }
 ];
 
-const GN = { 1:'Stage 2 (Journey & Obstacles)', 2:'Stage 3 (Investigation)', 3:'the Bonus Live Game' };
-const PILL = { 0:'🍼 STAGE 1 · CREATION', 4:'🌩️ STAGE 2 · JOURNEY', 9:'🔎 STAGE 3 · INVESTIGATION', 13:'🏠 FINAL DELIVERY' };
+const GN = { 
+  1:'Stage 2 (Perilous Mountain Journey)', 
+  2:'Stage 3 (Courier Identity Matching)', 
+  3:'Stage 4 (Depot Quality Inspection)',
+  4:'the Final Home Delivery'
+};
+const PILL = { 
+  0: '📦 STAGE 1 · WORD PUZZLE DEPOT', 
+  4: '👶 STAGE 2 · CANYON DELIVERY MAZE', 
+  8: '🃏 STAGE 3 · COURIER MEMORY MATCH', 
+  12:'🔎 STAGE 4 · SPOT & FIX INSPECTION',
+  16:'🏠 FINAL STAGE · HOME SWEET HOME'
+};
 const CUE = {
-  0: 'The baby is born. Can you prepare it for delivery?',
-  4: 'The baby’s journey hits obstacles. Match the courier tags and fix the broken delivery!',
-  9: 'The baby is delayed. Can you investigate and resolve the case?',
-  13: 'The baby must reach its family. Complete the final delivery!'
+  0:  'Decode logistics terminology across 3 escalating anagram crossword puzzles.',
+  4:  'Navigate the hazardous mountain canyon maze to deliver the baby bundle safely.',
+  8:  'Pair courier badges across 3 increasing memory grid challenges.',
+  12: 'Scrutinize depot dispatches and correct hazardous logistics errors.',
+  16: 'All checkpoints cleared! Enter the seminar code for the final delivery.'
 };
 const BEAT = {
-  2: 'The baby is ready for the journey.',
-  4: 'Courier identity tags paired!',
-  7: 'The delivery survived the obstacles.',
-  11: 'The delay is solved. The family is close.'
+  2:  'Stage 1 cleared! Logistics parcels consolidated.',
+  6:  'Stage 2 cleared! The delivery van made it through the canyon.',
+  10: 'Stage 3 cleared! All courier badges authenticated.',
+  14: 'Stage 4 cleared! Quality control zero defect standard achieved!'
 };
-const GL = { 1:'Dispatch Gate', 2:'Roadblock Gate', 3:'Last-Mile Gate' };
+const GL = { 1:'Dispatch Gate', 2:'Canyon Gate', 3:'Identity Gate', 4:'Arrival Gate' };
 const SC = [
   ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['👧', 2, 'tulip'],
   ['🃏', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['👧', 7, 'tulip'],
@@ -1464,8 +1488,11 @@ const DESC = {
 const TT = ['Junior Dispatch Courier', 'Senior Sorter', 'Quality Inspector', 'Route Dispatcher', 'Chief Logistics Director'];
 const title = () => TT[cur >= 14 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
 
-const N = I.length, H = N * 105 + 240;
-const P = I.map((_, i) => ({ x: 180 + 105 * Math.sin(i * 1.25 + 0.3), y: H - 100 - i * 105 }));
+const N = I.length, H = N * 128 + 260;
+const P = I.map((_, i) => ({ 
+  x: Math.round(190 + 92 * Math.sin(i * 1.05 + 0.35)), 
+  y: H - 110 - i * 128 
+}));
 const V = id => ['#login', '#mapv', '#play'].forEach(s => $(s).hidden = s !== id);
 const modal = h => { $('#mbox').innerHTML = h; $('#modal').classList.add('on'); };
 const X = () => $('#modal').classList.remove('on');
@@ -1660,13 +1687,14 @@ function draw() {
   I.forEach((it, i) => {
     const p = P[i], done = !!R[i], isC = i === cur;
 
-    // Stage Milestone Ribbon (Pill)
+    // Stage Milestone Ribbon (Pill) - Positioned safely above node with clear margin
     if (PILL[i]) {
-      const pillW = PILL[i].length * 7.5 + 28;
+      const pillW = PILL[i].length * 7.6 + 32;
+      const pillY = p.y - 82;
       h += `
         <g filter="url(#shadow-3d)">
-          <rect x="${p.x - pillW/2}" y="${p.y - 74}" width="${pillW}" height="26" rx="13" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2"/>
-          <text x="${p.x}" y="${p.y - 57}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" letter-spacing="0.5">${PILL[i]}</text>
+          <rect x="${p.x - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="${p.x}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
         </g>
       `;
     }
@@ -1867,21 +1895,15 @@ function launch(i) {
   if (it.k === 'wp') {
     $('#g0').hidden = false;
     wpStart(it.r !== undefined ? it.r : 0);
-  } else if (it.k === 'sf') {
-    $('#g1').hidden = false;
-    sfStart();
   } else if (it.k === 'mz') {
     $('#g2').hidden = false;
-    mzStart();
-  } else if (it.k === 'bd') {
-    $('#g3').hidden = false;
-    bdStart(it.sc || 0);
+    mzStart(it.lv !== undefined ? it.lv : 0);
   } else if (it.k === 'fm') {
     $('#g6').hidden = false;
-    fmStart();
-  } else if (it.k === 'dt') {
-    $('#g4').hidden = false;
-    dtStart(it.cs || 0);
+    fmStart(it.lv !== undefined ? it.lv : 1);
+  } else if (it.k === 'sf') {
+    $('#g1').hidden = false;
+    sfStart(it.lv !== undefined ? it.lv : 0);
   } else if (it.k === 'bn') {
     $('#g5').hidden = false;
     bnStart();
@@ -2356,24 +2378,34 @@ const HS = [
 let sf, dbg = false;
 const sfT = Timer($('#sf-t'));
 function sfUp() {
-  $('#sf-c').textContent = sf.x.size + '/5 fixed';
+  const req = sf ? (sf.targetCount || 5) : 5;
+  $('#sf-c').textContent = sf.x.size + '/' + req + ' fixed';
   $('#sf-s').textContent = '⭐ ' + Math.max(0, sf.s);
 }
-function sfStart() {
+let sfCurLevel = 0;
+const SF_LEVEL_CONFIGS = [
+  { name: 'Depot Floor (Easy)', required: 3, timeSec: 150, maxScore: 300, basePts: 60 },
+  { name: 'Conveyor Chute (Medium)', required: 4, timeSec: 120, maxScore: 350, basePts: 60 },
+  { name: 'Flight Deck (Hard)', required: 5, timeSec: 90, maxScore: 400, basePts: 60 }
+];
+
+function sfStart(lvIdx = 0) {
+  sfCurLevel = Math.max(0, Math.min(2, lvIdx));
+  const cfg = SF_LEVEL_CONFIGS[sfCurLevel];
   if (sf && sf.to) clearTimeout(sf.to);
-  sf = { f: new Set(), x: new Set(), p: null, s: 0, tries: 0, done: false };
+  sf = { f: new Set(), x: new Set(), p: null, s: 0, tries: 0, done: false, targetCount: cfg.required };
   const answerKey = $('#sf-admin-answers');
   answerKey.hidden = !isAdmin;
   if (isAdmin) {
-    $('#sf-admin-answer-list').innerHTML = HS.map(h => `<li><b>${h.q}</b><br>Correct fix: ${h.o[0]}</li>`).join('');
+    $('#sf-admin-answer-list').innerHTML = HS.slice(0, cfg.required).map(h => `<li><b>${h.q}</b><br>Correct fix: ${h.o[0]}</li>`).join('');
   }
   $('#sf-ov').innerHTML = '';
-  $('#sf-q').innerHTML = 'Tap the 5 packaging & dispatch errors. 3 minutes on the clock!';
+  $('#sf-q').innerHTML = `Find and fix ${cfg.required} packaging & dispatch errors! (${cfg.timeSec}s on the clock)`;
   $('#sf-r').innerHTML = '';
   $('#sf-m').textContent = '';
   sfUp();
   sfT.start();
-  sf.to = setTimeout(() => { if (!sf.done) sfEnd(); }, 180000);
+  sf.to = setTimeout(() => { if (!sf.done) sfEnd(); }, cfg.timeSec * 1000);
 }
 
 $('#sf-i').onclick = e => {
@@ -2420,7 +2452,7 @@ $('#sf-i').onclick = e => {
         c.classList.add('ok');
         $('#sf-q').innerHTML = '✅ Fixed! Find the next error.';
         sfUp();
-        if (sf.x.size === 5) sfEnd();
+        if (sf.x.size >= (sf.targetCount || 5)) sfEnd();
       } else {
         audio.error();
         sf.tries++;
@@ -2453,42 +2485,93 @@ $('#sf-d').onclick = () => {
 /* =============================================================
    GAME 2: BABY DELIVERY MAZE
    ============================================================= */
-const M = [
-  '#########',
-  '#S..#...#',
-  '#.#.#.#.#',
-  '#.#...#.#',
-  '#.#####.#',
-  '#...#...#',
-  '###.#.###',
-  '#...#..E#',
-  '#########'
+/* ── 3 Maze Canyon Levels (Easy, Medium, Hard) ── */
+const MZ_LEVELS = [
+  {
+    name: 'Canyon Route 1 (Easy)',
+    targetMoves: 18,
+    pk: ['1,7', '5,6', '7,1'],
+    m: [
+      '#########',
+      '#S..#...#',
+      '#.#.#.#.#',
+      '#.#...#.#',
+      '#.#####.#',
+      '#...#...#',
+      '###.#.###',
+      '#...#..E#',
+      '#########'
+    ]
+  },
+  {
+    name: 'Canyon Route 2 · Broken Bridge (Medium)',
+    targetMoves: 28,
+    pk: ['1,9', '5,1', '9,5'],
+    m: [
+      '###########',
+      '#S....#...#',
+      '#.###.#.#.#',
+      '#...#...#.#',
+      '###.#####.#',
+      '#...#...#.#',
+      '#.#.###.#.#',
+      '#.#...#...#',
+      '#.###.###.#',
+      '#...#....E#',
+      '###########'
+    ]
+  },
+  {
+    name: 'Canyon Route 3 · Storm Pass & Wolves (Hard)',
+    targetMoves: 40,
+    pk: ['1,11', '5,5', '7,1', '11,7'],
+    m: [
+      '#############',
+      '#S....#.....#',
+      '#.###.#.###.#',
+      '#.#...#.#...#',
+      '#.#.###.#.###',
+      '#...#...#...#',
+      '###.#.#####.#',
+      '#...#.#.....#',
+      '#.#.###.###.#',
+      '#.#.....#.#.#',
+      '#.#######.#.#',
+      '#.......#..E#',
+      '#############'
+    ]
+  }
 ];
-const PK = ['1,7', '5,6', '7,1'];
+
+let mzCurLv = 0;
 let mz;
 const mzT = Timer($('#mz-t'));
 
 function mzDraw() {
-  $('#mz').innerHTML = M.map((row, r) => [...row].map((ch, c) => {
+  const L = MZ_LEVELS[mzCurLv];
+  const gridEl = $('#mz');
+  gridEl.style.gridTemplateColumns = `repeat(${L.m[0].length}, 1fr)`;
+  gridEl.innerHTML = L.m.map((row, r) => [...row].map((ch, c) => {
     let t = '';
     const k = r + ',' + c;
     if (r === mz.r && c === mz.c) {
       const pImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : okA.baby;
-        t = pImg ? `<img src="${pImg}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
+      t = pImg ? `<img src="${pImg}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
     } else if (ch === 'E') {
-      t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '🏠';
+      t = okA.family ? `<img src="${okA.family}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '🏠';
     } else if (ch === 'S') {
-      t = okA.machine ? `<img src="${okA.machine}" style="width:28px;height:28px;object-fit:contain">` : '🏭';
-    } else if (PK.includes(k) && !mz.p.has(k)) {
+      t = okA.machine ? `<img src="${okA.machine}" style="width:26px;height:26px;object-fit:contain">` : '🏭';
+    } else if (L.pk.includes(k) && !mz.p.has(k)) {
       t = '📦';
     }
     return `<div class="c ${ch === '#' ? 'w' : ''}">${t}</div>`;
   }).join('')).join('');
   $('#mz-m').textContent = mz.m + ' moves';
-  $('#mz-p').textContent = '📦 ' + mz.p.size + '/3';
+  $('#mz-p').textContent = '📦 ' + mz.p.size + '/' + L.pk.length;
 }
 
-function mzStart() {
+function mzStart(lvIdx = 0) {
+  mzCurLv = Math.max(0, Math.min(2, lvIdx));
   mzT.reset();
   mz = { r: 1, c: 1, m: 0, p: new Set(), go: false, done: false };
   $('#mz-r').innerHTML = '';
@@ -2497,8 +2580,9 @@ function mzStart() {
 
 function mzMove(dr, dc) {
   if (mz.done) return;
+  const L = MZ_LEVELS[mzCurLv];
   const r = mz.r + dr, c = mz.c + dc;
-  if (M[r][c] === '#') return;
+  if (r < 0 || r >= L.m.length || c < 0 || c >= L.m[0].length || L.m[r][c] === '#') return;
   if (!mz.go) {
     mz.go = true;
     mzT.start();
@@ -2507,7 +2591,7 @@ function mzMove(dr, dc) {
   mz.c = c;
   mz.m++;
   const k = r + ',' + c;
-  if (PK.includes(k) && !mz.p.has(k)) {
+  if (L.pk.includes(k) && !mz.p.has(k)) {
     mz.p.add(k);
     audio.letterPick(2);
   } else {
@@ -2515,12 +2599,15 @@ function mzMove(dr, dc) {
   }
   mzDraw();
 
-  if (M[r][c] === 'E') {
+  if (L.m[r][c] === 'E') {
     mz.done = true;
     const t = mzT.stop();
-    const s = Math.max(0, 100 + 20 * mz.p.size + Math.max(0, 120 - t) - 2 * Math.max(0, mz.m - 20));
-    res($('#mz-r'), 'Baby Delivered Home! 👶', s, 280, `${mz.m} moves (Optimal route: 20 moves).`);
-    onStopCompleted(s, 280);
+    const maxScore = mzCurLv === 0 ? 280 : mzCurLv === 1 ? 320 : 360;
+    const timeBonus = Math.max(0, 150 - t * 2);
+    const movesPenalty = Math.max(0, (mz.m - L.targetMoves) * 3);
+    const score = Math.max(100, Math.min(maxScore, 140 + 35 * mz.p.size + timeBonus - movesPenalty));
+    res($('#mz-r'), 'Canyon Route Cleared! 👶', score, maxScore, `Completed in ${mz.m} moves (Par: ${L.targetMoves} moves).`);
+    onStopCompleted(score, maxScore);
   }
 }
 
@@ -3099,19 +3186,30 @@ function FmTimer(el) {
 
 const fmTimer = FmTimer($('#fm-t'));
 
-function fmStart() {
+let fmCurLevel = 0;
+const FM_LEVEL_CONFIGS = [
+  { name: 'Warmup Match (Easy)', pairs: 4, cols: 4, maxScore: 250, parTime: 25 },
+  { name: 'Standard Match (Medium)', pairs: 6, cols: 4, maxScore: 300, parTime: 40 },
+  { name: 'Master Match (Hard)', pairs: 6, cols: 4, maxScore: 350, parTime: 55 }
+];
+
+function fmStart(lvIdx = 0) {
+  fmCurLevel = Math.max(0, Math.min(2, lvIdx));
+  const cfg = FM_LEVEL_CONFIGS[fmCurLevel];
   fmTimer.reset();
   $('#fm-r').innerHTML = '';
   $('#fm-m').textContent = '0';
   $('#fm-s').textContent = '⭐ 0';
 
-  // Create 12 cards (2 of each from 6 character types)
-  const fullDeck = shuf([...FM_CARDS, ...FM_CARDS].map((c, idx) => ({ ...c, uid: idx })));
+  // Select pairs for this level
+  const chosenCards = FM_CARDS.slice(0, cfg.pairs);
+  const fullDeck = shuf([...chosenCards, ...chosenCards].map((c, idx) => ({ ...c, uid: idx })));
 
   fmState = {
     deck: fullDeck,
     flipped: [],
     matched: 0,
+    totalCards: fullDeck.length,
     tries: 0,
     busy: false,
     score: 0,
@@ -3119,6 +3217,7 @@ function fmStart() {
   };
 
   const grid = $('#fm-grid');
+  grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
   grid.innerHTML = fullDeck.map((card, i) => `
     <div class="fm-card" id="fm-c-${i}" onclick="fmCardClick(${i})">
       <div class="fm-card-face fm-card-back">?</div>

@@ -381,59 +381,86 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
   </div>
 
     <!-- INSTANT GAME & LEVEL PREVIEW (ADMIN ONLY) -->
-  <div class="card" style="margin-bottom:20px">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-      <div>
-        <h2 style="margin:0 0 4px">🎮 Instant Game & Level Preview</h2>
-        <div style="font-size:0.86rem;color:var(--text-muted)">Preview or showcase any level directly in a new tab without playing earlier stops</div>
+    <div class="card" style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <div>
+          <h2 style="margin:0 0 4px">🎮 Instant Game & Level Preview</h2>
+          <div style="font-size:0.86rem;color:var(--text-muted)">Preview or showcase any level directly in a new tab without playing earlier stops</div>
+        </div>
+        <a href="index.html?admin=1" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">🗺️ Open Map in Admin Mode ↗</a>
       </div>
-      <a href="index.html?admin=1" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">🗺️ Open Map in Admin Mode ↗</a>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px">
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 1 · STREAM</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 1 (Stage 1)</div>
-        <a href="index.html?admin=1&play=0" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 2 · LOADER</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 2 (Stage 1)</div>
-        <a href="index.html?admin=1&play=1" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 3 · DELIVER</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Crossword Route 3 (Stage 1)</div>
-        <a href="index.html?admin=1&play=2" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 4 · Flip n Match</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">12-card memory pairs (Stage 2)</div>
-        <a href="index.html?admin=1&play=4" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 5 · Spot & Fix</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Inspect 5 logistics defects</div>
-        <a href="index.html?admin=1&play=5" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 6 · Delivery Maze</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Van to house avoiding obstacles</div>
-        <a href="index.html?admin=1&play=6" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🛠️ Stop 7 · Fix Delivery</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Delivery route detour scenario</div>
-        <a href="index.html?admin=1&play=7" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-      <div class="preview-card">
-        <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🏠 Stop 11 · Final Delivery</div>
-        <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Live seminar code & quiz bonus</div>
-        <a href="index.html?admin=1&play=13" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
-      </div>
-    </div>
-  </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px">
+        <!-- Stage 1 -->
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 1 · STREAM</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Easy)</div>
+          <a href="index.html?admin=1&play=0" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 2 · LOADER</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Medium)</div>
+          <a href="index.html?admin=1&play=1" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 3 · DELIVER</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Hard)</div>
+          <a href="index.html?admin=1&play=2" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
 
-<!-- COURIERS LEADERBOARD & PLAYER ROSTER TABLE -->
+        <!-- Stage 2 -->
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 5 · Maze Route 1</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Canyon Maze 9x9 (Easy)</div>
+          <a href="index.html?admin=1&play=4" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 6 · Maze Route 2</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Broken Bridge 11x11 (Medium)</div>
+          <a href="index.html?admin=1&play=5" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 7 · Maze Route 3</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Storm Pass 13x13 (Hard)</div>
+          <a href="index.html?admin=1&play=6" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 9 · Flip Match 8</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">4 Character Pairs (Easy)</div>
+          <a href="index.html?admin=1&play=8" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 10 · Flip Match 12</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">6 Character Pairs (Medium)</div>
+          <a href="index.html?admin=1&play=9" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 11 · Flip Match 16</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">8 Character Pairs (Hard)</div>
+          <a href="index.html?admin=1&play=10" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 13 · Spot 3 Errors</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Depot Floor (Easy)</div>
+          <a href="index.html?admin=1&play=12" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 14 · Spot 4 Errors</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Conveyor Junction (Medium)</div>
+          <a href="index.html?admin=1&play=13" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+        <div class="preview-card">
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 15 · Spot 5 Errors</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Flight Departure Deck (Hard)</div>
+          <a href="index.html?admin=1&play=14" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURIERS LEADERBOARD & PLAYER ROSTER TABLE -->
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
       <h2>🚚 Live Couriers Roster & Results</h2>
@@ -490,6 +517,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 </div>
 
 <script>
+const $ = selector => document.querySelector(selector);
 const CONTROL_KEY = 'streamlined_control_v6';
 const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
 let remoteCouriers = {};
