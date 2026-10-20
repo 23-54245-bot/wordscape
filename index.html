@@ -290,6 +290,7 @@ header {
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
   border: 1px solid var(--line);
 }
+.mbox .btn + .btn { margin-top: 18px; }
 .stars { font-size: 2.2rem; letter-spacing: 4px; color: #f5b301; margin: 4px 0; }
 .dim { color: #cbd5e1; }
 #qr { display: flex; justify-content: center; margin: 12px 0; background: #fff; padding: 12px; border-radius: 14px; }
@@ -467,7 +468,7 @@ input:focus { outline: none; border-color: var(--acc); }
   width: 270px;
   height: 270px;
   pointer-events: none;
-  z-index: 4;
+  z-index: 2;
 }
 #wheel {
   position: absolute;
@@ -498,9 +499,9 @@ input:focus { outline: none; border-color: var(--acc); }
 #wheel button.selected {
   background: var(--tile-active);
   color: #fff;
-  border-color: #ff9d47;
-  transform: scale(1.18);
-  box-shadow: 0 4px 0 #b34100;
+  border-color: #fff2d6;
+  transform: scale(1.2);
+  box-shadow: 0 4px 0 #b34100, 0 0 0 4px rgba(255, 174, 72, 0.28), 0 0 22px rgba(255, 138, 31, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 #confetti-canvas {
   position: fixed;
