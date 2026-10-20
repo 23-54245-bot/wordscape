@@ -1568,23 +1568,8 @@ function adv() {
 
 function draw() {
   const vbW = 380;
-
-  // ── Zone image helpers ────────────────────────────────────────────────────
-  // N=18 stops, H = N*148+280 = 2944
-  // P[i].y = H - 110 - i*148  → P[0] bottom, P[17] top
-  // Zone bands (by stop index):
-  //   Zone 1 (Depot)      stops 0-3   y range: P[3].y-80  → H
-  //   Zone 2 (Canyon)     stops 4-7   y range: P[7].y-80  → P[3].y+80
-  //   Zone 3 (Mystery)    stops 8-11  y range: P[11].y-80 → P[7].y+80
-  //   Zone 4 (Sunny Home) stops 12-17 y range: 0          → P[11].y+80
-
-  // okA stores URL strings directly (e.g. 'assets/zone1.jpg')
-  const assetHref = urlStr => (urlStr && typeof urlStr === 'string') ? urlStr : null;
-
-  // ── SVG header, defs ─────────────────────────────────────────────────────
   let h = `
   <defs>
-    <!-- Filters -->
     <filter id="shadow-3d" x="-20%" y="-20%" width="140%" height="150%">
       <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#090e17" flood-opacity="0.45"/>
     </filter>
@@ -1595,215 +1580,152 @@ function draw() {
       <feGaussianBlur stdDeviation="6" result="blur"/>
       <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
-    <filter id="zone-vignette" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="0"/>
-    </filter>
-    <!-- Node button gradients -->
-    <radialGradient id="gloss-green" cx="35%" cy="30%" r="65%">
-      <stop offset="0%"   stop-color="#a7f3d0"/>
-      <stop offset="35%"  stop-color="#34d399"/>
-      <stop offset="80%"  stop-color="#059669"/>
-      <stop offset="100%" stop-color="#064e3b"/>
-    </radialGradient>
-    <radialGradient id="gloss-orange" cx="35%" cy="30%" r="65%">
-      <stop offset="0%"   stop-color="#fef08a"/>
-      <stop offset="30%"  stop-color="#f59e0b"/>
-      <stop offset="75%"  stop-color="#ea580c"/>
-      <stop offset="100%" stop-color="#9a3412"/>
-    </radialGradient>
-    <radialGradient id="gloss-gray" cx="35%" cy="30%" r="65%">
-      <stop offset="0%"   stop-color="#cbd5e1"/>
-      <stop offset="40%"  stop-color="#94a3b8"/>
-      <stop offset="80%"  stop-color="#64748b"/>
-      <stop offset="100%" stop-color="#334155"/>
-    </radialGradient>
-    <radialGradient id="gloss-gold" cx="35%" cy="30%" r="65%">
-      <stop offset="0%"   stop-color="#fffbeb"/>
-      <stop offset="35%"  stop-color="#fcd34d"/>
-      <stop offset="75%"  stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#b45309"/>
-    </radialGradient>
-    <linearGradient id="gold-star-grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#fef08a"/>
-      <stop offset="100%" stop-color="#f59e0b"/>
-    </linearGradient>
-    <!-- Gate gradients -->
-    <linearGradient id="gate-open-grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#6ee7b7"/>
-      <stop offset="100%" stop-color="#059669"/>
-    </linearGradient>
-    <linearGradient id="gate-locked-grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#fde68a"/>
-      <stop offset="100%" stop-color="#b45309"/>
-    </linearGradient>
-    <!-- Ribbon / pill -->
-    <linearGradient id="ribbon-grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#7c3aed"/>
-      <stop offset="50%"  stop-color="#db2777"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
-    </linearGradient>
-    <linearGradient id="stage-banner-grad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#1e3a8a"/>
-      <stop offset="50%"  stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#1e3a8a"/>
-    </linearGradient>
-    <!-- Road -->
     <linearGradient id="road-curb" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#78350f"/>
-      <stop offset="50%"  stop-color="#b45309"/>
+      <stop offset="0%" stop-color="#78350f"/>
+      <stop offset="50%" stop-color="#b45309"/>
       <stop offset="100%" stop-color="#78350f"/>
     </linearGradient>
     <linearGradient id="road-sand" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#fef3c7"/>
-      <stop offset="50%"  stop-color="#fffbeb"/>
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#fffbeb"/>
       <stop offset="100%" stop-color="#fde68a"/>
     </linearGradient>
     <linearGradient id="road-cleared" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#059669"/>
-      <stop offset="50%"  stop-color="#10b981"/>
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="50%" stop-color="#10b981"/>
       <stop offset="100%" stop-color="#059669"/>
     </linearGradient>
-    <!-- Zone clip paths (will be computed dynamically below) -->
-    <clipPath id="zone1-clip"><rect id="z1cr" x="0" y="0" width="${vbW}" height="1"/></clipPath>
-    <clipPath id="zone2-clip"><rect id="z2cr" x="0" y="0" width="${vbW}" height="1"/></clipPath>
-    <clipPath id="zone3-clip"><rect id="z3cr" x="0" y="0" width="${vbW}" height="1"/></clipPath>
-    <clipPath id="zone4-clip"><rect id="z4cr" x="0" y="0" width="${vbW}" height="1"/></clipPath>
+    <radialGradient id="gloss-green" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#a7f3d0"/>
+      <stop offset="35%" stop-color="#34d399"/>
+      <stop offset="80%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </radialGradient>
+    <radialGradient id="gloss-orange" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="30%" stop-color="#f59e0b"/>
+      <stop offset="75%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </radialGradient>
+    <radialGradient id="gloss-gray" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="40%" stop-color="#94a3b8"/>
+      <stop offset="80%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </radialGradient>
+    <radialGradient id="gloss-gold" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="35%" stop-color="#fcd34d"/>
+      <stop offset="75%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </radialGradient>
+    <linearGradient id="gold-star-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="arch-wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b45309"/>
+      <stop offset="30%" stop-color="#d97706"/>
+      <stop offset="70%" stop-color="#92400e"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <linearGradient id="ribbon-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <!-- Full-length Seamless World Gradient -->
+    <linearGradient id="world-canvas-grad" x1="0" y1="0" x2="0" y2="1">
+      <!-- Zone 4: Sunny Day (Family Home) Top 0% - 22% -->
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="10%" stop-color="#7dd3fc"/>
+      <stop offset="20%" stop-color="#bae6fd"/>
+      <!-- Transition to Zone 3: Twilight Investigation Sky 22% - 48% -->
+      <stop offset="26%" stop-color="#2563eb"/>
+      <stop offset="38%" stop-color="#1e3a8a"/>
+      <stop offset="48%" stop-color="#1e293b"/>
+      <!-- Transition to Zone 2: Wolf Canyon Sunset Mesa 48% - 74% -->
+      <stop offset="54%" stop-color="#7c2d12"/>
+      <stop offset="64%" stop-color="#c2410c"/>
+      <stop offset="74%" stop-color="#ea580c"/>
+      <!-- Transition to Zone 1: Stork Mountain Depot Night Base 74% - 100% -->
+      <stop offset="82%" stop-color="#334155"/>
+      <stop offset="92%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
   </defs>
   `;
 
-  // ── Zone boundary calculations ────────────────────────────────────────────
-  // P[i].y = H - 110 - i*148
-  const z1Top  = P[3].y  - 60;   // top of Zone 1 zone image band
-  const z1Bot  = H;               // bottom of map
-  const z2Top  = P[7].y  - 60;
-  const z2Bot  = P[3].y  + 90;
-  const z3Top  = P[11].y - 60;
-  const z3Bot  = P[7].y  + 90;
-  const z4Top  = 0;
-  const z4Bot  = P[11].y + 90;
+  // 1. Continuous Seamless World Canvas
+  h += `<rect x="0" y="0" width="${vbW}" height="${H}" fill="url(#world-canvas-grad)"/>`;
 
-  // ── Zone backgrounds using real zone images ────────────────────────────────
-  // Each zone image is tiled/fitted to its vertical band
-  const zoneImgs = [
-    { id: 'zone1-clip', top: z1Top, height: z1Bot - z1Top, src: assetHref(okA.zone1), fallback: '#1e293b' },
-    { id: 'zone2-clip', top: z2Top, height: z2Bot - z2Top, src: assetHref(okA.zone2), fallback: '#7c2d12' },
-    { id: 'zone3-clip', top: z3Top, height: z3Bot - z3Top, src: assetHref(okA.zone3), fallback: '#1e3a8a' },
-    { id: 'zone4-clip', top: z4Top, height: z4Bot - z4Top, src: assetHref(okA.zone4), fallback: '#38bdf8' },
-  ];
-
-  zoneImgs.forEach((z, zi) => {
-    const ht = Math.max(1, z.height);
-    if (z.src) {
-      h += `<image href="${z.src}" x="0" y="${z.top}" width="${vbW}" height="${ht}" preserveAspectRatio="xMidYMid slice" opacity="0.92"/>`;
-    } else {
-      h += `<rect x="0" y="${z.top}" width="${vbW}" height="${ht}" fill="${z.fallback}"/>`;
-    }
-    // Subtle dark vignette overlay for depth at zone borders
-    if (zi < zoneImgs.length - 1) {
-      // gradient fade at the seam between zones
-      const seamY = z.top + ht - 50;
-      h += `<rect x="0" y="${seamY}" width="${vbW}" height="100" fill="rgba(0,0,0,0.38)"/>`;
-    }
-  });
-
-  // ── Ambient character art (non-interactive scene dressing) ─────────────────
-  // Zone 1 - The Baby Making Machine in the depot (bottom-right)
-  if (okA.machine) {
-    const mSrc = assetHref(okA.machine);
-    if (mSrc) {
-      h += `<image href="${mSrc}" x="248" y="${P[0].y + 30}" width="120" height="120" opacity="0.55" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-  // Zone 1 - Junior flying in top-left of depot zone
-  if (okA.junior) {
-    const jSrc = assetHref(okA.junior);
-    if (jSrc) {
-      h += `<image href="${jSrc}" x="-18" y="${P[2].y - 60}" width="110" height="110" opacity="0.5" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-  // Zone 2 - Wolves pack in the canyon (right side)
-  if (okA.wolves) {
-    const wSrc = assetHref(okA.wolves);
-    if (wSrc) {
-      h += `<image href="${wSrc}" x="260" y="${P[5].y - 40}" width="110" height="110" opacity="0.5" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-  // Zone 2 - Tulip navigating (left side of canyon)
-  if (okA.tulip) {
-    const tSrc = assetHref(okA.tulip);
-    if (tSrc) {
-      h += `<image href="${tSrc}" x="-15" y="${P[4].y - 55}" width="95" height="95" opacity="0.48" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-  // Zone 3 - Baby Diamond floating mystery zone (right side)
-  if (okA.baby) {
-    const bSrc = assetHref(okA.baby);
-    if (bSrc) {
-      h += `<image href="${bSrc}" x="272" y="${P[9].y - 55}" width="95" height="95" opacity="0.48" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-  // Zone 4 - Family home at finish line
-  if (okA.family) {
-    const fSrc = assetHref(okA.family);
-    if (fSrc) {
-      h += `<image href="${fSrc}" x="260" y="${P[16].y - 55}" width="110" height="110" opacity="0.52" preserveAspectRatio="xMidYMid meet"/>`;
-    }
-  }
-
-  // ── Decorative scene overlays ─────────────────────────────────────────────
-  // Sunny clouds in Zone 4 (top / home zone)
+  // Stylized Organic World Elements (Cartoon Hills, Clouds, Mesa Slopes, Depot Lights)
   h += `
-    <g fill="rgba(255,255,255,0.72)" filter="url(#shadow-3d)">
-      <ellipse cx="58"  cy="${P[17].y - 55}" rx="44" ry="18"/>
-      <ellipse cx="100" cy="${P[17].y - 70}" rx="34" ry="14"/>
-      <ellipse cx="290" cy="${P[17].y - 52}" rx="40" ry="16"/>
-      <ellipse cx="330" cy="${P[17].y - 65}" rx="30" ry="12"/>
-      <ellipse cx="178" cy="${P[16].y - 38}" rx="36" ry="14" opacity="0.6"/>
+    <!-- Sunny clouds at the top around Family Home finish line -->
+    <g fill="rgba(255,255,255,0.75)" filter="url(#shadow-3d)">
+      <circle cx="45" cy="85" r="36"/>
+      <circle cx="95" cy="72" r="46"/>
+      <circle cx="150" cy="84" r="38"/>
+      <circle cx="280" cy="78" r="40"/>
+      <circle cx="335" cy="88" r="35"/>
     </g>
-  `;
+    <!-- Rolling sunny green hills around Family Home zone -->
+    <path d="M -20,${P[13].y + 45} Q 90,${P[13].y - 35} 200,${P[13].y + 40} T ${vbW + 20},${P[13].y + 25} L ${vbW + 20},${P[13].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(34, 197, 94, 0.4)"/>
+    <path d="M -20,${P[13].y + 65} Q 130,${P[13].y + 15} 250,${P[13].y + 70} T ${vbW + 20},${P[12].y + 55} L ${vbW + 20},${P[11].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(21, 128, 61, 0.55)"/>
 
-  // Zone 3 mystery sparkle stars
-  h += `
-    <g fill="#fef08a" opacity="0.7">
-      <circle cx="42"  cy="${P[10].y - 30}" r="2.2"/>
+    <!-- Investigation Zone: Soft mystical fog banks and star sparkles -->
+    <g fill="rgba(255,255,255,0.14)">
+      <ellipse cx="80" cy="${P[9].y}" rx="140" ry="38"/>
+      <ellipse cx="300" cy="${P[8].y}" rx="150" ry="42"/>
+      <ellipse cx="190" cy="${P[10].y}" rx="180" ry="48"/>
+    </g>
+    <g fill="#fef08a" opacity="0.75">
+      <circle cx="45" cy="${P[10].y - 30}" r="2.2"/>
       <circle cx="320" cy="${P[10].y + 20}" r="2.5"/>
-      <circle cx="68"  cy="${P[9].y - 40}"  r="1.8"/>
-      <circle cx="338" cy="${P[8].y - 20}"  r="2.2"/>
-      <circle cx="200" cy="${P[9].y + 15}"  r="1.5"/>
-      <circle cx="155" cy="${P[10].y - 55}" r="1.8"/>
+      <circle cx="70" cy="${P[9].y - 40}" r="1.8"/>
+      <circle cx="335" cy="${P[8].y - 20}" r="2.2"/>
+    </g>
+
+    <!-- Canyon Zone: Warm desert sandstone ridges and canyon cliffs -->
+    <path d="M -20,${P[5].y + 45} Q 110,${P[5].y - 25} 230,${P[5].y + 45} T ${vbW + 20},${P[5].y + 25} L ${vbW + 20},${P[3].y + 55} L -20,${P[3].y + 55} Z" fill="rgba(124, 45, 18, 0.35)"/>
+    <path d="M -20,${P[4].y + 65} Q 140,${P[4].y + 10} 270,${P[4].y + 70} T ${vbW + 20},${P[4].y + 45} L ${vbW + 20},${P[3].y + 55} L -20,${P[3].y + 55} Z" fill="rgba(154, 52, 18, 0.5)"/>
+
+    <!-- Stork Mountain Base: Industrial factory cogs and warm ambient glows -->
+    <g stroke="rgba(245, 158, 11, 0.22)" stroke-width="3" fill="none">
+      <circle cx="35" cy="${P[1].y}" r="32" stroke-dasharray="8 6"/>
+      <circle cx="345" cy="${P[2].y}" r="40" stroke-dasharray="10 8"/>
+      <line x1="0" y1="${P[0].y + 35}" x2="${vbW}" y2="${P[0].y + 35}" stroke-width="4" stroke-dasharray="12 12"/>
     </g>
   `;
 
-  // Zone 1 industrial glow rings (depot ambiance)
-  h += `
-    <g stroke="rgba(245,158,11,0.2)" stroke-width="3" fill="none">
-      <circle cx="38"  cy="${P[1].y}" r="34" stroke-dasharray="8 6"/>
-      <circle cx="342" cy="${P[2].y}" r="42" stroke-dasharray="10 8"/>
-      <line x1="0" y1="${P[0].y + 40}" x2="${vbW}" y2="${P[0].y + 40}" stroke-width="4" stroke-dasharray="12 12"/>
-    </g>
-  `;
 
-  // ── Top Welcome Banner ─────────────────────────────────────────────────────
+
+  // Top Welcome Banner Ribbon
   h += `
     <g filter="url(#shadow-3d)">
-      <rect x="45" y="12" width="290" height="44" rx="22" fill="url(#stage-banner-grad)" stroke="#f59e0b" stroke-width="2.5"/>
-      <text x="190" y="25" text-anchor="middle" font-size="8" font-weight="800" fill="#fcd34d" letter-spacing="1.5" opacity="0.9">✦ THE STORKS DELIVERY ADVENTURE ✦</text>
-      <text x="190" y="44" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff" letter-spacing="0.5">THE BABY'S JOURNEY HOME</text>
+      <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
+      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY???S JOURNEY HOME</text>
     </g>
   `;
 
-  // ── Winding delivery road ─────────────────────────────────────────────────
+  // 3. Winding Stepping-Stone Road (Layered 3D Cobblestones)
+  // Build the continuous Bezier curve path string
   let roadD = `M ${P[0].x} ${P[0].y}`;
   for (let i = 1; i < N; i++) {
     const a = P[i-1], b = P[i], ym = (a.y + b.y) / 2;
     roadD += ` C ${a.x} ${ym}, ${b.x} ${ym}, ${b.x} ${b.y}`;
   }
 
+  // Layer 1: Ground drop shadow beneath road
   h += `<path d="${roadD}" fill="none" stroke="rgba(15,23,42,0.38)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>`;
-  h += `<path d="${roadD}" fill="none" stroke="url(#road-curb)"     stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>`;
-  h += `<path d="${roadD}" fill="none" stroke="url(#road-sand)"     stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`;
-  h += `<path d="${roadD}" fill="none" stroke="#d97706"             stroke-width="14" stroke-dasharray="14 18" stroke-linecap="round"/>`;
+  // Layer 2: Road curb / embankment
+  h += `<path d="${roadD}" fill="none" stroke="url(#road-curb)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>`;
+  // Layer 3: Elevated sand/stone road surface
+  h += `<path d="${roadD}" fill="none" stroke="url(#road-sand)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`;
+  // Layer 4: Stepping-stone paver pattern
+  h += `<path d="${roadD}" fill="none" stroke="#d97706" stroke-width="14" stroke-dasharray="14 18" stroke-linecap="round"/>`;
 
+  // Cleared Segment Glow Trail
   if (cur > 0) {
     let clearedD = `M ${P[0].x} ${P[0].y}`;
     for (let i = 1; i <= Math.min(cur, N - 1); i++) {
@@ -1814,121 +1736,103 @@ function draw() {
     h += `<path d="${clearedD}" fill="none" stroke="#ecfdf5" stroke-width="10" stroke-dasharray="12 16" stroke-linecap="round"/>`;
   }
 
-  // ── Stage milestone banners (left-side margin labels, no collision) ────────
-  // Placed to the LEFT of the road, alternating with right side based on x
-  // Each banner is a side-note panel anchored at the zone start node
-  const STAGE_BANDS = [
-    { stopIdx: 0,  label: '📦 STAGE 1',  sub: 'Word Puzzle Depot',      color: '#b45309', text: '#fff8e1' },
-    { stopIdx: 4,  label: '🌋 STAGE 2',  sub: 'Canyon Delivery Maze',   color: '#9a3412', text: '#fff1e6' },
-    { stopIdx: 8,  label: '🃏 STAGE 3',  sub: 'Courier Memory Match',    color: '#1e3a8a', text: '#e0f2fe' },
-    { stopIdx: 12, label: '🔎 STAGE 4',  sub: 'Depot Quality Inspection',color: '#4c1d95', text: '#f3e8ff' },
-    { stopIdx: 16, label: '🏠 FINAL',    sub: 'Home Arrival',             color: '#065f46', text: '#d1fae5' },
-  ];
-
-  STAGE_BANDS.forEach(band => {
-    const p = P[band.stopIdx];
-    // Place banner ABOVE the stage start node, offset to a side margin
-    const bannerY = p.y - 82;  // well above the node (node label is at p.y+40..+62)
-    const bW = 106, bH = 36;
-    // Alternate: if p.x > 190 put banner on left, else on right
-    const bannerX = p.x > 190 ? 4 : vbW - bW - 4;
-    // Connector line from banner to node
-    const lineX1 = p.x > 190 ? bannerX + bW : bannerX;
-    h += `
-      <g filter="url(#shadow-3d)" opacity="0.93">
-        <rect x="${bannerX}" y="${bannerY}" width="${bW}" height="${bH}" rx="10"
-              fill="${band.color}" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <text x="${bannerX + bW/2}" y="${bannerY + 13}" text-anchor="middle"
-              font-size="11" font-weight="900" fill="${band.text}">${band.label}</text>
-        <text x="${bannerX + bW/2}" y="${bannerY + 27}" text-anchor="middle"
-              font-size="7.5" font-weight="700" fill="${band.text}" opacity="0.85">${band.sub}</text>
-        <line x1="${lineX1}" y1="${bannerY + bH/2}" x2="${p.x}" y2="${p.y - 30}"
-              stroke="${band.color}" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
-      </g>
-    `;
-  });
-
-  // ── Nodes, Gates, Name plaques ────────────────────────────────────────────
+  // 4. Level Nodes, Checkpoint Gates & Milestone Banners
   I.forEach((it, i) => {
     const p = P[i], done = !!R[i], isC = i === cur;
+
+    // Keep milestone ribbons inside the map and clear of adjacent stop labels.
+    if (PILL[i]) {
+      const pillW = Math.min(vbW - 28, PILL[i].length * 7.6 + 32);
+      const pillX = Math.max(pillW / 2 + 14, Math.min(vbW - pillW / 2 - 14, p.x));
+      // Position ribbon midway in the empty canyon between previous stage and current node
+      const pillY = p.y + 72;
+      h += `
+        <g filter="url(#shadow-3d)">
+          <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="${pillX}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
+        </g>
+      `;
+    }
 
     h += `<g class="node" onclick="tap(${i})">`;
 
     if (it.t === 'gate') {
+      // Monumental Checkpoint Gate Archway
       const gateOpen = done || O[it.g];
-      const gateGrad = gateOpen ? 'url(#gate-open-grad)' : 'url(#gate-locked-grad)';
+      const gateGrad = gateOpen ? 'url(#gloss-green)' : 'url(#arch-wood)';
       const gateBorder = gateOpen ? '#10b981' : '#f59e0b';
-      const GL = { 1:'Gate 1 · Canyon Pass', 2:'Gate 2 · Memory Crossing', 3:'Gate 3 · Inspection Entry', 4:'Gate 4 · Final Stretch' };
 
       h += `
         <g filter="url(#pedestal-shadow)">
-          <!-- Pillars -->
+          <!-- Left and Right Stone Checkpoint Pillars -->
           <rect x="${p.x - 74}" y="${p.y - 32}" width="20" height="64" rx="8" fill="#334155" stroke="#475569" stroke-width="2"/>
           <circle cx="${p.x - 64}" cy="${p.y - 34}" r="12" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
+          
           <rect x="${p.x + 54}" y="${p.y - 32}" width="20" height="64" rx="8" fill="#334155" stroke="#475569" stroke-width="2"/>
           <circle cx="${p.x + 64}" cy="${p.y - 34}" r="12" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
-          <!-- Crossbar -->
+
+          <!-- Crossbar Checkpoint Beam -->
           <rect x="${p.x - 60}" y="${p.y - 26}" width="120" height="52" rx="16" fill="${gateGrad}" stroke="${gateBorder}" stroke-width="3.5"/>
-          <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}"
-                fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
-          <!-- Lock icon -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '🔓' : '🔒'}</text>
-          <!-- Gate name -->
-          <rect x="${p.x - 62}" y="${p.y + 34}" width="124" height="22" rx="11"
-                fill="#0f172a" stroke="${gateBorder}" stroke-width="1.5"/>
-          <text x="${p.x}" y="${p.y + 49}" text-anchor="middle"
-                font-size="9.5" font-weight="800" fill="#ffffff">${GL[it.g] || 'CHECKPOINT'}</text>
+          <!-- Top glare arc on gate -->
+          <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Lock Icon & Status -->
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '????' : '????'}</text>
+          
+          <!-- Checkpoint Name Ribbon -->
+          <rect x="${p.x - 55}" y="${p.y + 34}" width="110" height="22" rx="11" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="${p.x}" y="${p.y + 49}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">${GL[it.g]}</text>
         </g>
       `;
     } else {
-      // Regular game node
-      const badgeFill = done   ? 'url(#gloss-green)'
-                      : isC    ? (it.t === 'bonus' ? 'url(#gloss-gold)' : 'url(#gloss-orange)')
-                               : 'url(#gloss-gray)';
-      const bevelColor = done  ? '#064e3b'
-                       : isC   ? '#7c2d12'
-                                : '#1e293b';
+      // 3D Candy Crush / Royal Match Glossy Pedestal & Button
+      const badgeFill = done ? 'url(#gloss-green)' : isC ? (it.t === 'bonus' ? 'url(#gloss-gold)' : 'url(#gloss-orange)') : 'url(#gloss-gray)';
+      const bevelColor = done ? '#064e3b' : isC ? '#7c2d12' : '#1e293b';
 
       if (isC) {
+        // Glowing animated ripple ring around current level
         h += `<circle class="pulse" cx="${p.x}" cy="${p.y}" r="45" fill="none" stroke="#ff8a1f" stroke-width="6"/>`;
       }
 
       h += `
         <g filter="url(#pedestal-shadow)">
-          <ellipse cx="${p.x}" cy="${p.y + 14}" rx="33" ry="12" fill="rgba(15,23,42,0.45)"/>
-          <circle  cx="${p.x}" cy="${p.y + 6}"  r="31"  fill="${bevelColor}"/>
-          <circle  cx="${p.x}" cy="${p.y}"      r="29"  fill="${badgeFill}" stroke="#ffffff" stroke-width="3.5"/>
-          <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z"
-                fill="rgba(255,255,255,0.6)"/>
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28"
-                filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '🔒'}</text>
+          <!-- Ground shadow -->
+          <ellipse cx="${p.x}" cy="${p.y + 14}" rx="33" ry="12" fill="rgba(15, 23, 42, 0.45)"/>
+          
+          <!-- 3D Pedestal Bottom Lip/Bevel -->
+          <circle cx="${p.x}" cy="${p.y + 6}" r="31" fill="${bevelColor}"/>
+          
+          <!-- Main Glossy Circular Button -->
+          <circle cx="${p.x}" cy="${p.y}" r="29" fill="${badgeFill}" stroke="#ffffff" stroke-width="3.5"/>
+          
+          <!-- Glossy Crescent Reflection Arc -->
+          <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
+          
+          <!-- Stop Icon or Number -->
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '????'}</text>
         </g>
       `;
 
-      // 3-star crown above cleared levels
-      if (done && R[i] && R[i].stars) {
+      // 3-Star Crown above cleared level buttons
+      if (done && R[i].stars) {
         h += `
           <g filter="url(#shadow-3d)">
-            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16"
-                  fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
-            <text x="${p.x}"      y="${p.y - 42}" text-anchor="middle" font-size="22"
-                  fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">★</text>
-            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16"
-                  fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
+            <!-- Left Star -->
+            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">???</text>
+            <!-- Center Star (Larger) -->
+            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">???</text>
+            <!-- Right Star -->
+            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">???</text>
           </g>
         `;
       }
 
-      // Name label plaque — always below node, well-spaced from stars
-      const nameW = Math.min(vbW - 20, it.n.length * 6.2 + 24);
-      // Clamp x so label stays inside viewbox
-      const nameX = Math.max(nameW/2 + 10, Math.min(vbW - nameW/2 - 10, p.x));
+      // Name label plaque beneath node
+      const nameW = it.n.length * 7.4 + 20;
       h += `
         <g filter="url(#shadow-3d)">
-          <rect x="${nameX - nameW/2}" y="${p.y + 40}" width="${nameW}" height="22" rx="11"
-                fill="#0f172a" stroke="#334155" stroke-width="1.5" opacity="0.92"/>
-          <text x="${nameX}" y="${p.y + 55}" text-anchor="middle"
-                font-size="10" font-weight="800" fill="#ffffff">${it.n}</text>
+          <rect x="${p.x - nameW/2}" y="${p.y + 40}" width="${nameW}" height="22" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+          <text x="${p.x}" y="${p.y + 55}" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${it.n}</text>
         </g>
       `;
     }
@@ -1936,38 +1840,39 @@ function draw() {
     h += `</g>`;
   });
 
-  // ── Active courier pin ────────────────────────────────────────────────────
+  // 5. Active Courier Character (Hopping Baby Courier directly on current level)
   const c = P[Math.min(cur, N - 1)];
   h += `
     <g>
+      <!-- Expanding/contracting contact shadow on the level stone -->
       <ellipse class="baby-shadow" cx="${c.x}" cy="${c.y - 32}" rx="22" ry="8" fill="rgba(0,0,0,0.55)"/>
+      
+      <!-- Hopping character mascot -->
       <g class="bob">
   `;
 
-  const pinImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : (okA.baby ? assetHref(okA.baby) : null);
-  if (pinImg) {
-    h += `
-      <defs>
-        <clipPath id="pin-clip-${c.x}-${c.y}">
-          <circle cx="${c.x}" cy="${c.y - 50}" r="28"/>
-        </clipPath>
-      </defs>
-      <circle cx="${c.x}" cy="${c.y - 50}" r="31" fill="#ff8a1f" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
-      <image href="${pinImg}" x="${c.x - 28}" y="${c.y - 78}" width="56" height="56"
-             clip-path="url(#pin-clip-${c.x}-${c.y})" preserveAspectRatio="xMidYMid slice"/>
-    `;
+  const pinImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : okA.baby;
+    if (pinImg) {
+      h += `
+        <defs>
+          <clipPath id="pin-clip-${c.x}-${c.y}">
+            <circle cx="${c.x}" cy="${c.y - 50}" r="28"/>
+          </clipPath>
+        </defs>
+        <circle cx="${c.x}" cy="${c.y - 50}" r="31" fill="#ff8a1f" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
+        <image href="${pinImg}" x="${c.x - 28}" y="${c.y - 78}" width="56" height="56" clip-path="url(#pin-clip-${c.x}-${c.y})" preserveAspectRatio="xMidYMid slice"/>
+      `;
   } else {
     h += `
       <circle cx="${c.x}" cy="${c.y - 54}" r="26" fill="url(#gloss-gold)" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
-      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">👶</text>
+      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">????</text>
     `;
   }
 
+  // Floating "YOU ARE HERE" Indicator Flag
   h += `
-        <rect x="${c.x - 42}" y="${c.y - 104}" width="84" height="20" rx="10"
-              fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" filter="url(#shadow-3d)"/>
-        <text x="${c.x}" y="${c.y - 90}" text-anchor="middle"
-              font-size="9" font-weight="900" fill="#1e293b" letter-spacing="0.5">DISPATCH HERE</text>
+        <rect x="${c.x - 42}" y="${c.y - 104}" width="84" height="20" rx="10" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" filter="url(#shadow-3d)"/>
+        <text x="${c.x}" y="${c.y - 90}" text-anchor="middle" font-size="9" font-weight="900" fill="#1e293b" letter-spacing="0.5">DISPATCH HERE</text>
       </g>
     </g>
   `;
@@ -1976,10 +1881,10 @@ function draw() {
   $('#map').innerHTML = h;
 
   const cleared = R.filter(r => r && !r.gate).length;
-  const total   = R.reduce((a, r) => a + (r && r.pts || 0), 0);
+  const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
-  $('#hs').textContent = '⭐ ' + total;
+  $('#hs').textContent = '??? ' + total;
   $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
 }
 
