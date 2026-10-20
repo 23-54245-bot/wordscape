@@ -1,26 +1,26 @@
-[
-  {
-    "name": "Diamond",
-    "img": "assets/avatars/fm_diamond.jpg"
-  },
-  {
-    "name": "Hunter",
-    "img": "assets/avatars/fm_hunter.jpg"
-  },
-  {
-    "name": "Junior",
-    "img": "assets/avatars/fm_junior.jpg"
-  },
-  {
-    "name": "Nate",
-    "img": "assets/avatars/fm_nate.jpg"
-  },
-  {
-    "name": "Toady",
-    "img": "assets/avatars/fm_toady.jpg"
-  },
-  {
-    "name": "Tulip",
-    "img": "assets/avatars/fm_tulip.jpg"
-  }
+﻿[
+    {
+        "img":  "assets/avatars/fm_diamond.jpg",
+        "name":  "Baby Diamond"
+    },
+    {
+        "img":  "assets/avatars/fm_hunter.jpg",
+        "name":  "Hunter"
+    },
+    {
+        "img":  "assets/avatars/fm_junior.jpg",
+        "name":  "Junior"
+    },
+    {
+        "img":  "assets/avatars/fm_nate.jpg",
+        "name":  "Nate Gardner"
+    },
+    {
+        "img":  "assets/avatars/fm_toady.jpg",
+        "name":  "Pigeon Toady"
+    },
+    {
+        "img":  "assets/avatars/fm_tulip.jpg",
+        "name":  "Tulip"
+    }
 ]

@@ -511,6 +511,60 @@ input:focus { outline: none; border-color: var(--acc); }
   z-index: 99;
 }
 [hidden] { display: none !important; }
+
+/* ── Avatar Picker ── */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+.av-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 8px 4px 6px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.av-btn img {
+  width: 62px;
+  height: 62px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: #0f172a;
+}
+.av-btn span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--mut);
+  text-align: center;
+  line-height: 1.2;
+}
+.av-btn.selected {
+  border-color: var(--acc);
+  background: rgba(255,138,31,0.15);
+  transform: scale(1.06);
+}
+.av-btn.selected img { border-color: var(--acc); }
+.av-btn.selected span { color: var(--acc); }
+#av-err { color:#ef4444;font-size:0.82rem;margin:-8px 0 8px;display:none; }
+/* Avatar badge in map header */
+#hav {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--acc);
+  display: none;
+  flex-shrink: 0;
+}
+
 </style>
 </head>
 <body>
@@ -527,6 +581,12 @@ input:focus { outline: none; border-color: var(--acc); }
  <input id="nm" placeholder="e.g. Juan Dela Cruz" maxlength="40">
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
  <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric">
+
+ <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left;margin-top:12px">CHOOSE YOUR CHARACTER</label>
+ <div class="avatar-grid" id="avatar-grid">
+   <div style="grid-column:1/-1;text-align:center;color:var(--mut);font-size:0.85rem;padding:14px">Loading characters…</div>
+ </div>
+ <p id="av-err">Please pick a character first!</p>
  <button class="btn" id="go">Start Delivering 🚀</button>
 </section>
 
@@ -534,9 +594,12 @@ input:focus { outline: none; border-color: var(--acc); }
 <div id="mapv" hidden>
  <header>
   <div class="hrow">
-    <div>
-      <div class="nm" id="hn">Courier</div>
-      <div class="ttl" id="ht">Junior Dispatch Courier</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <img id="hav" src="" alt="avatar">
+      <div>
+        <div class="nm" id="hn">Courier</div>
+        <div class="ttl" id="ht">Junior Dispatch Courier</div>
+      </div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
@@ -2212,14 +2275,71 @@ $('#view-profile-btn').onclick = evalCard;
 /* =============================================================
    INITIALIZATION & LOGIN FLOW
    ============================================================= */
+
+/* ══════════════════════════════════════════════
+   AVATAR PICKER — loads from assets/avatars.json
+   ══════════════════════════════════════════════ */
+let chosenAvatar = null; // { name, img }
+
+function pickAvatar(idx, avatars) {
+  chosenAvatar = avatars[idx];
+  document.querySelectorAll('.av-btn').forEach((b, i) => b.classList.toggle('selected', i === idx));
+  const err = document.getElementById('av-err');
+  if (err) err.style.display = 'none';
+}
+
+function applyAvatar() {
+  if (!chosenAvatar) return;
+  const el = document.getElementById('hav');
+  if (el) { el.src = chosenAvatar.img; el.style.display = 'block'; }
+}
+
+function buildAvatarGrid(avatars) {
+  const grid = document.getElementById('avatar-grid');
+  if (!grid) return;
+  grid.innerHTML = avatars.map((av, i) => `
+    <button class="av-btn" onclick="pickAvatar(${i}, window._avatars)" type="button">
+      <img src="${av.img}" alt="${av.name}" loading="lazy">
+      <span>${av.name}</span>
+    </button>
+  `).join('');
+}
+
+// Load avatars.json and build grid
+fetch('assets/avatars.json?v=' + Date.now())
+  .then(r => r.json())
+  .then(avatars => {
+    window._avatars = avatars;
+    buildAvatarGrid(avatars);
+  })
+  .catch(() => {
+    // Fallback hardcoded list if fetch fails (e.g. file:// protocol)
+    const fallback = [
+      { name: 'Baby Diamond',  img: 'assets/fm_diamond.jpg' },
+      { name: 'Junior',        img: 'assets/fm_junior.jpg'  },
+      { name: 'Tulip',         img: 'assets/fm_tulip.jpg'   },
+      { name: 'Pigeon Toady',  img: 'assets/fm_toady.jpg'   },
+      { name: 'Nate Gardner',  img: 'assets/fm_nate.jpg'    },
+      { name: 'Hunter',        img: 'assets/fm_hunter.jpg'  }
+    ];
+    window._avatars = fallback;
+    buildAvatarGrid(fallback);
+  });
+
 $('#go').onclick = () => {
   audio.init();
+  if (!chosenAvatar) {
+    const err = document.getElementById('av-err');
+    if (err) { err.style.display = 'block'; err.scrollIntoView({behavior:'smooth',block:'center'}); }
+    return;
+  }
   const inputName = $('#nm').value.trim();
   const inputPid = $('#pid').value.trim();
   user = inputName || 'Courier';
   pid = inputPid || 'ID-001';
   courierKey = normalizeId(user, pid);
 
+  applyAvatar();
   loadState();
   adv();
   V('#mapv');
