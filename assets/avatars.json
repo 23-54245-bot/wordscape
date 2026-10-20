@@ -22,5 +22,13 @@
     {
         "img":  "assets/avatars/fm_tulip.jpg",
         "name":  "Tulip"
+    },
+    {
+        "img":  "assets/avatars/Alpha.png",
+        "name":  "Alpha"
+    },
+    {
+        "img":  "assets/avatars/Beta.png",
+        "name":  "Beta"
     }
 ]
