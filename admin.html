@@ -554,19 +554,35 @@ $('#save-code-btn').onclick = () => {
    COURIER DATA SCANNING & RENDERING
    ============================================================= */
 function getAllCouriers() {
-  const list = [];
+  const map = new Map();
+
+  // 1. LocalStorage
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith(STORAGE_PREFIX)) {
       try {
         const item = JSON.parse(localStorage.getItem(key));
         if (item && item.name) {
-          list.push({ key: key, ...item });
+          const id = (item.name + '_' + (item.pid || '')).toLowerCase().replace(/[^a-z0-9]/g, '');
+          map.set(id, { key: key, courierId: id, ...item });
         }
       } catch(e) {}
     }
   }
-  return list;
+
+  // 2. Remote Firebase couriers
+  if (remoteCouriers && typeof remoteCouriers === 'object') {
+    Object.entries(remoteCouriers).forEach(([cId, item]) => {
+      if (item && item.name) {
+        const existing = map.get(cId);
+        if (!existing || (item.updatedAt || 0) >= (existing.updatedAt || 0)) {
+          map.set(cId, { key: STORAGE_PREFIX + cId, courierId: cId, ...item });
+        }
+      }
+    });
+  }
+
+  return Array.from(map.values());
 }
 
 function calculateScore(c) {
@@ -608,19 +624,25 @@ function refreshCouriers() {
 
   tbody.innerHTML = filtered.map((c, idx) => {
     const totalScore = calculateScore(c);
-    const stopIdx = c.cur || 0;
+    const stopIdx = c.cur !== undefined ? c.cur : (c.stops || 0);
     const res = c.results || [];
-    const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
-    const r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
-    const rBon = (res[13]?.pts||0);
+    let r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
+    let r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
+    let r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
+    let rBon = (res[13]?.pts||0);
+    if (r1 === 0 && r2 === 0 && r3 === 0 && totalScore > 0) {
+      r1 = totalScore;
+    }
 
     return `
       <tr>
         <td style="font-weight:800;color:var(--accent)">#${idx + 1}</td>
-        <td style="font-weight:700">${escapeHtml(c.name)}</td>
+        <td style="font-weight:700">
+          ${c.avatar && c.avatar.img ? `<img src="${c.avatar.img}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--accent)">` : ''}
+          ${escapeHtml(c.name)}
+        </td>
         <td><code>${escapeHtml(c.pid || '—')}</code></td>
-        <td>Stop ${stopIdx}</td>
+        <td>Stop ${stopIdx + 1}</td>
         <td>${r1 > 0 ? `<span class="badge badge-good">⭐ ${r1}</span>` : '<span style="color:#64748b">—</span>'}</td>
         <td>${r2 > 0 ? `<span class="badge badge-good">⭐ ${r2}</span>` : '<span style="color:#64748b">—</span>'}</td>
         <td>${r3 > 0 ? `<span class="badge badge-good">⭐ ${r3}</span>` : '<span style="color:#64748b">—</span>'}</td>
@@ -641,9 +663,16 @@ function escapeHtml(str) {
   })[m]);
 }
 
-function deleteCourier(key, name) {
+async function deleteCourier(key, name) {
   if (!confirm(`Delete courier "${name}" from the database? This cannot be undone.`)) return;
   localStorage.removeItem(key);
+  const cId = key.replace(STORAGE_PREFIX, '');
+  if (FIREBASE_DB_URL && cId) {
+    try {
+      await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${cId}.json`, { method: 'DELETE' });
+      delete remoteCouriers[cId];
+    } catch(e) {}
+  }
   refreshCouriers();
 }
 
