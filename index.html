@@ -302,6 +302,9 @@ header {
 #sf-ov { position: absolute; inset: 0; pointer-events: none; }
 .ring { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border: 4px solid var(--acc); border-radius: 50%; background: rgba(255, 138, 31, 0.25); }
 .ring.ok { border-color: #10b981; background: rgba(16, 185, 129, 0.3); }
+#sf-admin-answers summary { cursor: pointer; font-weight: 800; }
+#sf-admin-answer-list { display: grid; gap: 10px; margin-bottom: 0; padding-left: 24px; }
+#sf-admin-answer-list li { padding-left: 4px; }
 
 /* Maze */
 #mz { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; width: min(100%, 360px); margin: 10px auto; touch-action: none; }
@@ -978,6 +981,10 @@ select option {
  <section id="g1" hidden>
   <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">⭐ 0</span></div>
   <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/spot_errors.jpg"><div id="sf-ov"></div></div>
+  <details id="sf-admin-answers" class="card" hidden>
+    <summary>Admin answer key</summary>
+    <ol id="sf-admin-answer-list"></ol>
+  </details>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
   <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button></div>
  </section>
@@ -2321,27 +2328,27 @@ $('#wp-hint').onclick = () => {
    ============================================================= */
 const HS = [
   { 
-    x: 0.18, y: 0.22, r: 0.06, tapR: 0.1,
+    x: 0.20, y: 0.30, r: 0.035, tapR: 0.065,
     q: 'Fragile wooden parcel is placed upside-down under heavy crates. How should this be corrected?', 
     o: ['Rotate upright (arrows pointing UP) and place safely atop the stack', 'Leave upside-down and wrap with extra packing tape', 'Scratch off the fragile label'] 
   },
   { 
-    x: 0.32, y: 0.55, r: 0.06, tapR: 0.1,
+    x: 0.29, y: 0.73, r: 0.035, tapR: 0.065,
     q: 'Shipping barcode label is torn and unreadable. How should this be corrected?', 
     o: ['Rescan manifest ID and reprint a clean optical barcode label', 'Write a guessed tracking number with a marker pen', 'Ship the parcel with no barcode'] 
   },
   { 
-    x: 0.50, y: 0.65, r: 0.06, tapR: 0.1,
+    x: 0.56, y: 0.58, r: 0.035, tapR: 0.065,
     q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?', 
     o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation'] 
   },
   { 
-    x: 0.68, y: 0.48, r: 0.06, tapR: 0.1,
+    x: 0.71, y: 0.43, r: 0.035, tapR: 0.065,
     q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?', 
     o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor'] 
   },
   { 
-    x: 0.85, y: 0.40, r: 0.06, tapR: 0.1,
+    x: 0.92, y: 0.26, r: 0.035, tapR: 0.065,
     q: 'Departing delivery stork is missing required safety goggles and courier pilot cap. How should this be corrected?', 
     o: ['Equip high-altitude anti-glare goggles and standard courier flight cap', 'Allow unequipped flight as long as the sky is sunny', 'Instruct courier to fly with eyes closed'] 
   }
@@ -2355,6 +2362,11 @@ function sfUp() {
 function sfStart() {
   if (sf && sf.to) clearTimeout(sf.to);
   sf = { f: new Set(), x: new Set(), p: null, s: 0, tries: 0, done: false };
+  const answerKey = $('#sf-admin-answers');
+  answerKey.hidden = !isAdmin;
+  if (isAdmin) {
+    $('#sf-admin-answer-list').innerHTML = HS.map(h => `<li><b>${h.q}</b><br>Correct fix: ${h.o[0]}</li>`).join('');
+  }
   $('#sf-ov').innerHTML = '';
   $('#sf-q').innerHTML = 'Tap the 5 packaging & dispatch errors. 3 minutes on the clock!';
   $('#sf-r').innerHTML = '';
