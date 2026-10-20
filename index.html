@@ -1257,6 +1257,7 @@ function normalizeId(name, id) {
   const norm = (name + '_' + id).toLowerCase().replace(/[^a-z0-9]/g, '');
   return norm || 'guest_courier';
 }
+const HOST_ADMIN_COURIER_KEY = normalizeId('Host Admin', 'ADMIN-01');
 
 function loadState() {
   // Load host control switches
@@ -1266,7 +1267,13 @@ function loadState() {
     if (ctrl.seminarCode) seminarCode = ctrl.seminarCode;
   } catch(e) {}
 
-  if (!courierKey) return;
+  if (!courierKey) return null;
+  if (courierKey === HOST_ADMIN_COURIER_KEY) {
+    localStorage.removeItem(STORAGE_PREFIX + courierKey);
+    cur = 0;
+    R = [];
+    return null;
+  }
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || '{}');
     if (data.results) R = data.results;
@@ -1339,6 +1346,10 @@ async function syncToFirebase(payload) {
 
 function saveState() {
   if (!courierKey) return;
+  if (courierKey === HOST_ADMIN_COURIER_KEY) {
+    localStorage.removeItem(STORAGE_PREFIX + courierKey);
+    return;
+  }
   const payload = {
     name: user,
     pid: pid,
@@ -3191,7 +3202,7 @@ async function getLeaderboardEntries() {
     if (k.startsWith(STORAGE_PREFIX)) {
       try {
         const item = JSON.parse(localStorage.getItem(k));
-        if (item && item.name) {
+        if (item && item.name && normalizeId(item.name, item.pid || '') !== HOST_ADMIN_COURIER_KEY) {
           const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
           const stops = (item.results || []).filter(r => r && !r.gate).length;
           map.set(item.name.toLowerCase().trim(), {
@@ -3207,7 +3218,7 @@ async function getLeaderboardEntries() {
   }
 
   // Current session courier
-  if (user && !map.has(user.toLowerCase().trim())) {
+  if (user && !isAdmin && courierKey !== HOST_ADMIN_COURIER_KEY && !map.has(user.toLowerCase().trim())) {
     const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
     const myStops = (R || []).filter(r => r && !r.gate).length;
     map.set(user.toLowerCase().trim(), {
@@ -3227,7 +3238,7 @@ async function getLeaderboardEntries() {
         const data = await res.json();
         if (data && typeof data === 'object') {
           Object.values(data).forEach(entry => {
-            if (entry && entry.name) {
+            if (entry && entry.name && normalizeId(entry.name, entry.pid || '') !== HOST_ADMIN_COURIER_KEY) {
               const k = entry.name.toLowerCase().trim();
               const existing = map.get(k);
               if (!existing || (entry.score || 0) > (existing.score || 0)) {
