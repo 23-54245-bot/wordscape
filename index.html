@@ -2321,27 +2321,27 @@ $('#wp-hint').onclick = () => {
    ============================================================= */
 const HS = [
   { 
-    x: 0.18, y: 0.22, r: 0.15, 
+    x: 0.18, y: 0.22, r: 0.06, tapR: 0.1,
     q: 'Fragile wooden parcel is placed upside-down under heavy crates. How should this be corrected?', 
     o: ['Rotate upright (arrows pointing UP) and place safely atop the stack', 'Leave upside-down and wrap with extra packing tape', 'Scratch off the fragile label'] 
   },
   { 
-    x: 0.32, y: 0.55, r: 0.15, 
+    x: 0.32, y: 0.55, r: 0.06, tapR: 0.1,
     q: 'Shipping barcode label is torn and unreadable. How should this be corrected?', 
     o: ['Rescan manifest ID and reprint a clean optical barcode label', 'Write a guessed tracking number with a marker pen', 'Ship the parcel with no barcode'] 
   },
   { 
-    x: 0.50, y: 0.65, r: 0.15, 
+    x: 0.50, y: 0.65, r: 0.06, tapR: 0.1,
     q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?', 
     o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation'] 
   },
   { 
-    x: 0.68, y: 0.48, r: 0.15, 
+    x: 0.68, y: 0.48, r: 0.06, tapR: 0.1,
     q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?', 
     o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor'] 
   },
   { 
-    x: 0.85, y: 0.40, r: 0.15, 
+    x: 0.85, y: 0.40, r: 0.06, tapR: 0.1,
     q: 'Departing delivery stork is missing required safety goggles and courier pilot cap. How should this be corrected?', 
     o: ['Equip high-altitude anti-glare goggles and standard courier flight cap', 'Allow unequipped flight as long as the sky is sunny', 'Instruct courier to fly with eyes closed'] 
   }
@@ -2370,7 +2370,7 @@ $('#sf-i').onclick = e => {
   const px = (e.clientX - b.left) / b.width;
   const py = (e.clientY - b.top) / b.height;
   $('#sf-m').textContent = dbg ? `x: ${px.toFixed(2)}  y: ${py.toFixed(2)}` : '';
-  const i = HS.findIndex((h, k) => !sf.f.has(k) && Math.hypot((px - h.x) * b.width, (py - h.y) * b.height) < h.r * b.width);
+  const i = HS.findIndex((h, k) => !sf.f.has(k) && Math.hypot((px - h.x) * b.width, (py - h.y) * b.height) < h.tapR * b.width);
 
   if (i < 0) {
     audio.error();
