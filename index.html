@@ -512,6 +512,81 @@ input:focus { outline: none; border-color: var(--acc); }
 }
 [hidden] { display: none !important; }
 
+/* ── Glassmorphism Login Card ── */
+#login.card {
+  background: rgba(18, 30, 58, 0.58);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 26px;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  color: #f8fafc;
+  padding: 22px 20px;
+}
+
+#login label {
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+#login .sub {
+  color: #94a3b8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#login input {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+#login input:focus {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px rgba(255, 138, 31, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#login input::placeholder {
+  color: #64748b;
+}
+
+#login .av-btn {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#login .av-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+#login .av-btn span {
+  color: #cbd5e1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+#login .av-btn.selected {
+  border-color: var(--acc);
+  background: rgba(255, 138, 31, 0.22);
+  box-shadow: 0 0 18px rgba(255, 138, 31, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+#login .btn {
+  box-shadow: 0 8px 24px rgba(255, 115, 0, 0.35);
+}
+
 /* ── Avatar Picker ── */
 .avatar-grid {
   display: grid;
