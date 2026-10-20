@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -626,15 +626,15 @@ input:focus { outline: none; border-color: var(--acc); }
 <!-- LOGIN SCREEN -->
 <section id="login" class="card" style="text-align:center">
  <img src="assets/logo.png" alt="STREAMLINED" style="width: 85%; max-width: 290px; display: block; margin: 6px auto 10px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
- <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Baby’s Journey Home · Logistics Master Challenge</p>
+ <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Babyâ€™s Journey Home Â· Logistics Master Challenge</p>
 
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">COURIER FULL NAME</label>
  <input id="nm" placeholder="e.g. Juan Dela Cruz" maxlength="40">
  <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
  <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric">
- <button class="btn" id="go">Start Delivering 🚀</button>
+ <button class="btn" id="go">Start Delivering ðŸš€</button>
  <div class="row" style="margin-top:14px">
-   <a href="admin.html" target="_blank" style="font-size:0.85rem;font-weight:600;color:var(--mut);text-decoration:none">Host Control Tower ↗</a>
+   <a href="admin.html" target="_blank" style="font-size:0.85rem;font-weight:600;color:var(--mut);text-decoration:none">Host Control Tower â†—</a>
  </div>
 </section>
 
@@ -647,9 +647,9 @@ input:focus { outline: none; border-color: var(--acc); }
       <div class="ttl" id="ht">Junior Dispatch Courier</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">🏆 Leaderboard</button>
-      <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
-      <span class="score" id="hs">⭐ 0</span>
+      <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">ðŸ† Leaderboard</button>
+      <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">ðŸ”Š</button>
+      <span class="score" id="hs">â­ 0</span>
     </div>
   </div>
   <div class="pbar"><i id="hb"></i></div>
@@ -659,9 +659,9 @@ input:focus { outline: none; border-color: var(--acc); }
  <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
  
  <div class="row" style="margin-top:10px">
-   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">🏆 Leaderboard</button>
-   <button class="sm" id="view-profile-btn">📜 Digital Pass</button>
-   <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">👑 Level Select</button>
+   <button class="sm" id="map-lb-bottom-btn" style="background:var(--acc);color:#fff;font-weight:700">ðŸ† Leaderboard</button>
+   <button class="sm" id="view-profile-btn">ðŸ“œ Digital Pass</button>
+   <button class="sm" id="admin-preview-btn" style="background:#334155;color:#f8fafc;font-weight:700">ðŸ‘‘ Level Select</button>
    <button class="sm" id="rs-btn">Reset demo</button>
  </div>
 </div>
@@ -669,15 +669,15 @@ input:focus { outline: none; border-color: var(--acc); }
 <!-- PLAY SCREEN (CONTAINER FOR ALL 5 ENGINES) -->
 <div id="play" hidden>
  <div class="row" style="justify-content:flex-start;margin:0 0 8px">
-   <button class="sm" onclick="leave()">← Delivery Map</button>
+   <button class="sm" onclick="leave()">â† Delivery Map</button>
  </div>
 
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
  <section id="g0" hidden>
    <div class="bar">
      <span id="wp-rd">Route 1/3</span>
-     <span id="wp-t">⏱️ 0:00</span>
-     <span id="wp-s">⭐ 0</span>
+     <span id="wp-t">â±ï¸ 0:00</span>
+     <span id="wp-s">â­ 0</span>
    </div>
    <div id="grid-container">
      <div id="grid"></div>
@@ -689,17 +689,17 @@ input:focus { outline: none; border-color: var(--acc); }
      <div id="wheel"></div>
    </div>
    <div class="row" style="margin-top:12px">
-     <button class="sm" id="wp-hint">💡 Hint (<span id="wp-hc">3</span>) [-15]</button>
-     <button class="sm" id="wp-shuf">🔀 Shuffle</button>
-     <button class="sm" id="wp-clr">✕ Clear</button>
-     <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">↵ Enter</button>
+     <button class="sm" id="wp-hint">ðŸ’¡ Hint (<span id="wp-hc">3</span>) [-15]</button>
+     <button class="sm" id="wp-shuf">ðŸ”€ Shuffle</button>
+     <button class="sm" id="wp-clr">âœ• Clear</button>
+     <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">â†µ Enter</button>
    </div>
    <div id="wp-r"></div>
  </section>
 
  <!-- GAME 1: SPOT & FIX THE ERRORS -->
  <section id="g1" hidden>
-  <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">⭐ 0</span></div>
+  <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s">â­ 0</span></div>
   <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/spot_errors.jpg"><div id="sf-ov"></div></div>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
   <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button></div>
@@ -707,20 +707,20 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <!-- GAME 2: BABY DELIVERY MAZE -->
  <section id="g2" hidden>
-  <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p">📦 0/3</span></div>
+  <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p">ðŸ“¦ 0/3</span></div>
   <div id="mz"></div>
   <div class="pad">
-    <span></span><button data-d="-1,0">↑</button><span></span>
-    <button data-d="0,-1">←</button><button data-d="1,0">↓</button><button data-d="0,1">→</button>
+    <span></span><button data-d="-1,0">â†‘</button><span></span>
+    <button data-d="0,-1">â†</button><button data-d="1,0">â†“</button><button data-d="0,1">â†’</button>
   </div>
-  <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery 🏠!</p>
+  <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery ðŸ !</p>
   <div id="mz-r"></div>
   <div class="row"><button class="sm" id="mz-a">Restart</button></div>
  </section>
 
  <!-- GAME 3: FIX THE BROKEN DELIVERY (SCENARIOS 1, 2, 3) -->
  <section id="g3" hidden>
-  <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">⭐ 0</span></div>
+  <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">â­ 0</span></div>
   <div class="card"><div id="bd-h"></div><div id="bd-b"></div></div>
   <div id="bd-r"></div>
   <div class="row"><button class="sm" id="bd-a">Restart Scenario</button></div>
@@ -728,13 +728,13 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
  <section id="g4" hidden>
-  <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-s-count">⭐ 0</span></div>
+  <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-s-count">â­ 0</span></div>
   <div class="card" id="dt-brief"><b>The Case:</b> Loading delay investigation.</div>
   <div id="dt-c"></div>
   <div class="card"><b>Suspects</b> (Tap to cross off cleared couriers)<div id="dt-s"></div></div>
   <div class="card"><b>Submit Accusation</b> (2 attempts max)
    <select id="dt-cu"></select><select id="dt-pl"></select><select id="dt-ca"></select>
-   <button class="btn" id="dt-go">Submit Accusation 🔍</button>
+   <button class="btn" id="dt-go">Submit Accusation ðŸ”</button>
    <div class="msg" id="dt-m"></div>
   </div>
   <div id="dt-r"></div>
@@ -747,17 +747,17 @@ input:focus { outline: none; border-color: var(--acc); }
   <div style="background:var(--card-bg);border-radius:20px;padding:12px 18px;margin-bottom:12px;box-shadow:0 4px 14px rgba(0,0,0,0.18);border:1px solid var(--line)">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:1.4rem">🗂️</span>
+        <span style="font-size:1.4rem">ðŸ—‚ï¸</span>
         <span style="font-weight:800;font-size:1.25rem;letter-spacing:0.5px">12 Cards</span>
-        <span style="font-size:1.4rem">🗂️</span>
+        <span style="font-size:1.4rem">ðŸ—‚ï¸</span>
       </div>
       <div>
-        <span id="fm-s" class="score">⭐ 0</span>
+        <span id="fm-s" class="score">â­ 0</span>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:1rem;font-weight:700">
       <div style="display:flex;align-items:center;gap:6px">
-        <span>⏱️</span>
+        <span>â±ï¸</span>
         <span style="color:var(--mut)">Time:</span>
         <span id="fm-t" style="font-family:monospace;font-size:1.05rem">00:00:00</span>
       </div>
@@ -777,9 +777,9 @@ input:focus { outline: none; border-color: var(--acc); }
 
  <!-- BONUS LIVE GAME / QUIZ STOP -->
  <section id="g5" hidden>
-   <div class="bar"><span>⚡ Live Seminar Bonus</span><span id="bn-t">0:00</span><span id="bn-s">⭐ 0</span></div>
+   <div class="bar"><span>âš¡ Live Seminar Bonus</span><span id="bn-t">0:00</span><span id="bn-s">â­ 0</span></div>
    <div class="card">
-     <h2>🏠 The Final Delivery</h2>
+     <h2>ðŸ  The Final Delivery</h2>
      <p>Enter the live seminar code announced by the host to unlock the bonus handoff challenge!</p>
      <input id="bn-code-input" placeholder="Enter Seminar Code (e.g. STORKS2026)" style="text-transform:uppercase">
      <button class="btn" id="bn-unlock-btn">Verify Code & Play</button>
@@ -800,12 +800,12 @@ input:focus { outline: none; border-color: var(--acc); }
 <div id="leaderboard-modal" hidden>
   <div class="lb-modal-card">
     <div class="lb-header">
-      <h2 class="lb-title">🏆 Courier Leaderboard</h2>
-      <button class="sm" id="close-lb-btn" style="padding:4px 10px;font-size:1.1rem">✕</button>
+      <h2 class="lb-title">ðŸ† Courier Leaderboard</h2>
+      <button class="sm" id="close-lb-btn" style="padding:4px 10px;font-size:1.1rem">âœ•</button>
     </div>
     <div class="lb-sub">
-      <span id="lb-status">🔄 Auto-updating...</span>
-      <button class="sm" id="refresh-lb-btn" style="padding:3px 10px;font-size:0.8rem">Refresh 🔄</button>
+      <span id="lb-status">ðŸ”„ Auto-updating...</span>
+      <button class="sm" id="refresh-lb-btn" style="padding:3px 10px;font-size:0.8rem">Refresh ðŸ”„</button>
     </div>
     <div class="lb-head-row lb-item">
       <span style="text-align:center">#</span>
@@ -958,7 +958,7 @@ function res(el, title, score, max, extra) {
   el.innerHTML = `
     <div class="card" style="text-align:center;margin-top:14px">
       <h2>${title}</h2>
-      <div class="big">⭐ ${score}</div>
+      <div class="big">â­ ${score}</div>
       <p style="margin:4px 0">Raw score: <b>${score}</b> / ${max}. ${extra || ''}</p>
       <p class="sub" style="margin-bottom:0">Scaled towards your stage point rating.</p>
     </div>
@@ -1026,28 +1026,28 @@ window.addEventListener('storage', e => {
    ============================================================= */
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
-  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'🧩', cap:200 },
-  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'🧩', cap:200 },
-  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'🧩', cap:200 },
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'ðŸ§©', cap:200 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'ðŸ§©', cap:200 },
+  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'ðŸ§©', cap:200 },
   { t:'gate', g:1 },
-  { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
-  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'🔎', cap:200 },
-  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:200 },
-  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'🛠️', cap:200 },
+  { t:'game', k:'fm', n:'Flip n Match', e:'ðŸƒ', cap:200 },
+  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'ðŸ”Ž', cap:200 },
+  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'ðŸ‘¶', cap:200 },
+  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'ðŸ› ï¸', cap:200 },
   { t:'gate', g:2 },
-  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'ðŸ•µï¸', cap:400 },
+  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'ðŸ•µï¸', cap:400 },
+  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'ðŸ•µï¸', cap:400 },
   { t:'gate', g:3 },
-  { t:'bonus', k:'bn', n:'Final Delivery', e:'🏠', cap:500 },
-  { t:'fin', n:'Certificate & Eval', e:'📜' }
+  { t:'bonus', k:'bn', n:'Final Delivery', e:'ðŸ ', cap:500 },
+  { t:'fin', n:'Certificate & Eval', e:'ðŸ“œ' }
 ];
 
 const GN = { 1:'Stage 2 (Journey & Obstacles)', 2:'Stage 3 (Investigation)', 3:'the Bonus Live Game' };
-const PILL = { 0:'🍼 STAGE 1 · CREATION', 4:'🌩️ STAGE 2 · JOURNEY', 9:'🔎 STAGE 3 · INVESTIGATION', 13:'🏠 FINAL DELIVERY' };
+const PILL = { 0:'ðŸ¼ STAGE 1 Â· CREATION', 4:'ðŸŒ©ï¸ STAGE 2 Â· JOURNEY', 9:'ðŸ”Ž STAGE 3 Â· INVESTIGATION', 13:'ðŸ  FINAL DELIVERY' };
 const CUE = {
   0: 'The baby is born. Can you prepare it for delivery?',
-  4: 'The baby’s journey hits obstacles. Match the courier tags and fix the broken delivery!',
+  4: 'The babyâ€™s journey hits obstacles. Match the courier tags and fix the broken delivery!',
   9: 'The baby is delayed. Can you investigate and resolve the case?',
   13: 'The baby must reach its family. Complete the final delivery!'
 };
@@ -1059,10 +1059,10 @@ const BEAT = {
 };
 const GL = { 1:'Dispatch Gate', 2:'Roadblock Gate', 3:'Last-Mile Gate' };
 const SC = [
-  ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['👧', 2, 'tulip'],
-  ['🃏', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['👧', 7, 'tulip'],
-  ['🐦', 9, 'junior'], ['👧', 10, 'tulip'], ['🐺', 11, 'wolves'],
-  ['🏡', 13, 'family'], ['👶', 14, 'baby']
+  ['ðŸ­', 0, 'machine'], ['ðŸ¦', 1, 'junior'], ['ðŸ‘§', 2, 'tulip'],
+  ['ðŸƒ', 4, 'toady'], ['ðŸº', 5, 'wolves'], ['ðŸ¦', 6, 'junior'], ['ðŸ‘§', 7, 'tulip'],
+  ['ðŸ¦', 9, 'junior'], ['ðŸ‘§', 10, 'tulip'], ['ðŸº', 11, 'wolves'],
+  ['ðŸ¡', 13, 'family'], ['ðŸ‘¶', 14, 'baby']
 ];
 
 const ASSETS = {
@@ -1070,7 +1070,7 @@ const ASSETS = {
   wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png', toady: 'assets/toady.png',
   zone1: 'assets/zone1.jpg', zone2: 'assets/zone2.jpg', zone3: 'assets/zone3.jpg', zone4: 'assets/zone4.jpg'
 };
-const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'👧', wolves:'🐺', machine:'🏭', family:'🏡', toady:'🐦' };
+const okA = {}, FB = { baby:'ðŸ‘¶', junior:'ðŸ¦', tulip:'ðŸ‘§', wolves:'ðŸº', machine:'ðŸ­', family:'ðŸ¡', toady:'ðŸ¦' };
 function loadAssets() {
   Object.entries(ASSETS).forEach(([k, u]) => {
     const im = new Image();
@@ -1084,7 +1084,7 @@ const STORY = {
   0: { w:['machine', 'junior', 'baby'], t:'A new baby has just come out of the Baby Making Machine! Junior and Tulip must prepare Diamond Destiny for her journey.' },
   4: { w:['junior','tulip','wolves','toady'], t:'Junior and Tulip face roadblocks on the highway! Match the courier identity cards and resolve the dispatch breakdowns.' },
   9: { w:['junior','tulip'], t:'The delivery is delayed at the dispatch tower. Junior and Tulip must investigate the evidence to uncover the bottleneck.' },
-  13: { w:['baby','family'], t:'At last the baby reaches Nate Gardner’s family home, and the storks’ true delivery mission is restored!' }
+  13: { w:['baby','family'], t:'At last the baby reaches Nate Gardnerâ€™s family home, and the storksâ€™ true delivery mission is restored!' }
 };
 const story = i => {
   if (!CUE[i]) return '';
@@ -1113,7 +1113,7 @@ const X = () => $('#modal').classList.remove('on');
 const bt = (t, f, alt) => `<button class="btn${alt?' alt':''}" onclick="${f}">${t}</button>`;
 const st = n => {
   let s = '';
-  for (let k = 1; k <= 3; k++) s += `<span class="${k <= n ? '' : 'dim'}">★</span>`;
+  for (let k = 1; k <= 3; k++) s += `<span class="${k <= n ? '' : 'dim'}">â˜…</span>`;
   return `<div class="stars">${s}</div>`;
 };
 const info = (t, b) => modal(`<h2>${t}</h2><p>${b}</p>` + bt('OK', 'X()'));
@@ -1265,7 +1265,7 @@ function draw() {
   h += `
     <g filter="url(#shadow-3d)">
       <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
-      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY’S JOURNEY HOME</text>
+      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABYâ€™S JOURNEY HOME</text>
     </g>
   `;
 
@@ -1335,7 +1335,7 @@ function draw() {
           <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
 
           <!-- Lock Icon & Status -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '🔓' : '🔒'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? 'ðŸ”“' : 'ðŸ”’'}</text>
           
           <!-- Checkpoint Name Ribbon -->
           <rect x="${p.x - 55}" y="${p.y + 34}" width="110" height="22" rx="11" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
@@ -1367,7 +1367,7 @@ function draw() {
           <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
           
           <!-- Stop Icon or Number -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '🔒'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : 'ðŸ”’'}</text>
         </g>
       `;
 
@@ -1376,11 +1376,11 @@ function draw() {
         h += `
           <g filter="url(#shadow-3d)">
             <!-- Left Star -->
-            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
+            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">â˜…</text>
             <!-- Center Star (Larger) -->
-            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">★</text>
+            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">â˜…</text>
             <!-- Right Star -->
-            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
+            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">â˜…</text>
           </g>
         `;
       }
@@ -1414,7 +1414,7 @@ function draw() {
   } else {
     h += `
       <circle cx="${c.x}" cy="${c.y - 54}" r="26" fill="url(#gloss-gold)" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
-      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">👶</text>
+      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">ðŸ‘¶</text>
     `;
   }
 
@@ -1433,7 +1433,7 @@ function draw() {
   const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
-  $('#hs').textContent = '⭐ ' + total;
+  $('#hs').textContent = 'â­ ' + total;
   $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
 }
 
@@ -1452,23 +1452,23 @@ function tap(i) {
   const it = I[i], done = !!R[i], cue = story(i);
   if (isAdmin) {
     if (it.t === 'gate') {
-      return info(`👑 Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
+      return info(`ðŸ‘‘ Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
     }
     if (it.t === 'fin') {
       return evalCard();
     }
-    return modal(`<h2>👑 Admin Preview: ${it.e || '📦'} ${it.n}</h2>${cue}<p>${DESC[it.k] || ''}</p>` + bt('Launch Level 🚀', `launch(${i})`) + bt('Close', 'X()', 1));
+    return modal(`<h2>ðŸ‘‘ Admin Preview: ${it.e || 'ðŸ“¦'} ${it.n}</h2>${cue}<p>${DESC[it.k] || ''}</p>` + bt('Launch Level ðŸš€', `launch(${i})`) + bt('Close', 'X()', 1));
   }
-  if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('🔒 Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
+  if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('ðŸ”’ Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
   if (it.t === 'gate') {
-    if (done) return info('🔓 ' + GL[it.g], 'This checkpoint has been cleared and released by dispatch.');
-    if (i === cur) return modal(`<h2>🔒 ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization…</p>` + bt('Demo Unlock (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
-    return info('🔒 Gate ' + it.g, 'Clear all previous stops to reach this gate.');
+    if (done) return info('ðŸ”“ ' + GL[it.g], 'This checkpoint has been cleared and released by dispatch.');
+    if (i === cur) return modal(`<h2>ðŸ”’ ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorizationâ€¦</p>` + bt('Demo Unlock (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
+    return info('ðŸ”’ Gate ' + it.g, 'Clear all previous stops to reach this gate.');
   }
   if (it.t === 'bonus') {
-    if (done) return modal(`<h2>⚡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus (Demo)', `launch(${i})`) + bt('Close', 'X()', 1));
-    if (i === cur) return modal(`<h2>🏠 Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
-    return info('🔒 Final Delivery', 'Clear the earlier stops and gates first.');
+    if (done) return modal(`<h2>âš¡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus (Demo)', `launch(${i})`) + bt('Close', 'X()', 1));
+    if (i === cur) return modal(`<h2>ðŸ  Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
+    return info('ðŸ”’ Final Delivery', 'Clear the earlier stops and gates first.');
   }
   if (done) {
     return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Recorded Score: <b>${R[i].pts}</b></p>` + bt('Replay Stop (Practice)', `launch(${i})`) + bt('Close', 'X()', 1));
@@ -1476,7 +1476,7 @@ function tap(i) {
   if (i === cur) {
     return modal(`<h2>${it.e} ${it.n}</h2>${cue}<p>${DESC[it.k]}</p>` + bt('Start Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
   }
-  info('🔒 ' + it.n, 'Clear the earlier stops in order first.');
+  info('ðŸ”’ ' + it.n, 'Clear the earlier stops in order first.');
 }
 
 function openGate(g) {
@@ -1556,7 +1556,7 @@ function onStopCompleted(score, max) {
     evalCard();
   } else {
     modal(`
-      <h2>📦 Delivered!</h2>
+      <h2>ðŸ“¦ Delivered!</h2>
       ${st(stars)}
       <p style="font-size:1.1rem;margin:8px 0"><b>${fresh ? '+' + pts + ' points' : 'Practice round complete!'}</b></p>
       ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
@@ -1598,7 +1598,7 @@ function wpStart(routeIdx = 0) {
   wpScore = 0;
   wpHintsLeft = 3;
   wpTotalSec = 0;
-  $('#wp-s').textContent = '⭐ 0';
+  $('#wp-s').textContent = 'â­ 0';
   $('#wp-hc').textContent = wpHintsLeft;
   $('#wp-r').innerHTML = '';
   startWpRoute();
@@ -1613,7 +1613,7 @@ function startWpRoute() {
     const j = Math.floor(Math.random() * (i + 1));
     [wpOrder[i], wpOrder[j]] = [wpOrder[j], wpOrder[i]];
   }
-  $('#wp-rd').textContent = `Stop ${wpRi + 1} · ${r.letters}`;
+  $('#wp-rd').textContent = `Stop ${wpRi + 1} Â· ${r.letters}`;
   $('#wp-msg').textContent = 'Find the hidden words!';
   renderWpGrid();
   renderWpWheel();
@@ -1624,7 +1624,7 @@ function startWpRoute() {
   let t0 = Date.now();
   wpTimer = setInterval(() => {
     const s = Math.floor((Date.now() - t0) / 1000) + wpTotalSec;
-    $('#wp-t').textContent = '⏱️ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    $('#wp-t').textContent = 'â±ï¸ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   }, 500);
 }
 
@@ -1895,7 +1895,7 @@ function wpSubmit() {
     if (newlyFound) {
       audio.wordSuccess();
       wpScore += word.length * 10;
-      $('#wp-s').textContent = '⭐ ' + wpScore;
+      $('#wp-s').textContent = 'â­ ' + wpScore;
       $('#wp-msg').textContent = `Awesome! Found "${word}" (+${word.length * 10})`;
       renderWpGrid();
       checkWpClear();
@@ -1905,8 +1905,8 @@ function wpSubmit() {
   } else if (B.r.bonus && B.r.bonus.includes(word)) {
     audio.wordSuccess();
     wpScore += 15;
-    $('#wp-s').textContent = '⭐ ' + wpScore;
-    $('#wp-msg').textContent = `🎁 Bonus Word! "${word}" (+15)`;
+    $('#wp-s').textContent = 'â­ ' + wpScore;
+    $('#wp-msg').textContent = `ðŸŽ Bonus Word! "${word}" (+15)`;
   } else {
     audio.error();
     $('#wp-msg').textContent = `"${word}" is not on the board.`;
@@ -1925,7 +1925,7 @@ function checkWpClear() {
     audio.roundWin();
     clearInterval(wpTimer);
     const totalPts = Math.min(1000, wpScore + 250);
-    res($('#wp-r'), 'Word Puzzle Cleared! 🧩', totalPts, 1000, 'Route 1 delivered successfully!');
+    res($('#wp-r'), 'Word Puzzle Cleared! ðŸ§©', totalPts, 1000, 'Route 1 delivered successfully!');
     onStopCompleted(totalPts, 1000);
   }
 }
@@ -1949,7 +1949,7 @@ $('#wp-hint').onclick = () => {
   wpHintsLeft--;
   $('#wp-hc').textContent = wpHintsLeft;
   wpScore = Math.max(0, wpScore - 15);
-  $('#wp-s').textContent = '⭐ ' + wpScore;
+  $('#wp-s').textContent = 'â­ ' + wpScore;
   audio.letterPick(2);
   renderWpGrid();
   checkWpClear();
@@ -1989,7 +1989,7 @@ let sf, dbg = false;
 const sfT = Timer($('#sf-t'));
 function sfUp() {
   $('#sf-c').textContent = sf.x.size + '/5 fixed';
-  $('#sf-s').textContent = '⭐ ' + Math.max(0, sf.s);
+  $('#sf-s').textContent = 'â­ ' + Math.max(0, sf.s);
 }
 function sfStart() {
   if (sf && sf.to) clearTimeout(sf.to);
@@ -2045,7 +2045,7 @@ $('#sf-i').onclick = e => {
         sf.x.add(i);
         sf.p = null;
         c.classList.add('ok');
-        $('#sf-q').innerHTML = '✅ Fixed! Find the next error.';
+        $('#sf-q').innerHTML = 'âœ… Fixed! Find the next error.';
         sfUp();
         if (sf.x.size === 5) sfEnd();
       } else {
@@ -2068,7 +2068,7 @@ function sfEnd() {
   sf.s = Math.max(0, sf.s + b);
   sfUp();
   $('#sf-q').innerHTML = '';
-  res($('#sf-r'), sf.x.size === 5 ? 'All Errors Fixed! 🎉' : 'Time’s Up', sf.s, 850, `Speed bonus +${b}.`);
+  res($('#sf-r'), sf.x.size === 5 ? 'All Errors Fixed! ðŸŽ‰' : 'Timeâ€™s Up', sf.s, 850, `Speed bonus +${b}.`);
   onStopCompleted(sf.s, 850);
 }
 $('#sf-a').onclick = sfStart;
@@ -2100,18 +2100,18 @@ function mzDraw() {
     let t = '';
     const k = r + ',' + c;
     if (r === mz.r && c === mz.c) {
-      t = okA.baby ? `<img src="${okA.baby}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '👶';
+      t = okA.baby ? `<img src="${okA.baby}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : 'ðŸ‘¶';
     } else if (ch === 'E') {
-      t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '🏠';
+      t = okA.family ? `<img src="${okA.family}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : 'ðŸ ';
     } else if (ch === 'S') {
-      t = okA.machine ? `<img src="${okA.machine}" style="width:28px;height:28px;object-fit:contain">` : '🏭';
+      t = okA.machine ? `<img src="${okA.machine}" style="width:28px;height:28px;object-fit:contain">` : 'ðŸ­';
     } else if (PK.includes(k) && !mz.p.has(k)) {
-      t = '📦';
+      t = 'ðŸ“¦';
     }
     return `<div class="c ${ch === '#' ? 'w' : ''}">${t}</div>`;
   }).join('')).join('');
   $('#mz-m').textContent = mz.m + ' moves';
-  $('#mz-p').textContent = '📦 ' + mz.p.size + '/3';
+  $('#mz-p').textContent = 'ðŸ“¦ ' + mz.p.size + '/3';
 }
 
 function mzStart() {
@@ -2145,7 +2145,7 @@ function mzMove(dr, dc) {
     mz.done = true;
     const t = mzT.stop();
     const s = Math.max(0, 100 + 20 * mz.p.size + Math.max(0, 120 - t) - 2 * Math.max(0, mz.m - 20));
-    res($('#mz-r'), 'Baby Delivered Home! 👶', s, 280, `${mz.m} moves (Optimal route: 20 moves).`);
+    res($('#mz-r'), 'Baby Delivered Home! ðŸ‘¶', s, 280, `${mz.m} moves (Optimal route: 20 moves).`);
     onStopCompleted(s, 280);
   }
 }
@@ -2176,34 +2176,34 @@ const BD_SCENARIOS = [
     title: 'Scenario 1: Baby Basket Order #101',
     steps: ['Receive the order', 'Pick the items', 'Pack the order', 'Ship the parcel', 'Deliver to the customer'],
     faults: [
-      { q: '⚠️ Fault 1: The shipping label displays an invalid delivery address.', o: ['Verify address with customer and reprint label', 'Send it anyway to local depot', 'Cancel the order entirely'] },
-      { q: '⚠️ Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute delivery via highway bypass and notify family', 'Wait at the roadblock until cleared', 'Return the package to dispatch depot'] }
+      { q: 'âš ï¸ Fault 1: The shipping label displays an invalid delivery address.', o: ['Verify address with customer and reprint label', 'Send it anyway to local depot', 'Cancel the order entirely'] },
+      { q: 'âš ï¸ Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute delivery via highway bypass and notify family', 'Wait at the roadblock until cleared', 'Return the package to dispatch depot'] }
     ]
   },
   {
     title: 'Scenario 2: Mountain Highway & Wolf Roadblock',
     steps: ['Inspect bundle', 'Load dispatch van', 'Verify flight manifest', 'Deploy courier', 'Navigate roadblock', 'Deliver to doorstep'],
     faults: [
-      { q: '⚠️ Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare distraction and take the ridge bypass', 'Confront the wolves directly', 'Turn back to factory'] },
-      { q: '⚠️ Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Engage auxiliary solar beacon channel', 'Continue blind without communication', 'Drop parcel at nearest tree'] },
-      { q: '⚠️ Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Execute soft suspension recalibration and inspect bundle', 'Ignore the sensor', 'Shake the basket'] }
+      { q: 'âš ï¸ Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare distraction and take the ridge bypass', 'Confront the wolves directly', 'Turn back to factory'] },
+      { q: 'âš ï¸ Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Engage auxiliary solar beacon channel', 'Continue blind without communication', 'Drop parcel at nearest tree'] },
+      { q: 'âš ï¸ Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Execute soft suspension recalibration and inspect bundle', 'Ignore the sensor', 'Shake the basket'] }
     ]
   },
   {
     title: 'Scenario 3: Severe Weather & Route Recalibration',
     steps: ['Order intake', 'Express sorting', 'Security clearance', 'Flight manifest signing', 'Airborne ascent', 'Storm evasion', 'Family doorstep handoff'],
     faults: [
-      { q: '⚠️ Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
-      { q: '⚠️ Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
-      { q: '⚠️ Fault 3: Nate’s family updated the handoff drop coordinates mid-route.', o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
-      { q: '⚠️ Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
+      { q: 'âš ï¸ Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
+      { q: 'âš ï¸ Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
+      { q: 'âš ï¸ Fault 3: Nateâ€™s family updated the handoff drop coordinates mid-route.', o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
+      { q: 'âš ï¸ Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
     ]
   }
 ];
 
 let bd, bdCurScenario = 0;
 const bdT = Timer($('#bd-t'));
-const bdUp = () => $('#bd-s').textContent = '⭐ ' + bd.s;
+const bdUp = () => $('#bd-s').textContent = 'â­ ' + bd.s;
 
 function bdStart(scenIdx = 0) {
   bdCurScenario = scenIdx;
@@ -2279,9 +2279,9 @@ function bdEnd() {
   const t = bdT.stop(), b = Math.max(0, 120 - t);
   bd.s += b;
   bdUp();
-  $('#bd-h').innerHTML = '✅ All Process Roadblocks Resolved!';
+  $('#bd-h').innerHTML = 'âœ… All Process Roadblocks Resolved!';
   $('#bd-b').innerHTML = '';
-  res($('#bd-r'), 'Roadblock Cleared! 🚚', bd.s, 300, `Speed bonus +${b}.`);
+  res($('#bd-r'), 'Roadblock Cleared! ðŸšš', bd.s, 300, `Speed bonus +${b}.`);
   onStopCompleted(bd.s, 300);
 }
 $('#bd-a').onclick = () => bdStart(bdCurScenario);
@@ -2296,11 +2296,11 @@ const DT_CASES = [
     suspects: ['Pia (Packer)', 'Lando (Loader)', 'Dani (Driver)', 'Rico (Dispatcher)'],
     clues: [
       'Packing log: The basket was sealed at 08:40.',
-      'Message log: At 08:55 Rico sent a message to Lando: “Hold the basket until I release it.”',
+      'Message log: At 08:55 Rico sent a message to Lando: â€œHold the basket until I release it.â€',
       'Dock record: Delivery Truck 2 was ready at Bay 3 from 08:30. Rico released the hold at 12:05 and loading began at 12:10.',
       'GPS log: Truck 2 departed at 12:15 and drive time was 1 hr 45 min, standard duration for this route.',
-      'Dani’s statement: Dani waited in the courier break room until summoned at 12:00.',
-      'Lando’s statement: Lando held the parcel specifically following Rico’s hold order.'
+      'Daniâ€™s statement: Dani waited in the courier break room until summoned at 12:00.',
+      'Landoâ€™s statement: Lando held the parcel specifically following Ricoâ€™s hold order.'
     ],
     places: ['Packing station', 'Loading dock', 'Delivery route'],
     causes: ['A hold instruction that delayed loading', 'A truck engine breakdown', 'A wrong address label'],
@@ -2315,9 +2315,9 @@ const DT_CASES = [
       'Scanner log: Sector 4 barcode read accurately upon arrival at intake at 10:15.',
       'Sorting belt report: Conveyor diverter jam occurred at 10:30 at Sorting Belt 2.',
       'Badge log: Jasper was the sole operator stationed at Sorting Belt 2 during the jam.',
-      'Doug’s statement: Doug transported the pallets only after they were marked and palletized.',
-      'Sarah’s inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.',
-      'Tulip’s log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given.'
+      'Dougâ€™s statement: Doug transported the pallets only after they were marked and palletized.',
+      'Sarahâ€™s inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.',
+      'Tulipâ€™s log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given.'
     ],
     places: ['Intake bay', 'Sorting belt 2', 'Airfield hangar'],
     causes: ['Manual diverter override during conveyor jam', 'Forklift collision damage', 'Radio transmission static'],
@@ -2326,14 +2326,14 @@ const DT_CASES = [
   },
   {
     title: 'Case 3: The Sabotaged Dispatch Coordinates',
-    brief: 'Flight navigational coordinates for Nate’s delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!',
+    brief: 'Flight navigational coordinates for Nateâ€™s delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!',
     suspects: ['Pigeon Toady (Informant)', 'Junior (Lead Courier)', 'Tulip (Mechanic)', 'Alpha Wolf (Tracker)', 'Beta Wolf (Scout)'],
     clues: [
       'Security camera: An unidentified figure entered the Control Tower console room at 22:15.',
-      'Console audit: Flight coordinates for Nate’s sector were overwritten with blizzard waypoint data at 22:18.',
-      'Access keycard log: Pigeon Toady’s executive keycard unlocked the console room door at 22:14.',
-      'Junior’s alibi: Junior was in the hangar briefing room with Nate until 22:45.',
-      'Tulip’s alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.',
+      'Console audit: Flight coordinates for Nateâ€™s sector were overwritten with blizzard waypoint data at 22:18.',
+      'Access keycard log: Pigeon Toadyâ€™s executive keycard unlocked the console room door at 22:14.',
+      'Juniorâ€™s alibi: Junior was in the hangar briefing room with Nate until 22:45.',
+      'Tulipâ€™s alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.',
       'Forest ranger report: Alpha and Beta wolves remained north of the valley perimeter all evening.'
     ],
     places: ['Hangar briefing room', 'Control tower console room', 'Crane workshop'],
@@ -2357,7 +2357,7 @@ function dtStart(caseIdx = 0) {
   $('#dt-r').innerHTML = '';
   $('#dt-m').textContent = '';
 
-  $('#dt-c').innerHTML = C.clues.map((c, i) => `<button class="clue" data-i="${i}">🔍 Inspect Clue ${i + 1}</button>`).join('');
+  $('#dt-c').innerHTML = C.clues.map((c, i) => `<button class="clue" data-i="${i}">ðŸ” Inspect Clue ${i + 1}</button>`).join('');
   $$('.clue').forEach(b => b.onclick = () => {
     audio.letterPick(1);
     b.classList.add('open');
@@ -2387,7 +2387,7 @@ $('#dt-go').onclick = () => {
     dt.done = true;
     const t = dtT.stop();
     const s = Math.max(0, 150 + 50 + 50 + Math.max(0, 200 - t) - 40 * dt.w);
-    res($('#dt-r'), 'Case Solved! 🕵️', s, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
+    res($('#dt-r'), 'Case Solved! ðŸ•µï¸', s, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
     $('#dt-m').textContent = '';
     onStopCompleted(s, 450);
   } else {
@@ -2397,7 +2397,7 @@ $('#dt-go').onclick = () => {
       dt.done = true;
       dtT.stop();
       $('#dt-m').textContent = '';
-      res($('#dt-r'), 'Case Closed by Superior 📁', 120, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
+      res($('#dt-r'), 'Case Closed by Superior ðŸ“', 120, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
       onStopCompleted(120, 450);
     } else {
       $('#dt-m').textContent = 'Inconclusive deduction (-40 pts). 1 accusation remaining!';
@@ -2453,7 +2453,7 @@ function renderBnQuiz(idx) {
   if (idx >= BN_QUESTIONS.length) {
     clearInterval(bnTimer);
     const bonusPts = 500;
-    res($('#bn-r'), 'Final Delivery Complete! 🏆', bonusPts, 500, 'Mission fulfilled! The baby has arrived home.');
+    res($('#bn-r'), 'Final Delivery Complete! ðŸ†', bonusPts, 500, 'Mission fulfilled! The baby has arrived home.');
     onStopCompleted(bonusPts, 500);
     return;
   }
@@ -2487,18 +2487,18 @@ function evalCard() {
   const grade = total >= 2500 ? 'A+' : total >= 2000 ? 'A' : total >= 1500 ? 'B+' : 'B';
 
   modal(`
-    <h2>🏆 Mission Accomplished!</h2>
-    <p style="font-size:1.15rem"><b>Delivered! Nate’s family welcomes the baby home.</b></p>
+    <h2>ðŸ† Mission Accomplished!</h2>
+    <p style="font-size:1.15rem"><b>Delivered! Nateâ€™s family welcomes the baby home.</b></p>
     <div style="background:var(--cell);border-radius:18px;padding:14px;border:2px solid var(--acc);margin:12px 0">
       <div style="font-size:0.8rem;text-transform:uppercase;color:var(--mut);font-weight:800">Certified Courier Pass</div>
       <div style="font-size:1.3rem;font-weight:800;color:var(--ink);margin:4px 0">${user || 'Juan Dela Cruz'}</div>
-      <div style="font-weight:700;color:var(--acc);font-size:0.95rem">${title()} · Grade ${grade}</div>
-      <div style="font-size:1.2rem;font-weight:800;margin-top:6px">Grand Score: ⭐ ${total} pts</div>
+      <div style="font-weight:700;color:var(--acc);font-size:0.95rem">${title()} Â· Grade ${grade}</div>
+      <div style="font-size:1.2rem;font-weight:800;margin-top:6px">Grand Score: â­ ${total} pts</div>
     </div>
     <p>Please complete your seminar evaluation to receive your accredited completion certificate:</p>
     <div id="qr"></div>
     <div class="link">${EVAL_URL}</div>
-    <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation ↗</a>
+    <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation â†—</a>
     ${bt('Back to Delivery Map', 'X()', 1)}
   `);
 
@@ -2528,9 +2528,9 @@ $('#go').onclick = () => {
   draw();
 
   modal(`
-    <h2>🍼 A Baby is Born!</h2>
+    <h2>ðŸ¼ A Baby is Born!</h2>
     <p>A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.</p>
-    ${bt('Start Delivery Mission 🚀', 'X();focusCur()')}
+    ${bt('Start Delivery Mission ðŸš€', 'X();focusCur()')}
   `);
 };
 
@@ -2547,13 +2547,13 @@ $('#rs-btn').onclick = () => {
 // Check for deep-link stage param (e.g. ?stage=2)
 function showAdminLevelSelect() {
   modal(`
-    <h2>👑 Admin Level Select</h2>
+    <h2>ðŸ‘‘ Admin Level Select</h2>
     <p style="font-size:0.9rem;color:var(--mut);margin-bottom:12px">Jump to and preview any stop directly without playing earlier levels:</p>
     <div style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;text-align:left">
       ${I.map((item, idx) => {
-        if (item.t === 'gate') return `<div style="padding:6px 12px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:0.85rem;color:var(--mut)">🔒 Gate ${item.g}: ${GN[item.g]}</div>`;
-        if (item.t === 'fin') return `<button class="sm" onclick="X();evalCard()" style="text-align:left;padding:8px 12px">📜 Stop ${idx+1}: Digital Pass & Certificate</button>`;
-        return `<button class="sm" onclick="X();launch(${idx})" style="text-align:left;padding:8px 12px">${item.e || '📦'} Stop ${idx+1}: <b>${item.n}</b></button>`;
+        if (item.t === 'gate') return `<div style="padding:6px 12px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:0.85rem;color:var(--mut)">ðŸ”’ Gate ${item.g}: ${GN[item.g]}</div>`;
+        if (item.t === 'fin') return `<button class="sm" onclick="X();evalCard()" style="text-align:left;padding:8px 12px">ðŸ“œ Stop ${idx+1}: Digital Pass & Certificate</button>`;
+        return `<button class="sm" onclick="X();launch(${idx})" style="text-align:left;padding:8px 12px">${item.e || 'ðŸ“¦'} Stop ${idx+1}: <b>${item.n}</b></button>`;
       }).join('')}
     </div>
     ${bt('Close', 'X()', 1)}
@@ -2594,7 +2594,7 @@ if ($('#admin-preview-btn')) {
 // Sound toggle
 $('#mute-btn').onclick = () => {
   soundEnabled = !soundEnabled;
-  $('#mute-btn').textContent = soundEnabled ? '🔊' : '🔇';
+  $('#mute-btn').textContent = soundEnabled ? 'ðŸ”Š' : 'ðŸ”‡';
   if (soundEnabled) audio.letterPick(0);
 };
 
@@ -2603,12 +2603,12 @@ $('#mute-btn').onclick = () => {
    GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS)
    ============================================================= */
 const FM_CARDS = [
-  { id: 'baby', name: 'Baby Diamond', img: 'assets/baby.png' },
-  { id: 'junior', name: 'Junior', img: 'assets/junior.png' },
-  { id: 'tulip', name: 'Tulip', img: 'assets/tulip.png' },
-  { id: 'wolves', name: 'Wolves', img: 'assets/wolves.png' },
-  { id: 'toady', name: 'Pigeon Toady', img: 'assets/toady.png' },
-  { id: 'family', name: 'Nate Family', img: 'assets/family.png' }
+  { id: 'diamond', name: 'Baby Diamond',  img: 'assets/fm_diamond.jpg' },
+  { id: 'junior',  name: 'Junior',        img: 'assets/fm_junior.jpg' },
+  { id: 'tulip',   name: 'Tulip',         img: 'assets/fm_tulip.jpg' },
+  { id: 'toady',   name: 'Pigeon Toady',  img: 'assets/fm_toady.jpg' },
+  { id: 'nate',    name: 'Nate Gardner',  img: 'assets/fm_nate.jpg' },
+  { id: 'hunter',  name: 'Hunter',        img: 'assets/fm_hunter.jpg' }
 ];
 
 let fmState = {
@@ -2644,7 +2644,7 @@ function fmStart() {
   fmTimer.reset();
   $('#fm-r').innerHTML = '';
   $('#fm-m').textContent = '0';
-  $('#fm-s').textContent = '⭐ 0';
+  $('#fm-s').textContent = 'â­ 0';
 
   // Create 12 cards (2 of each from 6 character types)
   const fullDeck = shuf([...FM_CARDS, ...FM_CARDS].map((c, idx) => ({ ...c, uid: idx })));
@@ -2735,8 +2735,8 @@ function fmEnd() {
   const tryPenalty = Math.max(0, fmState.tries - 6) * 5;
   const finalScore = Math.max(60, Math.min(200, 160 + speedBonus - tryPenalty));
 
-  $('#fm-s').textContent = '⭐ ' + finalScore;
-  res($('#fm-r'), 'All 6 Pairs Matched! 🗂️', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
+  $('#fm-s').textContent = 'â­ ' + finalScore;
+  res($('#fm-r'), 'All 6 Pairs Matched! ðŸ—‚ï¸', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
   onStopCompleted(finalScore, 200);
 }
 
@@ -2838,24 +2838,24 @@ async function getLeaderboardEntries() {
 async function refreshLeaderboardUI() {
   const entriesEl = $('#lb-entries');
   const statusEl = $('#lb-status');
-  statusEl.textContent = '🔄 Fetching latest ranks...';
+  statusEl.textContent = 'ðŸ”„ Fetching latest ranks...';
   entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Loading live rankings...</div>';
 
   try {
     const list = await getLeaderboardEntries();
-    statusEl.textContent = '⚡ Connected to Seminar Leaderboard';
+    statusEl.textContent = 'âš¡ Connected to Seminar Leaderboard';
 
     if (list.length === 0) {
-      entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first! 🚚</div>';
+      entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first! ðŸšš</div>';
       return;
     }
 
     entriesEl.innerHTML = list.map((entry, idx) => {
       const rank = idx + 1;
       let badge = `#${rank}`;
-      if (rank === 1) badge = '🥇';
-      else if (rank === 2) badge = '🥈';
-      else if (rank === 3) badge = '🥉';
+      if (rank === 1) badge = 'ðŸ¥‡';
+      else if (rank === 2) badge = 'ðŸ¥ˆ';
+      else if (rank === 3) badge = 'ðŸ¥‰';
 
       const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
       const meClass = isMe ? ' lb-item me' : ' lb-item';
@@ -2863,13 +2863,13 @@ async function refreshLeaderboardUI() {
       return `
         <div class="${meClass}">
           <span class="lb-rank">${badge}</span>
-          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
-          <span class="lb-score">⭐ ${entry.score}</span>
+          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? 'â­ (You)' : ''}</span>
+          <span class="lb-score">â­ ${entry.score}</span>
         </div>
       `;
     }).join('');
   } catch(e) {
-    statusEl.textContent = '⚠️ Offline / Local Rankings';
+    statusEl.textContent = 'âš ï¸ Offline / Local Rankings';
   }
 }
 
