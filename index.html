@@ -1989,6 +1989,15 @@ function leave() {
   setTimeout(focusCur, 50);
 }
 
+function nextStop() {
+  X();
+  if (cur < N && I[cur].t !== 'gate' && I[cur].t !== 'fin') {
+    launch(cur);
+    return;
+  }
+  leave();
+}
+
 function onStopCompleted(score, max) {
   if (activeStopIndex === null) return;
   const i = activeStopIndex;
@@ -2027,6 +2036,7 @@ function onStopCompleted(score, max) {
       ${st(stars)}
       <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' Stars Earned! ⭐' : 'Stop Completed! ⭐ ' + pts}</b></p>
       ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
+      ${bt('Next ➜', 'nextStop()')}
       ${bt('Return to Map', 'leave();X()')}
       ${bt('Review Result', 'X()', 1)}
     `);
@@ -3042,7 +3052,7 @@ function evalCard() {
     <div id="qr"></div>
     <div class="link">${EVAL_URL}</div>
     <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation ↗</a>
-    ${bt('Back to Delivery Map', 'X()', 1)}
+    ${bt('Next ➜', 'leave();X()')}
   `);
 
   try {
