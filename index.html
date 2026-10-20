@@ -1058,7 +1058,7 @@ select option {
   <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">⭐ 0</span></div>
   <div class="card"><div id="bd-h"></div><div id="bd-b"></div></div>
   <div id="bd-r"></div>
-  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button></div>
+  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm" id="bd-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
@@ -1073,7 +1073,7 @@ select option {
    <div class="msg" id="dt-m"></div>
   </div>
   <div id="dt-r"></div>
-  <div class="row"><button class="sm" id="dt-a">Restart Case</button></div>
+  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm" id="dt-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
  </section>
 
  
@@ -1319,7 +1319,7 @@ const CONTROL_KEY = 'streamlined_control_v6';
 let user = '', pid = '', courierKey = '';
 let cur = 0;
 let R = []; // Results per stop index
-let O = { 1: 0, 2: 0, 3: 0, 4: 0 }; // Host gate controls (1=Stage2, 2=Stage3, 3=Bonus, 4=Eval)
+let O = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; // Host gate controls (1=Stage2, 2=Stage3, 3=Bonus, 4=Eval)
 let seminarCode = 'STORKS2026';
 
 function normalizeId(name, id) {
@@ -1470,23 +1470,35 @@ const I = [
   { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER (Hard)',  e:'🧩', cap:500 },
   { t:'gate', g:1 },
 
-  // STAGE 2: BABY DELIVERY MAZE (3 Canyon Routes)
+  // STAGE 2: BABY DELIVERY MAZE (Canyon Navigation)
   { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:500 },
   { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:500 },
   { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)',   e:'👶', cap:500 },
   { t:'gate', g:2 },
 
-  // STAGE 3: FLIP N MATCH (Scaling Deck Sizes)
+  // STAGE 3: FIX THE BROKEN DELIVERY (Roadblock Scenarios)
+  { t:'game', k:'bd', scen:0, n:'Broken Delivery: Scenario 1 (Easy)',   e:'🚚', cap:500 },
+  { t:'game', k:'bd', scen:1, n:'Broken Delivery: Scenario 2 (Medium)', e:'🚚', cap:500 },
+  { t:'game', k:'bd', scen:2, n:'Broken Delivery: Scenario 3 (Hard)',   e:'🚚', cap:500 },
+  { t:'gate', g:3 },
+
+  // STAGE 4: DETECTIVE CASE INVESTIGATION (Suspect Deduction)
+  { t:'game', k:'dt', caseIdx:0, n:'Detective Case: Case 1 (Easy)',   e:'🕵️', cap:500 },
+  { t:'game', k:'dt', caseIdx:1, n:'Detective Case: Case 2 (Medium)', e:'🕵️', cap:500 },
+  { t:'game', k:'dt', caseIdx:2, n:'Detective Case: Case 3 (Hard)',   e:'🕵️', cap:500 },
+  { t:'gate', g:4 },
+
+  // STAGE 5: FLIP N MATCH (Courier Badges)
   { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:500 },
   { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:500 },
   { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)',   e:'🃏', cap:500 },
-  { t:'gate', g:3 },
+  { t:'gate', g:5 },
 
-  // STAGE 4: SPOT & FIX THE ERRORS (Defect Inspection)
+  // STAGE 6: SPOT & FIX THE ERRORS (Defect Inspection)
   { t:'game', k:'sf', lv:0, n:'Spot & Fix: 3 Errors (Easy)',   e:'🔎', cap:500 },
   { t:'game', k:'sf', lv:1, n:'Spot & Fix: 4 Errors (Medium)', e:'🔎', cap:500 },
   { t:'game', k:'sf', lv:2, n:'Spot & Fix: 5 Errors (Hard)',   e:'🔎', cap:500 },
-  { t:'gate', g:4 },
+  { t:'gate', g:6 },
 
   // FINAL STAGE: HOME ARRIVAL
   { t:'bonus', k:'bn', n:'Final Delivery Challenge', e:'🏠', cap:500 },
@@ -1494,32 +1506,50 @@ const I = [
 ];
 
 const GN = { 
-  1:'Stage 2 (Perilous Mountain Journey)', 
-  2:'Stage 3 (Courier Identity Matching)', 
-  3:'Stage 4 (Depot Quality Inspection)',
-  4:'the Final Home Delivery'
+  1:'Stage 2 (Canyon Delivery Maze)', 
+  2:'Stage 3 (Roadblock Scenarios)', 
+  3:'Stage 4 (Detective Investigation)',
+  4:'Stage 5 (Courier Memory Match)',
+  5:'Stage 6 (Quality Inspection)',
+  6:'the Final Home Delivery'
 };
 const PILL = { 
   0: '📦 STAGE 1 · WORD PUZZLE DEPOT', 
   4: '👶 STAGE 2 · CANYON DELIVERY MAZE', 
-  8: '🃏 STAGE 3 · COURIER MEMORY MATCH', 
-  12:'🔎 STAGE 4 · SPOT & FIX INSPECTION',
-  16:'🏠 FINAL STAGE · HOME ARRIVAL'
+  8: '🚚 STAGE 3 · ROADBLOCK SCENARIOS', 
+  12:'🕵️ STAGE 4 · DETECTIVE INVESTIGATION',
+  16:'🃏 STAGE 5 · COURIER MEMORY MATCH',
+  20:'🔎 STAGE 6 · SPOT & FIX INSPECTION',
+  24:'🏠 FINAL STAGE · HOME ARRIVAL'
 };
 const CUE = {
-  0:  'Decode logistics terminology across 3 escalating anagram crossword puzzles.',
-  4:  'Navigate the hazardous mountain canyon maze to deliver the baby bundle safely.',
-  8:  'Pair courier badges across 3 increasing memory grid challenges.',
-  12: 'Scrutinize depot dispatches and correct hazardous logistics errors.',
-  16: 'All checkpoints cleared! Enter the seminar code for the final delivery.'
+  0:  'Decode logistics terminology across 3 escalating crossword puzzles.',
+  4:  'Navigate hazardous mountain canyon paths to deliver the baby bundle safely.',
+  8:  'Resolve delivery breakdowns, rerouting, and operational roadblocks.',
+  12: 'Analyze warehouse delay clues and identify culprit suspects.',
+  16: 'Pair courier badges across 3 increasing memory card grids.',
+  20: 'Scrutinize depot dispatches and correct hazardous logistics errors.',
+  24: 'All checkpoints cleared! Enter the seminar code for the final delivery.'
 };
 const BEAT = {
   2:  'Stage 1 cleared! Logistics parcels consolidated.',
   6:  'Stage 2 cleared! The delivery van made it through the canyon.',
-  10: 'Stage 3 cleared! All courier badges authenticated.',
-  14: 'Stage 4 cleared! Quality control zero defect standard achieved!'
+  10: 'Stage 3 cleared! Roadblocks resolved and rerouted.',
+  14: 'Stage 4 cleared! Detective case resolved and culprits cleared.',
+  18: 'Stage 5 cleared! All courier badges authenticated.',
+  22: 'Stage 6 cleared! Quality control inspection approved.',
+  24: 'Delivery completed! The baby has arrived safely home.'
 };
-const GL = { 1:'Dispatch Gate', 2:'Canyon Gate', 3:'Identity Gate', 4:'Arrival Gate' };
+
+const GL = { 
+  1:'Gate 1 · Canyon Pass', 
+  2:'Gate 2 · Roadblock Transit', 
+  3:'Gate 3 · Security Clearance', 
+  4:'Gate 4 · Badge Verification', 
+  5:'Gate 5 · Inspection Hub', 
+  6:'Gate 6 · Final Delivery' 
+};
+
 const SC = [
   ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['👧', 2, 'tulip'],
   ['🃏', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['👧', 7, 'tulip'],
@@ -1923,7 +1953,7 @@ function draw() {
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
   $('#hs').textContent = '⭐ ' + total;
-  $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
+  $('#hb').style.width = Math.round((cleared / 18) * 100) + '%';
 }
 
 function focusCur() {
@@ -1979,7 +2009,7 @@ function openGate(g) {
 let activeStopIndex = null;
 function launch(i) {
   X();
-  ['#wp-next-btn', '#sf-next-btn', '#mz-next-btn', '#fm-next-btn'].forEach(sel => { const el = document.querySelector(sel); if (el) el.hidden = true; });
+  ['#wp-next-btn', '#sf-next-btn', '#mz-next-btn', '#fm-next-btn', '#bd-next-btn', '#dt-next-btn'].forEach(sel => { const el = document.querySelector(sel); if (el) el.hidden = true; });
   activeStopIndex = i;
   $$('#play section').forEach(s => s.hidden = true);
   const it = I[i];
@@ -1992,9 +2022,15 @@ function launch(i) {
   } else if (it.k === 'mz') {
     $('#g2').hidden = false;
     mzStart(it.lv !== undefined ? it.lv : 0);
+  } else if (it.k === 'bd') {
+    $('#g3').hidden = false;
+    bdStart(it.scen !== undefined ? it.scen : 0);
+  } else if (it.k === 'dt') {
+    $('#g4').hidden = false;
+    dtStart(it.caseIdx !== undefined ? it.caseIdx : 0);
   } else if (it.k === 'fm') {
     $('#g6').hidden = false;
-    fmStart(it.lv !== undefined ? it.lv : 1);
+    fmStart(it.lv !== undefined ? it.lv : 0);
   } else if (it.k === 'sf') {
     $('#g1').hidden = false;
     sfStart(it.lv !== undefined ? it.lv : 0);
@@ -2886,8 +2922,11 @@ function bdEnd() {
   bdUp();
   $('#bd-h').innerHTML = '✅ All Process Roadblocks Resolved!';
   $('#bd-b').innerHTML = '';
-  res($('#bd-r'), 'Roadblock Cleared! 🚚', bd.s, 300, `Speed bonus +${b}.`);
-  onStopCompleted(bd.s, 300);
+  const maxPts = bdCurScenario === 0 ? 450 : bdCurScenario === 1 ? 480 : 500;
+  const score = Math.max(250, Math.min(maxPts, bd.s));
+  const bnb = $('#bd-next-btn'); if (bnb) bnb.hidden = false;
+  res($('#bd-r'), 'Roadblock Cleared! 🚚', score, maxPts, `Speed bonus +${b}.`);
+  onStopCompleted(score, maxPts);
 }
 $('#bd-a').onclick = () => bdStart(bdCurScenario);
 
@@ -2991,10 +3030,12 @@ $('#dt-go').onclick = () => {
   if (cu === ans.cu && pl === ans.pl && ca === ans.ca) {
     dt.done = true;
     const t = dtT.stop();
-    const s = Math.max(0, 150 + 50 + 50 + Math.max(0, 200 - t) - 40 * dt.w);
-    res($('#dt-r'), 'Case Solved! 🕵️', s, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
+    const maxPts = dtCurCase === 0 ? 450 : dtCurCase === 1 ? 480 : 500;
+    const s = Math.max(250, Math.min(maxPts, 250 + Math.max(0, 200 - t) - 40 * dt.w));
+    const dnb = $('#dt-next-btn'); if (dnb) dnb.hidden = false;
+    res($('#dt-r'), 'Case Solved! 🕵️', s, maxPts, `<b>Resolution:</b> ${dt.caseData.explanation}`);
     $('#dt-m').textContent = '';
-    onStopCompleted(s, 450);
+    onStopCompleted(s, maxPts);
   } else {
     audio.error();
     dt.w++;
@@ -3089,7 +3130,7 @@ function renderBnQuiz(idx) {
    ============================================================= */
 function evalCard() {
   const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
-  const grade = total >= 4500 ? 'A+' : total >= 3500 ? 'A' : total >= 2500 ? 'B+' : 'B';
+  const grade = total >= 7000 ? 'A+' : total >= 5500 ? 'A' : total >= 4000 ? 'B+' : 'B';
 
   modal(`
     <h2>🏆 Mission Accomplished!</h2>
@@ -3651,7 +3692,7 @@ async function refreshLeaderboardUI() {
           <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
             <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
             <div style="font-size:0.75rem;color:var(--mut);display:flex;gap:8px">
-              <span>${entry.stops}/13 Cleared</span>
+              <span>${entry.stops}/18 Cleared</span>
               <span>⏱️ ${timeStr}</span>
             </div>
           </div>
