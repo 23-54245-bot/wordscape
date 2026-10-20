@@ -974,8 +974,11 @@ select option {
 <div id="mapv" hidden>
  <header>
   <div class="hrow">
-    <div style="display:flex;align-items:center;gap:10px">
-      <img id="hav" src="" alt="avatar">
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="openAvatarModal()" title="Tap to change avatar">
+      <div style="position:relative;flex-shrink:0">
+        <img id="hav" src="" alt="avatar">
+        <span style="position:absolute;bottom:-2px;right:-2px;background:#ff8a1f;border:1.5px solid #fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;box-shadow:0 2px 4px rgba(0,0,0,0.3)">✏️</span>
+      </div>
       <div>
         <div class="nm" id="hn">Courier</div>
         <div class="ttl" id="ht">Junior Dispatch Courier</div>
@@ -1370,7 +1373,8 @@ async function restoreAccount(localState) {
   if (remoteUpdatedAt >= localUpdatedAt) {
     if (Array.isArray(remote.results)) R = remote.results;
     if (typeof remote.cur === 'number') cur = remote.cur;
-    if (remote.avatar) restoreAvatar(remote.avatar);
+    // Only restore previous remote avatar if user hasn't explicitly selected a new avatar on the login screen
+    if (remote.avatar && !chosenAvatar) restoreAvatar(remote.avatar);
   }
   return true;
 }
@@ -1577,6 +1581,18 @@ function adv() {
     cur++;
     saveState();
   }
+}
+
+function renderStarPolygon(cx, cy, r, isFilled) {
+  const pts = [];
+  for (let k = 0; k < 10; k++) {
+    const angle = (k * 36 - 90) * Math.PI / 180;
+    const dist = (k % 2 === 0) ? r : r * 0.42;
+    pts.push(`${(cx + dist * Math.cos(angle)).toFixed(1)},${(cy + dist * Math.sin(angle)).toFixed(1)}`);
+  }
+  const fill = isFilled ? 'url(#gold-star-grad)' : '#475569';
+  const stroke = isFilled ? '#b45309' : '#1e293b';
+  return `<polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round"/>`;
 }
 
 function draw() {
@@ -1826,16 +1842,13 @@ function draw() {
         </g>
       `;
 
-      // 3-Star Crown above cleared level buttons
+      // 3-Star Crown above cleared level buttons (Crisp Vector Polygons - immune to font/encoding issues!)
       if (done && R[i].stars) {
         h += `
           <g filter="url(#shadow-3d)">
-            <!-- Left Star -->
-            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
-            <!-- Center Star (Larger) -->
-            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">★</text>
-            <!-- Right Star -->
-            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
+            ${renderStarPolygon(p.x - 20, p.y - 42, 9, R[i].stars >= 1)}
+            ${renderStarPolygon(p.x,      p.y - 49, 13, R[i].stars >= 2)}
+            ${renderStarPolygon(p.x + 20, p.y - 42, 9, R[i].stars >= 3)}
           </g>
         `;
       }
@@ -3080,6 +3093,39 @@ function pickAvatar(idx, avatars) {
   });
   const err = document.getElementById('av-err');
   if (err) err.style.display = 'none';
+}
+
+function openAvatarModal() {
+  const avatars = window._avatars || [];
+  const gridHtml = avatars.map((av, i) => {
+    const isSelected = chosenAvatar && (chosenAvatar.name === av.name || chosenAvatar.img === av.img);
+    return `
+      <button class="av-btn${isSelected ? ' selected' : ''}" onclick="selectAndSaveAvatar(${i})" type="button" style="margin:4px">
+        <img src="${av.img}" alt="${av.name}" loading="lazy">
+        <span>${av.name}</span>
+      </button>
+    `;
+  }).join('');
+
+  modal(`
+    <h2>Change Your Avatar 🎭</h2>
+    <p class="sub">Select any courier avatar to represent you on the delivery trail:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(82px, 1fr));gap:8px;max-height:300px;overflow-y:auto;padding:8px 4px;margin:12px 0">
+      ${gridHtml}
+    </div>
+    ${bt('Close', 'X()', 1)}
+  `);
+}
+
+function selectAndSaveAvatar(idx) {
+  const avatars = window._avatars || [];
+  if (!avatars[idx]) return;
+  chosenAvatar = avatars[idx];
+  applyAvatar();
+  saveState();
+  if (!$('#mapv').hidden) draw();
+  audio.letterPick(2);
+  X();
 }
 
 function applyAvatar() {
