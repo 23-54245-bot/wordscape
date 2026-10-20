@@ -1026,18 +1026,18 @@ window.addEventListener('storage', e => {
    ============================================================= */
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
-  { t:'game', k:'wp', n:'Word Puzzle', e:'🧩', cap:167 },
-  { t:'game', k:'sf', n:'Spot & Fix', e:'🔎', cap:167 },
-  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:167 },
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM', e:'🧩', cap:200 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER', e:'🧩', cap:200 },
+  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER', e:'🧩', cap:200 },
   { t:'gate', g:1 },
   { t:'game', k:'fm', n:'Flip n Match', e:'🃏', cap:200 },
-  { t:'game', k:'bd', sc:0, n:'Scenario 1', e:'🛠️', cap:200 },
-  { t:'game', k:'bd', sc:1, n:'Scenario 2', e:'🛠️', cap:200 },
-  { t:'game', k:'bd', sc:2, n:'Scenario 3', e:'🛠️', cap:200 },
+  { t:'game', k:'sf', n:'Spot & Fix Errors', e:'🔎', cap:200 },
+  { t:'game', k:'mz', n:'Baby Delivery Maze', e:'👶', cap:200 },
+  { t:'game', k:'bd', sc:0, n:'Fix Broken Delivery', e:'🛠️', cap:200 },
   { t:'gate', g:2 },
-  { t:'game', k:'dt', cs:0, n:'Case 1', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:1, n:'Case 2', e:'🕵️', cap:400 },
-  { t:'game', k:'dt', cs:2, n:'Case 3', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:0, n:'Detective Case 1', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:1, n:'Detective Case 2', e:'🕵️', cap:400 },
+  { t:'game', k:'dt', cs:2, n:'Detective Case 3', e:'🕵️', cap:400 },
   { t:'gate', g:3 },
   { t:'bonus', k:'bn', n:'Final Delivery', e:'🏠', cap:500 },
   { t:'fin', n:'Certificate & Eval', e:'📜' }
@@ -1498,7 +1498,7 @@ function launch(i) {
 
   if (it.k === 'wp') {
     $('#g0').hidden = false;
-    wpStart();
+    wpStart(it.r !== undefined ? it.r : 0);
   } else if (it.k === 'sf') {
     $('#g1').hidden = false;
     sfStart();
@@ -1593,8 +1593,8 @@ const WP_ROUNDS = [
 let wpRi = 0, wpScore = 0, wpTotalSec = 0, wpTimer = null, wpSel = [], wpOrder = [];
 let wpHintsLeft = 3, wpActiveWordBoard = null, wpDragging = false, wpCurrentPointer = null;
 
-function wpStart() {
-  wpRi = 0;
+function wpStart(routeIdx = 0) {
+  wpRi = routeIdx;
   wpScore = 0;
   wpHintsLeft = 3;
   wpTotalSec = 0;
@@ -1613,7 +1613,7 @@ function startWpRoute() {
     const j = Math.floor(Math.random() * (i + 1));
     [wpOrder[i], wpOrder[j]] = [wpOrder[j], wpOrder[i]];
   }
-  $('#wp-rd').textContent = 'Word Puzzle · STREAM';
+  $('#wp-rd').textContent = `Stop ${wpRi + 1} · ${r.letters}`;
   $('#wp-msg').textContent = 'Find the hidden words!';
   renderWpGrid();
   renderWpWheel();
