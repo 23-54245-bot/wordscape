@@ -60,7 +60,10 @@
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
-html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); overflow-x: hidden; }
+html::-webkit-scrollbar { display: none; }
+html { scrollbar-width: none; }
+body::-webkit-scrollbar { display: none; }
 body {
   margin: 0;
   font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
@@ -71,6 +74,7 @@ body {
   display: flex;
   justify-content: center;
   overflow-x: hidden;
+  scrollbar-width: none;
   position: relative;
 }
 
