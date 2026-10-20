@@ -481,13 +481,15 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
             <th>Stage 1</th>
             <th>Stage 2</th>
             <th>Stage 3</th>
+            <th>Stage 4</th>
             <th>Bonus</th>
+            <th>Finish Time</th>
             <th>Grand Total</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="couriers-tbody">
-          <tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">No couriers have registered yet.</td></tr>
+          <tr><td colspan="12" style="text-align:center;color:var(--text-muted);padding:24px">No couriers have registered yet.</td></tr>
         </tbody>
       </table>
     </div>
@@ -613,10 +615,79 @@ function getAllCouriers() {
   return Array.from(map.values());
 }
 
+function getCourierTimeData(c) {
+  const res = Array.isArray(c.results) ? c.results : [];
+  const completedList = res.filter(r => r && r.completedAt);
+
+  let startTime = c.startTime ? Number(c.startTime) : null;
+  if (!startTime && completedList.length > 0) {
+    startTime = Math.min(...completedList.map(r => r.completedAt));
+  }
+
+  let finishTime = c.finishTime ? Number(c.finishTime) : null;
+  if (!finishTime && res[16] && res[16].completedAt) {
+    finishTime = Number(res[16].completedAt);
+  }
+
+  const isFinished = Boolean(res[16] || completedList.length >= 13);
+  const latestTime = finishTime || (completedList.length > 0 ? Math.max(...completedList.map(r => r.completedAt)) : (c.updatedAt || 0));
+
+  let elapsedMs = 0;
+  if (startTime && latestTime && latestTime >= startTime) {
+    elapsedMs = latestTime - startTime;
+  }
+
+  const totalSec = Math.floor(elapsedMs / 1000);
+  const mins = Math.floor(totalSec / 60);
+  const secs = totalSec % 60;
+  const elapsedStr = mins > 0 ? `${mins}m ${String(secs).padStart(2, '0')}s` : `${secs}s`;
+
+  let clockStr = '—';
+  if (latestTime) {
+    const d = new Date(latestTime);
+    clockStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  return {
+    startTime,
+    finishTime,
+    latestTime,
+    isFinished,
+    elapsedMs,
+    elapsedStr: elapsedMs > 0 ? elapsedStr : '—',
+    clockStr
+  };
+}
+
 function calculateScore(c) {
   if (typeof c.score === 'number' && c.score > 0) return c.score;
   if (!c.results || !Array.isArray(c.results)) return 0;
   return c.results.reduce((a, r) => a + (r && r.pts || 0), 0);
+}
+
+function sortCouriers(a, b) {
+  const scoreA = calculateScore(a);
+  const scoreB = calculateScore(b);
+  if (scoreB !== scoreA) {
+    return scoreB - scoreA; // 1st: Highest stars collected ranks first
+  }
+
+  const tA = getCourierTimeData(a);
+  const tB = getCourierTimeData(b);
+  if (tA.isFinished !== tB.isFinished) {
+    return tA.isFinished ? -1 : 1;
+  }
+
+  if (tA.elapsedMs && tB.elapsedMs && tA.elapsedMs !== tB.elapsedMs) {
+    return tA.elapsedMs - tB.elapsedMs; // 2nd: Faster elapsed finish time ranks higher
+  }
+  if (tA.latestTime && tB.latestTime && tA.latestTime !== tB.latestTime) {
+    return tA.latestTime - tB.latestTime; // Earlier finish timestamp ranks higher
+  }
+
+  const stopsA = (a.results || []).filter(r => r && !r.gate).length;
+  const stopsB = (b.results || []).filter(r => r && !r.gate).length;
+  return stopsB - stopsA;
 }
 
 function refreshCouriers() {
@@ -642,11 +713,11 @@ function refreshCouriers() {
   // Filter & sort
   const filtered = couriers.filter(c => 
     c.name.toLowerCase().includes(search) || (c.pid || '').toLowerCase().includes(search)
-  ).sort((a, b) => calculateScore(b) - calculateScore(a));
+  ).sort(sortCouriers);
 
   const tbody = $('#couriers-tbody');
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px">No matching couriers found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--text-muted);padding:24px">No matching couriers found.</td></tr>';
     return;
   }
 
@@ -654,13 +725,19 @@ function refreshCouriers() {
     const totalScore = calculateScore(c);
     const stopIdx = c.cur !== undefined ? c.cur : (c.stops || 0);
     const res = c.results || [];
+    // Stage 1 (Word Puzzle): stops 0, 1, 2
     let r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    let r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
-    let r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
-    let rBon = (res[13]?.pts||0);
-    if (r1 === 0 && r2 === 0 && r3 === 0 && totalScore > 0) {
-      r1 = totalScore;
-    }
+    // Stage 2 (Maze): stops 4, 5, 6
+    let r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
+    // Stage 3 (Flip n Match): stops 8, 9, 10
+    let r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
+    // Stage 4 (Spot & Fix): stops 12, 13, 14
+    let r4 = (res[12]?.pts||0) + (res[13]?.pts||0) + (res[14]?.pts||0);
+    // Bonus: stop 16
+    let rBon = (res[16]?.pts||0);
+
+    const t = getCourierTimeData(c);
+    const timeDisplay = t.elapsedStr !== '—' ? `⏱️ ${t.elapsedStr}` : (t.clockStr !== '—' ? `🕒 ${t.clockStr}` : '—');
 
     return `
       <tr>
@@ -674,7 +751,9 @@ function refreshCouriers() {
         <td>${r1 > 0 ? `<span class="badge badge-good">⭐ ${r1}</span>` : '<span style="color:#64748b">—</span>'}</td>
         <td>${r2 > 0 ? `<span class="badge badge-good">⭐ ${r2}</span>` : '<span style="color:#64748b">—</span>'}</td>
         <td>${r3 > 0 ? `<span class="badge badge-good">⭐ ${r3}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td>${r4 > 0 ? `<span class="badge badge-good">⭐ ${r4}</span>` : '<span style="color:#64748b">—</span>'}</td>
         <td>${rBon > 0 ? `<span class="badge badge-good">⭐ ${rBon}</span>` : '<span style="color:#64748b">—</span>'}</td>
+        <td style="font-size:0.88rem;color:#94a3b8" title="Clock: ${t.clockStr}">${timeDisplay}</td>
         <td style="font-weight:800;color:var(--accent);font-size:1.05rem">⭐ ${totalScore}</td>
         <td>
           <button class="btn btn-sm btn-outline" onclick="grantLatePass('${c.key}')" title="Unlock next stage immediately">Late Pass</button>
@@ -744,7 +823,7 @@ $('#close-proj-btn').onclick = () => {
 };
 
 function renderProjector() {
-  const couriers = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a)).slice(0, 10);
+  const couriers = getAllCouriers().sort(sortCouriers).slice(0, 10);
   const el = $('#proj-tbody');
   if (couriers.length === 0) {
     el.innerHTML = '<div style="text-align:center;font-size:1.6rem;color:var(--text-muted);margin-top:60px">No couriers on the leaderboard yet.</div>';
@@ -756,11 +835,17 @@ function renderProjector() {
     else if (i === 1) medal = '🥈';
     else if (i === 2) medal = '🥉';
 
+    const t = getCourierTimeData(c);
+    const timeDisplay = t.elapsedStr !== '—' ? `⏱️ ${t.elapsedStr}` : (t.clockStr !== '—' ? `🕒 ${t.clockStr}` : '—');
+
     return `
       <div class="proj-row">
         <span class="proj-rank">${medal}</span>
-        <span class="proj-name">${escapeHtml(c.name)}</span>
-        <span class="proj-time">ID: ${escapeHtml(c.pid || '—')}</span>
+        <span class="proj-name">
+          ${c.avatar && c.avatar.img ? `<img src="${c.avatar.img}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;border:2px solid #f5b301">` : ''}
+          ${escapeHtml(c.name)}
+        </span>
+        <span class="proj-time" title="Finish: ${t.clockStr}">${timeDisplay}</span>
         <span class="proj-score">⭐ ${calculateScore(c)} pts</span>
       </div>
     `;
@@ -775,7 +860,7 @@ setInterval(() => {
 
 // Podium sequence
 $('#start-ceremony-btn').onclick = () => {
-  const top3 = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a)).slice(0, 3);
+  const top3 = getAllCouriers().sort(sortCouriers).slice(0, 3);
   if (top3.length === 0) return alert('No couriers available for podium.');
 
   $('#podium-modal').classList.add('active');
@@ -818,19 +903,22 @@ function closePodium() {
    CSV EXPORT
    ============================================================= */
 $('#export-csv-btn').onclick = () => {
-  const couriers = getAllCouriers().sort((a, b) => calculateScore(b) - calculateScore(a));
-  let csv = 'Rank,Name,PlayerID,Stage1_Score,Stage2_Score,Stage3_Score,Bonus_Score,GrandTotal_Score,StopsCompleted\n';
+  const couriers = getAllCouriers().sort(sortCouriers);
+  let csv = 'Rank,Name,PlayerID,Stage1_Score,Stage2_Score,Stage3_Score,Stage4_Score,Bonus_Score,GrandTotal_Score,StopsCompleted,FinishTime\n';
 
   couriers.forEach((c, idx) => {
     const res = c.results || [];
     const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0) + (res[7]?.pts||0);
-    const r3 = (res[9]?.pts||0) + (res[10]?.pts||0) + (res[11]?.pts||0);
-    const rBon = (res[13]?.pts||0);
+    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
+    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
+    const r4 = (res[12]?.pts||0) + (res[13]?.pts||0) + (res[14]?.pts||0);
+    const rBon = (res[16]?.pts||0);
     const total = calculateScore(c);
     const stopsCount = res.filter(r => r && !r.gate).length;
+    const t = getCourierTimeData(c);
+    const timeVal = t.elapsedStr !== '—' ? t.elapsedStr : t.clockStr;
 
-    csv += `${idx + 1},"${c.name.replace(/"/g, '""')}","${c.pid || ''}",${r1},${r2},${r3},${rBon},${total},${stopsCount}\n`;
+    csv += `${idx + 1},"${c.name.replace(/"/g, '""')}","${c.pid || ''}",${r1},${r2},${r3},${r4},${rBon},${total},${stopsCount},"${timeVal}"\n`;
   });
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

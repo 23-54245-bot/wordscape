@@ -1291,8 +1291,7 @@ function res(el, title, score, max, extra) {
     <div class="card" style="text-align:center;margin-top:14px">
       <h2>${title}</h2>
       <div class="big">⭐ ${score}</div>
-      <p style="margin:4px 0">Raw score: <b>${score}</b> / ${max}. ${extra || ''}</p>
-      <p class="sub" style="margin-bottom:0">Scaled towards your stage point rating.</p>
+      <p style="margin:6px 0;font-size:1.05rem"><b>+${score} Stars Earned!</b> ${extra ? `<br><span class="sub">${extra}</span>` : ''}</p>
     </div>
   `;
 }
@@ -1389,6 +1388,8 @@ async function syncToFirebase(payload) {
       cur: payload.cur || 0,
       avatar: (payload.avatar && payload.avatar.name) ? payload.avatar : (chosenAvatar || null),
       results: payload.results || [],
+      startTime: payload.startTime || null,
+      finishTime: payload.finishTime || null,
       updatedAt: payload.updatedAt || Date.now()
     };
     await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
@@ -1407,12 +1408,24 @@ function saveState() {
     localStorage.removeItem(STORAGE_PREFIX + courierKey);
     return;
   }
+  const startKey = 'streamlined_start_' + courierKey;
+  let startTime = Number(localStorage.getItem(startKey));
+  if (!startTime) {
+    startTime = Date.now();
+    try { localStorage.setItem(startKey, String(startTime)); } catch(e) {}
+  }
+  const completedStops = (R || []).filter(r => r && r.completedAt);
+  const isFinished = Boolean(R[16] || completedStops.length >= 13);
+  const finishTime = isFinished ? (R[16]?.completedAt || Math.max(...completedStops.map(r => r.completedAt))) : null;
+
   const payload = {
     name: user,
     pid: pid,
     cur: cur,
     results: R,
     avatar: chosenAvatar,
+    startTime: startTime,
+    finishTime: finishTime,
     updatedAt: Date.now()
   };
   try {
@@ -1436,27 +1449,27 @@ window.addEventListener('storage', e => {
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
   // STAGE 1: WORD PUZZLE (Crossword Sorting)
-  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)',   e:'🧩', cap:250 },
-  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER (Medium)', e:'🧩', cap:250 },
-  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER (Hard)',  e:'🧩', cap:250 },
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)',   e:'🧩', cap:500 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER (Medium)', e:'🧩', cap:500 },
+  { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER (Hard)',  e:'🧩', cap:500 },
   { t:'gate', g:1 },
 
   // STAGE 2: BABY DELIVERY MAZE (3 Canyon Routes)
-  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:280 },
-  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:320 },
-  { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)',   e:'👶', cap:360 },
+  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:500 },
+  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:500 },
+  { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)',   e:'👶', cap:500 },
   { t:'gate', g:2 },
 
   // STAGE 3: FLIP N MATCH (Scaling Deck Sizes)
-  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:250 },
-  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:300 },
-  { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)',   e:'🃏', cap:350 },
+  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:500 },
+  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:500 },
+  { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)',   e:'🃏', cap:500 },
   { t:'gate', g:3 },
 
   // STAGE 4: SPOT & FIX THE ERRORS (Defect Inspection)
-  { t:'game', k:'sf', lv:0, n:'Spot & Fix: 3 Errors (Easy)',   e:'🔎', cap:300 },
-  { t:'game', k:'sf', lv:1, n:'Spot & Fix: 4 Errors (Medium)', e:'🔎', cap:350 },
-  { t:'game', k:'sf', lv:2, n:'Spot & Fix: 5 Errors (Hard)',   e:'🔎', cap:400 },
+  { t:'game', k:'sf', lv:0, n:'Spot & Fix: 3 Errors (Easy)',   e:'🔎', cap:500 },
+  { t:'game', k:'sf', lv:1, n:'Spot & Fix: 4 Errors (Medium)', e:'🔎', cap:500 },
+  { t:'game', k:'sf', lv:2, n:'Spot & Fix: 5 Errors (Hard)',   e:'🔎', cap:500 },
   { t:'gate', g:4 },
 
   // FINAL STAGE: HOME ARRIVAL
@@ -1979,18 +1992,27 @@ function leave() {
 function onStopCompleted(score, max) {
   if (activeStopIndex === null) return;
   const i = activeStopIndex;
-  const ratio = max ? score / max : 0;
+  const maxPts = max || (I[i] && I[i].cap) || 500;
+  const ratio = maxPts ? Math.min(1, score / maxPts) : 0;
   const stars = ratio >= 0.85 ? 3 : ratio >= 0.6 ? 2 : 1;
-  const pts = Math.round(I[i].cap * Math.min(1, ratio));
+  // 1:1 DIRECT SCORING: What players earn in the game is directly awarded as stars! No artificial downscaling!
+  const pts = score;
   let fresh = false;
 
   if (!R[i]) {
-    R[i] = { stars: stars, pts: pts, score: score, max: max, completedAt: Date.now() };
+    R[i] = { stars: stars, pts: pts, score: score, max: maxPts, completedAt: Date.now() };
     fresh = true;
     if (i === cur) {
       cur++;
       adv();
     }
+    saveState();
+  } else if (score > (R[i].pts || 0)) {
+    // If replayed and achieved a higher score, update to the higher score
+    R[i].pts = pts;
+    R[i].score = score;
+    R[i].stars = Math.max(R[i].stars || 0, stars);
+    R[i].completedAt = Date.now();
     saveState();
   }
 
@@ -2003,7 +2025,7 @@ function onStopCompleted(score, max) {
     modal(`
       <h2>📦 Delivered!</h2>
       ${st(stars)}
-      <p style="font-size:1.1rem;margin:8px 0"><b>${fresh ? '+' + pts + ' points' : 'Practice round complete!'}</b></p>
+      <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' Stars Earned! ⭐' : 'Stop Completed! ⭐ ' + pts}</b></p>
       ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
       ${bt('Return to Map', 'leave();X()')}
       ${bt('Review Result', 'X()', 1)}
@@ -2369,9 +2391,10 @@ function checkWpClear() {
   if (allRevealed) {
     audio.roundWin();
     clearInterval(wpTimer);
-    const totalPts = Math.min(1000, wpScore + 250);
-    res($('#wp-r'), 'Word Puzzle Cleared! 🧩', totalPts, 1000, 'Route 1 delivered successfully!');
-    onStopCompleted(totalPts, 1000);
+    const maxPts = wpRoundIdx === 0 ? 450 : wpRoundIdx === 1 ? 480 : 500;
+    const totalPts = Math.max(250, Math.min(maxPts, wpScore + (wpRoundIdx === 0 ? 150 : wpRoundIdx === 1 ? 180 : 200)));
+    res($('#wp-r'), 'Word Puzzle Cleared! 🧩', totalPts, maxPts, 'Route delivered successfully!');
+    onStopCompleted(totalPts, maxPts);
   }
 }
 
@@ -2524,12 +2547,16 @@ $('#sf-i').onclick = e => {
 function sfEnd() {
   sf.done = true;
   clearTimeout(sf.to);
-  const t = sfT.stop(), b = sf.x.size === 5 ? Math.max(0, 150 - t) : 0;
-  sf.s = Math.max(0, sf.s + b);
+  const t = sfT.stop();
+  const target = sf.targetCount || 5;
+  const isAllFixed = sf.x.size >= target;
+  const b = isAllFixed ? Math.max(0, 100 - t) : 0;
+  const maxPts = sfCurLevel === 0 ? 450 : sfCurLevel === 1 ? 480 : 500;
+  const finalScore = Math.max(200, Math.min(maxPts, sf.s + b));
   sfUp();
   $('#sf-q').innerHTML = '';
-  res($('#sf-r'), sf.x.size === 5 ? 'All Errors Fixed! 🎉' : 'Time’s Up', sf.s, 850, `Speed bonus +${b}.`);
-  onStopCompleted(sf.s, 850);
+  res($('#sf-r'), isAllFixed ? 'All Errors Fixed! 🎉' : 'Time’s Up', finalScore, maxPts, `Speed bonus +${b}.`);
+  onStopCompleted(finalScore, maxPts);
 }
 $('#sf-a').onclick = sfStart;
 $('#sf-d').onclick = () => {
@@ -2657,10 +2684,10 @@ function mzMove(dr, dc) {
   if (L.m[r][c] === 'E') {
     mz.done = true;
     const t = mzT.stop();
-    const maxScore = mzCurLv === 0 ? 280 : mzCurLv === 1 ? 320 : 360;
+    const maxScore = mzCurLv === 0 ? 450 : mzCurLv === 1 ? 480 : 500;
     const timeBonus = Math.max(0, 150 - t * 2);
     const movesPenalty = Math.max(0, (mz.m - L.targetMoves) * 3);
-    const score = Math.max(100, Math.min(maxScore, 140 + 35 * mz.p.size + timeBonus - movesPenalty));
+    const score = Math.max(250, Math.min(maxScore, (mzCurLv === 0 ? 280 : mzCurLv === 1 ? 320 : 360) + 35 * mz.p.size + timeBonus - movesPenalty));
     res($('#mz-r'), 'Canyon Route Cleared! 👶', score, maxScore, `Completed in ${mz.m} moves (Par: ${L.targetMoves} moves).`);
     onStopCompleted(score, maxScore);
   }
@@ -3000,7 +3027,7 @@ function renderBnQuiz(idx) {
    ============================================================= */
 function evalCard() {
   const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
-  const grade = total >= 2500 ? 'A+' : total >= 2000 ? 'A' : total >= 1500 ? 'B+' : 'B';
+  const grade = total >= 4500 ? 'A+' : total >= 3500 ? 'A' : total >= 2500 ? 'B+' : 'B';
 
   modal(`
     <h2>🏆 Mission Accomplished!</h2>
@@ -3321,15 +3348,15 @@ function fmEnd() {
   const elapsedMs = fmTimer.stop();
   const elapsedSec = Math.floor(elapsedMs / 1000);
 
-  // Scoring: Max 200 pts
-  // Perfect is 6 tries. Speed under 30s.
-  const speedBonus = Math.max(0, 45 - elapsedSec) * 2;
-  const tryPenalty = Math.max(0, fmState.tries - 6) * 5;
-  const finalScore = Math.max(60, Math.min(200, 160 + speedBonus - tryPenalty));
+  const maxScore = fmCurLv === 0 ? 450 : fmCurLv === 1 ? 480 : 500;
+  const targetTries = fmCurLv === 0 ? 6 : fmCurLv === 1 ? 10 : 14;
+  const speedBonus = Math.max(0, 50 - elapsedSec) * 3;
+  const tryPenalty = Math.max(0, fmState.tries - targetTries) * 10;
+  const finalScore = Math.max(250, Math.min(maxScore, (fmCurLv === 0 ? 340 : fmCurLv === 1 ? 380 : 420) + speedBonus - tryPenalty));
 
   $('#fm-s').textContent = '⭐ ' + finalScore;
-  res($('#fm-r'), 'All 6 Pairs Matched! 🗂️', finalScore, 200, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
-  onStopCompleted(finalScore, 200);
+  res($('#fm-r'), 'All Pairs Matched! 🗂️', finalScore, maxScore, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
+  onStopCompleted(finalScore, maxScore);
 }
 
 $('#fm-a').onclick = fmStart;
@@ -3338,6 +3365,75 @@ $('#fm-a').onclick = fmStart;
 /* =============================================================
    LIVE LEADERBOARD SYSTEM (FIREBASE + LOCAL STORAGE SYNC)
    ============================================================= */
+function getCourierTimeData(c) {
+  const res = Array.isArray(c.results) ? c.results : [];
+  const completedList = res.filter(r => r && r.completedAt);
+
+  let startTime = c.startTime ? Number(c.startTime) : null;
+  if (!startTime && completedList.length > 0) {
+    startTime = Math.min(...completedList.map(r => r.completedAt));
+  }
+
+  let finishTime = c.finishTime ? Number(c.finishTime) : null;
+  if (!finishTime && res[16] && res[16].completedAt) {
+    finishTime = Number(res[16].completedAt);
+  }
+
+  const isFinished = Boolean(res[16] || completedList.length >= 13);
+  const latestTime = finishTime || (completedList.length > 0 ? Math.max(...completedList.map(r => r.completedAt)) : (c.updatedAt || 0));
+
+  let elapsedMs = 0;
+  if (startTime && latestTime && latestTime >= startTime) {
+    elapsedMs = latestTime - startTime;
+  }
+
+  const totalSec = Math.floor(elapsedMs / 1000);
+  const mins = Math.floor(totalSec / 60);
+  const secs = totalSec % 60;
+  const elapsedStr = mins > 0 ? `${mins}m ${String(secs).padStart(2, '0')}s` : `${secs}s`;
+
+  let clockStr = '—';
+  if (latestTime) {
+    const d = new Date(latestTime);
+    clockStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  return {
+    startTime,
+    finishTime,
+    latestTime,
+    isFinished,
+    elapsedMs,
+    elapsedStr: elapsedMs > 0 ? elapsedStr : '—',
+    clockStr
+  };
+}
+
+function sortCouriers(a, b) {
+  const scoreA = (typeof a.score === 'number' && a.score > 0) ? a.score : (a.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+  const scoreB = (typeof b.score === 'number' && b.score > 0) ? b.score : (b.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+  if (scoreB !== scoreA) {
+    return scoreB - scoreA; // 1st Criterion: Highest stars collected ranks first!
+  }
+
+  const tA = getCourierTimeData(a);
+  const tB = getCourierTimeData(b);
+  if (tA.isFinished !== tB.isFinished) {
+    return tA.isFinished ? -1 : 1; // Finished couriers rank above unfinished
+  }
+
+  if (tA.elapsedMs && tB.elapsedMs && tA.elapsedMs !== tB.elapsedMs) {
+    return tA.elapsedMs - tB.elapsedMs; // 2nd Criterion: Faster completion time ranks higher!
+  }
+  if (tA.latestTime && tB.latestTime && tA.latestTime !== tB.latestTime) {
+    return tA.latestTime - tB.latestTime; // Earlier finish timestamp ranks higher
+  }
+
+  const stopsA = (a.results || []).filter(r => r && !r.gate).length;
+  const stopsB = (b.results || []).filter(r => r && !r.gate).length;
+  return stopsB - stopsA;
+}
+
 async function getLeaderboardEntries() {
   const map = new Map();
 
@@ -3351,10 +3447,12 @@ async function getLeaderboardEntries() {
           const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
           const stops = (item.results || []).filter(r => r && !r.gate).length;
           map.set(item.name.toLowerCase().trim(), {
+            ...item,
             name: item.name,
             pid: item.pid || '',
             score: score,
             stops: stops,
+            timeData: getCourierTimeData(item),
             isCurrent: courierKey === normalizeId(item.name, item.pid || '')
           });
         }
@@ -3366,13 +3464,18 @@ async function getLeaderboardEntries() {
   if (user && !isAdmin && courierKey !== HOST_ADMIN_COURIER_KEY && !map.has(user.toLowerCase().trim())) {
     const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
     const myStops = (R || []).filter(r => r && !r.gate).length;
-    map.set(user.toLowerCase().trim(), {
+    const myObj = {
       name: user,
       pid: pid || '',
       score: myScore,
       stops: myStops,
+      results: R,
+      startTime: Number(localStorage.getItem('streamlined_start_' + courierKey)) || null,
+      finishTime: R[16]?.completedAt || null,
       isCurrent: true
-    });
+    };
+    myObj.timeData = getCourierTimeData(myObj);
+    map.set(user.toLowerCase().trim(), myObj);
   }
 
   // 2. Fetch from Firebase
@@ -3386,12 +3489,21 @@ async function getLeaderboardEntries() {
             if (entry && entry.name && normalizeId(entry.name, entry.pid || '') !== HOST_ADMIN_COURIER_KEY) {
               const k = entry.name.toLowerCase().trim();
               const existing = map.get(k);
-              if (!existing || (entry.score || 0) > (existing.score || 0)) {
+              const score = (typeof entry.score === 'number' && entry.score > 0)
+                ? entry.score
+                : (entry.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+              const stops = (typeof entry.stops === 'number' && entry.stops > 0)
+                ? entry.stops
+                : (entry.results || []).filter(r => r && !r.gate).length;
+
+              if (!existing || score > (existing.score || 0)) {
                 map.set(k, {
+                  ...entry,
                   name: entry.name,
                   pid: entry.pid || '',
-                  score: entry.score || 0,
-                  stops: entry.stops || 0,
+                  score: score,
+                  stops: stops,
+                  timeData: getCourierTimeData(entry),
                   isCurrent: (existing && existing.isCurrent) || (user && user.toLowerCase().trim() === k)
                 });
               }
@@ -3402,7 +3514,7 @@ async function getLeaderboardEntries() {
     } catch(e) {}
   }
 
-  return Array.from(map.values()).sort((a, b) => b.score - a.score);
+  return Array.from(map.values()).sort(sortCouriers);
 }
 
 async function refreshLeaderboardUI() {
@@ -3429,11 +3541,18 @@ async function refreshLeaderboardUI() {
 
       const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
       const meClass = isMe ? ' lb-item me' : ' lb-item';
+      const timeStr = entry.timeData ? (entry.timeData.elapsedStr !== '—' ? entry.timeData.elapsedStr : entry.timeData.clockStr) : '—';
 
       return `
         <div class="${meClass}">
           <span class="lb-rank">${badge}</span>
-          <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+            <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? '⭐ (You)' : ''}</span>
+            <div style="font-size:0.75rem;color:var(--mut);display:flex;gap:8px">
+              <span>${entry.stops}/13 Cleared</span>
+              <span>⏱️ ${timeStr}</span>
+            </div>
+          </div>
           <span class="lb-score">⭐ ${entry.score}</span>
         </div>
       `;
