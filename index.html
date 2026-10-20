@@ -2933,8 +2933,9 @@ $('#go').onclick = async () => {
   const localState = loadState();
   const loginButton = $('#go');
   loginButton.disabled = true;
+  let isReturningCourier = Boolean(localState && localState.name && localState.pid);
   try {
-    await restoreAccount(localState);
+    isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
   } catch (error) {
     console.warn('Account restore error:', error);
     if (accountErr) {
@@ -2959,8 +2960,10 @@ $('#go').onclick = async () => {
   draw();
 
   modal(`
-    <h2>🍼 A Baby is Born!</h2>
-    <p>A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.</p>
+    <h2>${isReturningCourier ? '👋 Welcome back!' : '🍼 A Baby is Born!'}</h2>
+    <p>${isReturningCourier
+      ? 'Your courier account and saved progress have been restored.'
+      : 'A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.'}</p>
     ${bt('Start Delivery Mission 🚀', 'X();focusCur()')}
   `);
   loginButton.disabled = false;
