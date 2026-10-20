@@ -1037,7 +1037,7 @@ select option {
     <ol id="sf-admin-answer-list"></ol>
   </details>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
-  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button></div>
+  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button><button class="btn sm" id="sf-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 2: BABY DELIVERY MAZE -->
@@ -1050,7 +1050,7 @@ select option {
   </div>
   <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery 🏠!</p>
   <div id="mz-r"></div>
-  <div class="row"><button class="sm" id="mz-a">Restart</button></div>
+  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm" id="mz-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 3: FIX THE BROKEN DELIVERY (SCENARIOS 1, 2, 3) -->
@@ -1106,7 +1106,7 @@ select option {
   <div id="fm-grid"></div>
   <div id="fm-r"></div>
   <div class="row" style="margin-top:14px">
-    <button class="sm" id="fm-a">Restart Round</button>
+    <button class="sm" id="fm-a">Restart Round</button><button class="btn sm" id="fm-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button>
   </div>
  </section>
 
@@ -1290,11 +1290,23 @@ function shake(el) {
   el.classList.add('shake');
 }
 function res(el, title, score, max, extra) {
+  const nextIdx = (activeStopIndex !== null ? activeStopIndex : cur) + 1;
+  let nextLabel = 'Next Stop ⏩';
+  if (nextIdx < N) {
+    if (I[nextIdx].t === 'gate') nextLabel = O[I[nextIdx].g] ? 'Pass Checkpoint Gate 🔓' : 'Proceed to Gate 🚪';
+    else if (I[nextIdx].t === 'bonus') nextLabel = 'Final Delivery Challenge 🏠';
+    else if (I[nextIdx].t === 'fin') nextLabel = 'View Certificate 📜';
+  }
+
   el.innerHTML = `
     <div class="card" style="text-align:center;margin-top:14px">
       <h2>${title}</h2>
       <div class="big">⭐ ${score}</div>
       <p style="margin:6px 0;font-size:1.05rem"><b>+${score} Stars Earned!</b> ${extra ? `<br><span class="sub">${extra}</span>` : ''}</p>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" onclick="nextStop()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;padding:10px 24px;border-radius:14px;box-shadow:0 4px 14px rgba(16,185,129,0.4)">${nextLabel}</button>
+        <button class="btn alt" onclick="leave()">Return to Map 🗺️</button>
+      </div>
     </div>
   `;
 }
@@ -1967,6 +1979,7 @@ function openGate(g) {
 let activeStopIndex = null;
 function launch(i) {
   X();
+  ['#wp-next-btn', '#sf-next-btn', '#mz-next-btn', '#fm-next-btn'].forEach(sel => { const el = document.querySelector(sel); if (el) el.hidden = true; });
   activeStopIndex = i;
   $$('#play section').forEach(s => s.hidden = true);
   const it = I[i];
@@ -2004,8 +2017,31 @@ function leave() {
 
 function nextStop() {
   X();
-  if (cur < N && I[cur].t !== 'gate' && I[cur].t !== 'fin') {
-    launch(cur);
+  const targetStop = (activeStopIndex !== null ? activeStopIndex + 1 : cur);
+  if (targetStop < N) {
+    const nextIt = I[targetStop];
+    if (nextIt.t === 'gate') {
+      if (O[nextIt.g]) {
+        cur = Math.max(cur, targetStop + 1);
+        adv();
+        saveState();
+        if (cur < N && I[cur].t !== 'gate' && I[cur].t !== 'fin') {
+          launch(cur);
+          return;
+        }
+      }
+      cur = Math.max(cur, targetStop);
+      leave();
+      setTimeout(() => tap(targetStop), 150);
+      return;
+    }
+    if (nextIt.t === 'fin') {
+      leave();
+      evalCard();
+      return;
+    }
+    cur = Math.max(cur, targetStop);
+    launch(targetStop);
     return;
   }
   leave();
@@ -2416,6 +2452,7 @@ function checkWpClear() {
     clearInterval(wpTimer);
     const maxPts = wpRoundIdx === 0 ? 450 : wpRoundIdx === 1 ? 480 : 500;
     const totalPts = Math.max(250, Math.min(maxPts, wpScore + (wpRoundIdx === 0 ? 150 : wpRoundIdx === 1 ? 180 : 200)));
+    const wnb = $('#wp-next-btn'); if (wnb) wnb.hidden = false;
     res($('#wp-r'), 'Word Puzzle Cleared! 🧩', totalPts, maxPts, 'Route delivered successfully!');
     onStopCompleted(totalPts, maxPts);
   }
@@ -2578,6 +2615,7 @@ function sfEnd() {
   const finalScore = Math.max(200, Math.min(maxPts, sf.s + b));
   sfUp();
   $('#sf-q').innerHTML = '';
+  const snb = $('#sf-next-btn'); if (snb) snb.hidden = false;
   res($('#sf-r'), isAllFixed ? 'All Errors Fixed! 🎉' : 'Time’s Up', finalScore, maxPts, `Speed bonus +${b}.`);
   onStopCompleted(finalScore, maxPts);
 }
@@ -2711,6 +2749,7 @@ function mzMove(dr, dc) {
     const timeBonus = Math.max(0, 150 - t * 2);
     const movesPenalty = Math.max(0, (mz.m - L.targetMoves) * 3);
     const score = Math.max(250, Math.min(maxScore, (mzCurLv === 0 ? 280 : mzCurLv === 1 ? 320 : 360) + 35 * mz.p.size + timeBonus - movesPenalty));
+    const mnb = $('#mz-next-btn'); if (mnb) mnb.hidden = false;
     res($('#mz-r'), 'Canyon Route Cleared! 👶', score, maxScore, `Completed in ${mz.m} moves (Par: ${L.targetMoves} moves).`);
     onStopCompleted(score, maxScore);
   }
@@ -3413,6 +3452,7 @@ function fmEnd() {
   const finalScore = Math.max(250, Math.min(maxScore, (fmCurLevel === 0 ? 340 : fmCurLevel === 1 ? 380 : 420) + speedBonus - tryPenalty));
 
   $('#fm-s').textContent = '⭐ ' + finalScore;
+  const fnb = $('#fm-next-btn'); if (fnb) fnb.hidden = false;
   res($('#fm-r'), 'All Pairs Matched! 🗂️', finalScore, maxScore, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
   onStopCompleted(finalScore, maxScore);
 }
