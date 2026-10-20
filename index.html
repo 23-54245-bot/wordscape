@@ -1083,7 +1083,7 @@ select option {
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:1.4rem">🗂️</span>
-        <span style="font-weight:800;font-size:1.25rem;letter-spacing:0.5px">12 Cards</span>
+        <span style="font-weight:800;font-size:1.25rem;letter-spacing:0.5px" id="fm-title">12 Cards</span>
         <span style="font-size:1.4rem">🗂️</span>
       </div>
       <div>
@@ -3313,6 +3313,8 @@ const FM_LEVEL_CONFIGS = [
 function fmStart(lvIdx = 0) {
   fmCurLevel = Math.max(0, Math.min(2, lvIdx));
   const cfg = FM_LEVEL_CONFIGS[fmCurLevel];
+  const titleEl = document.getElementById('fm-title');
+  if (titleEl) titleEl.textContent = `${cfg.pairs * 2} Cards`;
   fmTimer.reset();
   $('#fm-r').innerHTML = '';
   $('#fm-m').textContent = '0';
@@ -3376,8 +3378,8 @@ function fmCardClick(idx) {
         fmState.flipped = [];
         fmState.busy = false;
 
-        // Check Win
-        if (fmState.matched === 12) {
+        // Check Win (All pairs in the deck matched!)
+        if (fmState.matched >= fmState.totalCards) {
           fmEnd();
         }
       }, 350);
@@ -3404,11 +3406,11 @@ function fmEnd() {
   const elapsedMs = fmTimer.stop();
   const elapsedSec = Math.floor(elapsedMs / 1000);
 
-  const maxScore = fmCurLv === 0 ? 450 : fmCurLv === 1 ? 480 : 500;
-  const targetTries = fmCurLv === 0 ? 6 : fmCurLv === 1 ? 10 : 14;
+  const maxScore = fmCurLevel === 0 ? 450 : fmCurLevel === 1 ? 480 : 500;
+  const targetTries = fmCurLevel === 0 ? 6 : fmCurLevel === 1 ? 10 : 14;
   const speedBonus = Math.max(0, 50 - elapsedSec) * 3;
   const tryPenalty = Math.max(0, fmState.tries - targetTries) * 10;
-  const finalScore = Math.max(250, Math.min(maxScore, (fmCurLv === 0 ? 340 : fmCurLv === 1 ? 380 : 420) + speedBonus - tryPenalty));
+  const finalScore = Math.max(250, Math.min(maxScore, (fmCurLevel === 0 ? 340 : fmCurLevel === 1 ? 380 : 420) + speedBonus - tryPenalty));
 
   $('#fm-s').textContent = '⭐ ' + finalScore;
   res($('#fm-r'), 'All Pairs Matched! 🗂️', finalScore, maxScore, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
@@ -3450,8 +3452,12 @@ function getCourierTimeData(c) {
 
   let clockStr = '—';
   if (latestTime) {
-    const d = new Date(latestTime);
-    clockStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    clockStr = new Intl.DateTimeFormat('en-PH', {
+      timeZone: 'Asia/Manila',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date(latestTime));
   }
 
   return {
