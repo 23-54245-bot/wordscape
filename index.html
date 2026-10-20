@@ -1717,7 +1717,7 @@ function draw() {
   h += `
     <g filter="url(#shadow-3d)">
       <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
-      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY???S JOURNEY HOME</text>
+      <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY'S JOURNEY HOME</text>
     </g>
   `;
 
@@ -1790,7 +1790,7 @@ function draw() {
           <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
 
           <!-- Lock Icon & Status -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '????' : '????'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '🔓' : '🔒'}</text>
           
           <!-- Checkpoint Name Ribbon -->
           <rect x="${p.x - 55}" y="${p.y + 34}" width="110" height="22" rx="11" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
@@ -1822,7 +1822,7 @@ function draw() {
           <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
           
           <!-- Stop Icon or Number -->
-          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '????'}</text>
+          <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : '🔒'}</text>
         </g>
       `;
 
@@ -1831,11 +1831,11 @@ function draw() {
         h += `
           <g filter="url(#shadow-3d)">
             <!-- Left Star -->
-            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">???</text>
+            <text x="${p.x - 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 1 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
             <!-- Center Star (Larger) -->
-            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">???</text>
+            <text x="${p.x}" y="${p.y - 42}" text-anchor="middle" font-size="22" fill="${R[i].stars >= 2 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="1">★</text>
             <!-- Right Star -->
-            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">???</text>
+            <text x="${p.x + 20}" y="${p.y - 36}" text-anchor="middle" font-size="16" fill="${R[i].stars >= 3 ? 'url(#gold-star-grad)' : '#64748b'}" stroke="#0f172a" stroke-width="0.8">★</text>
           </g>
         `;
       }
@@ -1878,7 +1878,7 @@ function draw() {
   } else {
     h += `
       <circle cx="${c.x}" cy="${c.y - 54}" r="26" fill="url(#gloss-gold)" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
-      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">????</text>
+      <text x="${c.x}" y="${c.y - 43}" font-size="34" text-anchor="middle">👶</text>
     `;
   }
 
@@ -1897,7 +1897,7 @@ function draw() {
   const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
   $('#hn').textContent = user || 'Courier';
   $('#ht').textContent = title();
-  $('#hs').textContent = '??? ' + total;
+  $('#hs').textContent = '⭐ ' + total;
   $('#hb').style.width = Math.round((cleared / 11) * 100) + '%';
 }
 
