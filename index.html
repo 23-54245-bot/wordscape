@@ -1461,7 +1461,7 @@ const PILL = {
   4: '👶 STAGE 2 · CANYON DELIVERY MAZE', 
   8: '🃏 STAGE 3 · COURIER MEMORY MATCH', 
   12:'🔎 STAGE 4 · SPOT & FIX INSPECTION',
-  16:'🏠 FINAL STAGE · HOME SWEET HOME'
+  16:'🏠 FINAL STAGE · HOME ARRIVAL'
 };
 const CUE = {
   0:  'Decode logistics terminology across 3 escalating anagram crossword puzzles.',
@@ -1522,12 +1522,12 @@ const DESC = {
 };
 
 const TT = ['Junior Dispatch Courier', 'Senior Sorter', 'Quality Inspector', 'Route Dispatcher', 'Chief Logistics Director'];
-const title = () => TT[cur >= 14 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
+const title = () => TT[cur >= 16 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
 
-const N = I.length, H = N * 128 + 260;
+const N = I.length, H = N * 148 + 280;
 const P = I.map((_, i) => ({ 
-  x: Math.round(190 + 92 * Math.sin(i * 1.05 + 0.35)), 
-  y: H - 110 - i * 128 
+  x: Math.round(190 + 82 * Math.sin(i * 1.05 + 0.35)), 
+  y: H - 110 - i * 148 
 }));
 const V = id => ['#login', '#mapv', '#play'].forEach(s => $(s).hidden = s !== id);
 const modal = h => { $('#mbox').innerHTML = h; $('#modal').classList.add('on'); };
@@ -1727,7 +1727,8 @@ function draw() {
     if (PILL[i]) {
       const pillW = Math.min(vbW - 28, PILL[i].length * 7.6 + 32);
       const pillX = Math.max(pillW / 2 + 14, Math.min(vbW - pillW / 2 - 14, p.x));
-      const pillY = it.t === 'bonus' ? p.y + 76 : p.y - 82;
+      // Position ribbon midway in the empty canyon between previous stage and current node
+      const pillY = p.y + 72;
       h += `
         <g filter="url(#shadow-3d)">
           <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
@@ -3150,6 +3151,7 @@ function checkUrlParams() {
     const s = parseInt(stageParam, 10);
     if (s === 2 && O[1]) cur = Math.max(cur, 4);
     if (s === 3 && O[2]) cur = Math.max(cur, 8);
+    if (s === 4 && O[3]) cur = Math.max(cur, 12);
   }
   const playParam = urlParams.get('play');
   if (playParam !== null) {
