@@ -2031,7 +2031,7 @@ let activeStopIndex = null;
 function launch(i) {
   X();
   activeStopIndex = i;
-  $('#play section').forEach(s => s.hidden = true);
+  $$('#play section').forEach(s => s.hidden = true);
   const it = I[i];
   V('#play');
   window.scrollTo(0, 0);
@@ -2056,7 +2056,9 @@ function launch(i) {
   }
   const ind = $('#nav-stage-indicator');
   if (ind) {
-    ind.textContent = `Stop ${i + 1}/${N}: ${it.n || (it.t === 'bonus' ? 'Final Delivery' : 'Checkpoint')}`;
+    const gameNumber = I.slice(0, i).filter(stage => stage.t === 'game' || stage.t === 'bonus').length + 1;
+    const levelNumber = (it.r ?? it.lv ?? it.scen ?? it.caseIdx ?? 0) + 1;
+    ind.textContent = `Game ${gameNumber} · Level ${levelNumber}: ${it.n || (it.t === 'bonus' ? 'Final Delivery' : 'Checkpoint')}`;
   }
 
   ['#wp-next-btn', '#sf-next-btn', '#mz-next-btn', '#fm-next-btn', '#bd-next-btn', '#dt-next-btn', '#bn-next-btn'].forEach(sel => {
