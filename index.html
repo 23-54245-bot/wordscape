@@ -103,16 +103,29 @@ main {
 h1 { text-align: center; font-size: 1.5rem; margin: 6px 0 2px; font-weight: 800; }
 h2 { margin: 4px 0 8px; font-weight: 700; }
 .sub { text-align: center; color: var(--mut); font-size: 0.88rem; margin: 0 0 10px; }
+/* ============================================================
+   3D GLOSSY CARTOON UI SYSTEM — Storks Color Scheme
+   ============================================================ */
+
+/* Cards — deep framed dialog boxes with 3D depth */
 .card {
   background: var(--card-bg);
-  border-radius: 20px;
-  padding: 16px;
+  border-radius: 22px;
+  padding: 18px;
   margin: 10px 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.06);
-  border: 1px solid var(--line);
+  box-shadow:
+    0 8px 0 rgba(0,0,0,0.14),
+    0 14px 30px rgba(0,0,0,0.18),
+    inset 0 2px 0 rgba(255,255,255,0.75),
+    inset 0 -2px 0 rgba(0,0,0,0.06);
+  border: 2.5px solid var(--cell-border);
+  position: relative;
 }
+
 button, select, input { font: inherit; color: inherit; border: 0; }
 button { cursor: pointer; }
+
+/* Primary CTA button — 3D orange pill (Storks Orange) */
 .btn {
   display: flex;
   align-items: center;
@@ -121,69 +134,173 @@ button { cursor: pointer; }
   text-align: center;
   text-decoration: none;
   width: 100%;
-  background: var(--acc-grad);
+  background: linear-gradient(180deg, #ffac47 0%, #ff8a1f 45%, #ea6000 100%);
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.05rem;
-  padding: 13px 18px;
+  padding: 13px 20px;
   border-radius: 999px;
-  box-shadow: 0 4px 0 var(--acc2), 0 8px 16px rgba(255, 106, 0, 0.35);
+  box-shadow:
+    0 5px 0 #b84600,
+    0 8px 18px rgba(255, 106, 0, 0.38),
+    inset 0 2px 0 rgba(255,255,255,0.55),
+    inset 0 -2px 0 rgba(0,0,0,0.15);
   margin-top: 10px;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition: transform 0.08s, box-shadow 0.08s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  letter-spacing: 0.3px;
+}
+.btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ffba60 0%, #ff9730 45%, #ea6800 100%);
 }
 .btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--acc2);
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 #b84600,
+    0 4px 10px rgba(255,106,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    inset 0 -1px 0 rgba(0,0,0,0.1);
 }
+
+/* Alt / secondary button — 3D porcelain white */
 .btn.alt {
-  background: var(--card-bg);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
   color: var(--ink);
-  box-shadow: 0 4px 0 var(--line);
-  border: 1px solid var(--line);
+  text-shadow: none;
+  box-shadow:
+    0 5px 0 #9eb5cc,
+    0 8px 16px rgba(0,0,0,0.14),
+    inset 0 2px 0 rgba(255,255,255,0.9),
+    inset 0 -2px 0 rgba(0,0,0,0.05);
 }
+.btn.alt:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #9eb5cc, 0 3px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* Green success/next button modifier */
+.btn.green {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
+  box-shadow:
+    0 5px 0 #047857,
+    0 8px 18px rgba(16,185,129,0.38),
+    inset 0 2px 0 rgba(255,255,255,0.5),
+    inset 0 -2px 0 rgba(0,0,0,0.12);
+}
+.btn.green:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #047857, 0 4px 10px rgba(16,185,129,0.25), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* Red danger/close button modifier */
+.btn.red {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%);
+  box-shadow:
+    0 5px 0 #991b1b,
+    0 8px 18px rgba(220,38,38,0.32),
+    inset 0 2px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 0 rgba(0,0,0,0.12);
+}
+.btn.red:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #991b1b, 0 4px 8px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+/* Squircle small control button (Hint, Shuffle, Enter, etc.) */
 .sm {
-  background: var(--card-bg);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 700;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%);
+  padding: 9px 16px;
+  border-radius: 16px;
+  font-weight: 800;
   font-size: 0.9rem;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.1);
-  border: 1px solid var(--line);
+  box-shadow:
+    0 4px 0 #9eb5cc,
+    0 6px 14px rgba(0,0,0,0.12),
+    inset 0 2px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(0,0,0,0.05);
+  border: 2px solid #bfdbfe;
   color: var(--ink);
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  transition: transform 0.08s, box-shadow 0.08s;
 }
+.sm:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #e8edf5 100%);
+}
+.sm:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #9eb5cc,
+    0 3px 6px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.85);
+}
+
+/* Small green action button variant */
+.sm.green-sm {
+  background: linear-gradient(180deg, #6ee7b7 0%, #10b981 50%, #059669 100%);
+  color: #fff;
+  border-color: #047857;
+  box-shadow:
+    0 4px 0 #047857,
+    0 6px 14px rgba(16,185,129,0.3),
+    inset 0 2px 0 rgba(255,255,255,0.45);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.sm.green-sm:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #047857, 0 3px 6px rgba(16,185,129,0.18), inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
 .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
+/* HUD stat bar — pill with inset inner shadow for depth */
 .bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--card-bg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(241,245,249,0.97) 100%);
   border-radius: 999px;
-  padding: 8px 18px;
-  font-weight: 700;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.08);
-  border: 1px solid var(--line);
-  margin-bottom: 10px;
+  padding: 9px 20px;
+  font-weight: 800;
+  box-shadow:
+    0 4px 0 rgba(0,0,0,0.1),
+    0 6px 16px rgba(0,0,0,0.1),
+    inset 0 2px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 3px rgba(0,0,0,0.06);
+  border: 2px solid #bfdbfe;
+  margin-bottom: 12px;
 }
 .msg { text-align: center; min-height: 24px; font-weight: 700; color: var(--mut); margin: 6px 0; }
 .opt {
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--cell);
-  border: 2px solid var(--line);
-  border-radius: 14px;
-  padding: 12px 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+  border: 2.5px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 13px 16px;
   margin: 7px 0;
   font-weight: 700;
   color: var(--ink);
-  transition: all 0.12s;
+  transition: transform 0.08s, box-shadow 0.08s, border-color 0.1s;
+  box-shadow:
+    0 4px 0 #bfdbfe,
+    0 6px 12px rgba(0,0,0,0.08),
+    inset 0 2px 0 rgba(255,255,255,0.95);
 }
 .opt:hover:not(:disabled) {
-  border-color: var(--acc);
-  background: rgba(255, 138, 31, 0.08);
+  border-color: #ff8a1f;
+  background: linear-gradient(180deg, #fff8f1 0%, #fff1e0 55%, #ffecd0 100%);
+  box-shadow:
+    0 4px 0 #ea6000,
+    0 6px 14px rgba(255,138,31,0.2),
+    inset 0 2px 0 rgba(255,255,255,0.95);
+  transform: translateY(-1px);
+}
+.opt:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #bfdbfe, 0 3px 6px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.85);
 }
 .opt:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -231,6 +348,169 @@ header {
   width: 0%;
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 0 12px #f97316;
+}
+
+/* ============================================================
+   3D Glossy UI — Extra Components (dpad, stars, sticky header)
+   ============================================================ */
+
+/* Maze D-Pad squircle tiles */
+.dpad-btn {
+  background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+  color: #0c4a6e;
+  font-size: 1.3rem;
+  font-weight: 900;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  box-shadow:
+    0 5px 0 #0284c7,
+    0 7px 14px rgba(2,132,199,0.3),
+    inset 0 2px 0 rgba(255,255,255,0.75),
+    inset 0 -2px 0 rgba(0,0,0,0.1);
+  border: 2.5px solid #7dd3fc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s, box-shadow 0.08s;
+  cursor: pointer;
+}
+.dpad-btn:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 #0284c7,
+    0 3px 6px rgba(2,132,199,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* 3D Star display in result cards */
+.stars {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 8px 0;
+  font-size: 2rem;
+}
+.stars span:not(.dim) {
+  filter: drop-shadow(0 3px 4px rgba(234,179,8,0.6));
+  text-shadow: 0 2px 0 #b45309;
+}
+.stars span.dim { opacity: 0.28; filter: none; }
+
+/* Big score number in result card */
+.big {
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(180deg, #fff3df 0%, #fed7aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 3px rgba(180,69,0,0.45));
+  margin: 8px 0;
+}
+
+/* Sticky top nav header (play screen) */
+#play-sticky-header {
+  background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(241,245,249,0.95) 100%) !important;
+  box-shadow:
+    0 5px 0 rgba(0,0,0,0.1),
+    0 8px 20px rgba(0,0,0,0.12),
+    inset 0 2px 0 rgba(255,255,255,0.9) !important;
+  border: 2.5px solid #bfdbfe !important;
+  border-radius: 18px !important;
+  backdrop-filter: blur(12px);
+}
+#nav-next-btn {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%) !important;
+  box-shadow:
+    0 4px 0 #047857,
+    0 6px 14px rgba(16,185,129,0.35),
+    inset 0 2px 0 rgba(255,255,255,0.5) !important;
+  border-radius: 14px !important;
+  transition: transform 0.08s, box-shadow 0.08s;
+  border: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+#nav-next-btn:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #047857, 0 3px 8px rgba(16,185,129,0.2), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+}
+
+/* Clue & suspect buttons in detective */
+.clue, .sus {
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow:
+    0 4px 0 #9eb5cc,
+    0 5px 12px rgba(0,0,0,0.1),
+    inset 0 2px 0 rgba(255,255,255,0.85);
+  border: 2px solid #bfdbfe;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.clue:active, .sus:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #9eb5cc, inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.clue.open {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fbbf24;
+  box-shadow: 0 3px 0 #d97706, inset 0 2px 0 rgba(255,255,255,0.9);
+}
+.sus.cl {
+  background: linear-gradient(180deg, #fee2e2 0%, #fecaca 100%);
+  border-color: #f87171;
+  box-shadow: 0 3px 0 #dc2626, inset 0 2px 0 rgba(255,255,255,0.75);
+}
+
+/* Progress bar candy-stripe shine */
+.pbar i {
+  background: linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #fbbf24 100%);
+  background-size: 200% 100%;
+  animation: barShine 1.8s linear infinite;
+}
+@keyframes barShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* Score header pill */
+.score {
+  background: linear-gradient(180deg, #fff7ed 0%, #fed7aa 100%);
+  box-shadow:
+    0 4px 0 #9a3412,
+    0 6px 14px rgba(0,0,0,0.25),
+    inset 0 2px 0 rgba(255,255,255,0.85);
+  border: 2.5px solid #ea580c;
+}
+
+/* .btn.green — 3D emerald green (Next Stop etc.) */
+.btn.green {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
+  box-shadow:
+    0 5px 0 #047857,
+    0 8px 18px rgba(16,185,129,0.38),
+    inset 0 2px 0 rgba(255,255,255,0.5),
+    inset 0 -2px 0 rgba(0,0,0,0.12);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.btn.green:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #047857, 0 4px 10px rgba(16,185,129,0.25), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* .btn.red — 3D candy red (Close / Danger) */
+.btn.red {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 50%, #dc2626 100%);
+  box-shadow:
+    0 5px 0 #991b1b,
+    0 8px 18px rgba(220,38,38,0.32),
+    inset 0 2px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 0 rgba(0,0,0,0.12);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.btn.red:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #991b1b, 0 4px 8px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 
 /* 3D Map Container */
@@ -287,15 +567,20 @@ header {
 #modal.on { display: flex; }
 .mbox {
   background: var(--card-bg);
-  border-radius: 26px;
-  padding: 22px;
+  border-radius: 28px;
+  padding: 24px 22px;
   width: 100%;
-  max-width: 380px;
+  max-width: 390px;
   text-align: center;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  border: 1px solid var(--line);
+  box-shadow:
+    0 10px 0 rgba(0,0,0,0.22),
+    0 20px 50px rgba(0,0,0,0.45),
+    inset 0 3px 0 rgba(255,255,255,0.8),
+    inset 0 -2px 0 rgba(0,0,0,0.08);
+  border: 3px solid #93c5fd;
+  position: relative;
 }
 .mbox .btn + .btn { margin-top: 18px; }
 .stars { font-size: 2.2rem; letter-spacing: 4px; color: #f5b301; margin: 4px 0; }
@@ -1028,7 +1313,7 @@ select option {
      <button class="sm" id="wp-shuf">🔀 Shuffle</button>
      <button class="sm" id="wp-clr">✕ Clear</button>
      <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">↵ Enter</button>
-     <button class="btn sm" id="wp-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button>
+     <button class="btn sm" id="wp-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button>
    </div>
    <div id="wp-r"></div>
  </section>
@@ -1042,7 +1327,7 @@ select option {
     <ol id="sf-admin-answer-list"></ol>
   </details>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
-  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button><button class="btn sm" id="sf-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button><button class="btn sm" id="sf-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 2: BABY DELIVERY MAZE -->
@@ -1050,12 +1335,12 @@ select option {
   <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p">📦 0/3</span></div>
   <div id="mz"></div>
   <div class="pad">
-    <span></span><button data-d="-1,0">↑</button><span></span>
-    <button data-d="0,-1">←</button><button data-d="1,0">↓</button><button data-d="0,1">→</button>
+    <span></span><button class="dpad-btn" data-d="-1,0">↑</button><span></span>
+    <button class="dpad-btn" data-d="0,-1">←</button><button class="dpad-btn" data-d="1,0">↓</button><button class="dpad-btn" data-d="0,1">→</button>
   </div>
   <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery 🏠!</p>
   <div id="mz-r"></div>
-  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm" id="mz-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm" id="mz-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 3: FIX THE BROKEN DELIVERY (SCENARIOS 1, 2, 3) -->
@@ -1063,7 +1348,7 @@ select option {
   <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">⭐ 0</span></div>
   <div class="card"><div id="bd-h"></div><div id="bd-b"></div></div>
   <div id="bd-r"></div>
-  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm" id="bd-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm" id="bd-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
@@ -1078,7 +1363,7 @@ select option {
    <div class="msg" id="dt-m"></div>
   </div>
   <div id="dt-r"></div>
-  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm" id="dt-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm" id="dt-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  
@@ -1111,7 +1396,7 @@ select option {
   <div id="fm-grid"></div>
   <div id="fm-r"></div>
   <div class="row" style="margin-top:14px">
-    <button class="sm" id="fm-a">Restart Round</button><button class="btn sm" id="fm-next-btn" onclick="nextStop()" style="margin-left:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800" hidden>Next Stop ⏩</button>
+    <button class="sm" id="fm-a">Restart Round</button><button class="btn sm" id="fm-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button>
   </div>
  </section>
 
@@ -1320,7 +1605,7 @@ function res(el, title, score, max, extra) {
       <div class="big">⭐ ${score}</div>
       <p style="margin:6px 0;font-size:1.05rem"><b>+${score} Stars Earned!</b> ${extra ? `<br><span class="sub">${extra}</span>` : ''}</p>
       <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn" onclick="nextStop()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;padding:12px 28px;border-radius:14px;box-shadow:0 4px 14px rgba(16,185,129,0.4);font-size:1.05rem">${nextLabel}</button>
+        <button class="btn green" onclick="nextStop()" style="font-size:1.05rem">${nextLabel}</button>
         <button class="btn alt" onclick="leave()">Return to Map 🗺️</button>
       </div>
     </div>
