@@ -320,6 +320,19 @@ header {
 #mapv > header .hrow > div:first-child { min-width: 0; }
 #mapv > header .hrow > div:first-child > div { min-width: 0; }
 #mapv > header .hrow > div:last-child { flex-shrink: 0; }
+.change-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
 .nm { font-weight: 800; font-size: 1.12rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .ttl { font-size: 0.8rem; color: #ffb347; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
 .score {
@@ -1259,15 +1272,15 @@ select option {
 <div id="mapv" hidden>
  <header>
   <div class="hrow">
-    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="openAvatarModal()" title="Tap to change avatar">
+    <div style="display:flex;align-items:center;gap:10px">
       <div style="position:relative;flex-shrink:0">
         <img id="hav" src="" alt="avatar">
-        <span style="position:absolute;bottom:-2px;right:-2px;background:#ff8a1f;border:1.5px solid #fff;border-radius:50%;width:18px;height:18px;display:grid;place-items:center;font-size:10px;box-shadow:0 2px 4px rgba(0,0,0,0.3)">✏️</span>
       </div>
       <div>
         <div class="nm" id="hn">Courier</div>
         <div class="ttl" id="ht">Junior Dispatch Courier</div>
       </div>
+      <button class="change-avatar-btn" id="change-avatar-btn" type="button">🎭 Change avatar</button>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">🏆 Leaderboard</button>
@@ -1287,7 +1300,7 @@ select option {
  <div class="row" id="play-sticky-header" style="justify-content:space-between;align-items:center;margin:0 0 10px;position:sticky;top:0;z-index:90;background:rgba(12,24,43,0.92);backdrop-filter:blur(12px);padding:8px 12px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.16)">
    <button class="sm" onclick="leave()" style="display:flex;align-items:center;gap:4px;font-weight:700">← Map</button>
    <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
-   <button class="btn sm" id="nav-next-btn" onclick="nextStop()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;padding:8px 16px;border-radius:12px;box-shadow:0 4px 12px rgba(16,185,129,0.4);display:flex;align-items:center;gap:6px;cursor:pointer;border:none">
+   <button class="btn sm" id="nav-next-btn" onclick="nextStop()" style="display:flex;align-items:center;gap:6px;padding:8px 16px">
      <span id="nav-next-label">Next Stop ⏩</span>
    </button>
  </div>
@@ -1312,8 +1325,8 @@ select option {
      <button class="sm" id="wp-hint">💡 Hint (<span id="wp-hc">3</span>) [-15]</button>
      <button class="sm" id="wp-shuf">🔀 Shuffle</button>
      <button class="sm" id="wp-clr">✕ Clear</button>
-     <button class="sm" id="wp-ent" style="background:var(--acc);color:#fff">↵ Enter</button>
-     <button class="btn sm" id="wp-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button>
+     <button class="sm" id="wp-ent" style="background:linear-gradient(180deg,#ffac47,#ff8a1f,#ea6000);color:#fff;border-color:#b84600;box-shadow:0 4px 0 #b84600,inset 0 2px 0 rgba(255,255,255,0.55)">↵ Enter</button>
+     <button class="btn sm green" id="wp-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button>
    </div>
    <div id="wp-r"></div>
  </section>
@@ -1327,7 +1340,7 @@ select option {
     <ol id="sf-admin-answer-list"></ol>
   </details>
   <div class="card" id="sf-q"></div><div class="msg" id="sf-m"></div><div id="sf-r"></div>
-  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button><button class="btn sm" id="sf-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="sf-d">Show tap coordinates</button><button class="sm" id="sf-a">Restart</button><button class="btn sm green" id="sf-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 2: BABY DELIVERY MAZE -->
@@ -1340,7 +1353,7 @@ select option {
   </div>
   <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery 🏠!</p>
   <div id="mz-r"></div>
-  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm" id="mz-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm green" id="mz-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 3: FIX THE BROKEN DELIVERY (SCENARIOS 1, 2, 3) -->
@@ -1348,7 +1361,7 @@ select option {
   <div class="bar"><span id="bd-t">0:00</span><span id="bd-scen-title">Scenario 1</span><span id="bd-s">⭐ 0</span></div>
   <div class="card"><div id="bd-h"></div><div id="bd-b"></div></div>
   <div id="bd-r"></div>
-  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm" id="bd-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm green" id="bd-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
@@ -1363,7 +1376,7 @@ select option {
    <div class="msg" id="dt-m"></div>
   </div>
   <div id="dt-r"></div>
-  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm" id="dt-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
+  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm green" id="dt-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button></div>
  </section>
 
  
@@ -1396,7 +1409,7 @@ select option {
   <div id="fm-grid"></div>
   <div id="fm-r"></div>
   <div class="row" style="margin-top:14px">
-    <button class="sm" id="fm-a">Restart Round</button><button class="btn sm" id="fm-next-btn" onclick="nextStop()" class="btn sm green" style="margin-left:8px" hidden>Next Stop ⏩</button>
+    <button class="sm" id="fm-a">Restart Round</button><button class="btn sm green" id="fm-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop ⏩</button>
   </div>
  </section>
 
@@ -1406,7 +1419,7 @@ select option {
    <div class="card">
      <h2>🏠 The Final Delivery</h2>
      <p>Enter the live seminar code announced by the host to unlock the bonus handoff challenge!</p>
-     <input id="bn-code-input" placeholder="Enter Seminar Code (e.g. STORKS2026)" style="text-transform:uppercase">
+     <input id="bn-code-input" placeholder="Enter Seminar Code" style="text-transform:uppercase">
      <button class="btn" id="bn-unlock-btn">Verify Code & Play</button>
      <div id="bn-quiz-area" hidden style="margin-top:16px">
        <div id="bn-q-text" style="font-weight:700;margin-bottom:10px"></div>
@@ -1414,7 +1427,7 @@ select option {
      </div>
    </div>
    <div class="row" style="margin-top:14px;justify-content:center">
-     <button class="btn sm" id="bn-next-btn" onclick="nextStop()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;padding:8px 20px" hidden>View Final Evaluation 📜</button>
+     <button class="btn sm" id="bn-next-btn" onclick="nextStop()" class="btn green" style="padding:10px 22px" hidden>View Final Evaluation 📜</button>
    </div>
    <div id="bn-r"></div>
  </section>
@@ -1652,7 +1665,7 @@ function loadState() {
     const data = JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || '{}');
     if (data.results) R = data.results;
     if (typeof data.cur === 'number') cur = data.cur;
-    if (data.avatar) restoreAvatar(data.avatar);
+    if (data.avatar && !chosenAvatar) restoreAvatar(data.avatar);
     return data;
   } catch(e) {}
   return null;
@@ -1664,11 +1677,26 @@ function loadState() {
 const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
 
 function restoreAvatar(avatar) {
-  if (!avatar || !avatar.name) return;
+  if (!avatar) return;
   const avatars = window._avatars || [];
+  const legacyAvatarNames = {
+    'baby diamond': 'Clover the Bunny',
+    'hunter': 'Pip the Fox',
+    'junior': 'Tumble the Turtle',
+    'nate gardner': 'Maple the Bear',
+    'pigeon toady': 'Skipper the Otter',
+    'tulip': 'Wren the Owl',
+    'alpha': 'Orbit the Cat',
+    'beta': 'Patch the Raccoon'
+  };
+  const savedName = String(avatar.name || '').toLowerCase();
+  const mappedName = legacyAvatarNames[savedName];
   chosenAvatar = avatars.find(item =>
-    item.name.toLowerCase() === avatar.name.toLowerCase() || item.img === avatar.img
-  ) || avatar;
+    item.name.toLowerCase() === savedName ||
+    (mappedName && item.name === mappedName) ||
+    item.img === avatar.img
+  ) || avatars[0] || null;
+  if (!chosenAvatar) return;
   document.querySelectorAll('.av-btn').forEach((button, index) => {
     const selected = avatars[index] === chosenAvatar;
     button.classList.toggle('selected', selected);
@@ -1763,6 +1791,35 @@ window.addEventListener('storage', e => {
     if (!$('#mapv').hidden) draw();
   }
 });
+
+// Real-time Cloud Sync for Host Gates & Live Seminar Code
+async function syncControlFromFirebase() {
+  if (!FIREBASE_DB_URL) return;
+  try {
+    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        let changed = false;
+        if (data.gates && JSON.stringify(data.gates) !== JSON.stringify(O)) {
+          O = Object.assign({}, O, data.gates);
+          changed = true;
+        }
+        if (data.seminarCode && data.seminarCode !== seminarCode) {
+          seminarCode = data.seminarCode;
+          changed = true;
+        }
+        if (changed || !localStorage.getItem(CONTROL_KEY)) {
+          try {
+            localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates: O, seminarCode: seminarCode, updatedAt: data.updatedAt || Date.now() }));
+          } catch(e) {}
+          adv();
+          if ($('#mapv') && !$('#mapv').hidden) draw();
+        }
+      }
+    }
+  } catch(e) {}
+}
 
 /* =============================================================
    MAP HUB ARCHITECTURE & STAGES DEFINITION
@@ -3427,7 +3484,7 @@ function bnStart() {
 
 $('#bn-unlock-btn').onclick = () => {
   const entered = $('#bn-code-input').value.trim().toUpperCase();
-  if (entered === seminarCode.toUpperCase() || entered === 'STORKS2026' || entered === 'DEMO') {
+  if (entered === seminarCode.toUpperCase() || entered === 'DEMO') {
     audio.wordSuccess();
     $('#bn-quiz-area').hidden = false;
     $('#bn-code-input').disabled = true;
@@ -3523,6 +3580,9 @@ function pickAvatar(idx, avatars) {
 
 function openAvatarModal() {
   const avatars = window._avatars || [];
+  if (avatars.length === 0) {
+    return info('Avatars are still loading', 'Please wait a moment and try again.');
+  }
   const gridHtml = avatars.map((av, i) => {
     const isSelected = chosenAvatar && (chosenAvatar.name === av.name || chosenAvatar.img === av.img);
     return `
@@ -3542,6 +3602,8 @@ function openAvatarModal() {
     ${bt('Close', 'X()', 1)}
   `);
 }
+
+document.getElementById('change-avatar-btn').addEventListener('click', openAvatarModal);
 
 function selectAndSaveAvatar(idx) {
   const avatars = window._avatars || [];
@@ -3580,14 +3642,14 @@ fetch('assets/avatars.json?v=' + Date.now())
   })
   .catch(() => {
     const fallback = [
-      { name: 'Alpha',        img: 'assets/avatars/Alpha.png' },
-      { name: 'Beta',         img: 'assets/avatars/Beta.png' },
-      { name: 'Baby Diamond', img: 'assets/fm_diamond.jpg' },
-      { name: 'Hunter',       img: 'assets/fm_hunter.jpg' },
-      { name: 'Junior',       img: 'assets/fm_junior.jpg' },
-      { name: 'Nate Gardner', img: 'assets/fm_nate.jpg' },
-      { name: 'Pigeon Toady', img: 'assets/fm_toady.jpg' },
-      { name: 'Tulip',        img: 'assets/fm_tulip.jpg' }
+      { name: 'Pip the Fox',      img: 'assets/avatars/pip-fox.svg' },
+      { name: 'Orbit the Cat',    img: 'assets/avatars/orbit-cat.svg' },
+      { name: 'Wren the Owl',     img: 'assets/avatars/wren-owl.svg' },
+      { name: 'Clover the Bunny', img: 'assets/avatars/clover-bunny.svg' },
+      { name: 'Tumble the Turtle',img: 'assets/avatars/tumble-turtle.svg' },
+      { name: 'Maple the Bear',   img: 'assets/avatars/maple-bear.svg' },
+      { name: 'Skipper the Otter',img: 'assets/avatars/skipper-otter.svg' },
+      { name: 'Patch the Raccoon',img: 'assets/avatars/patch-raccoon.svg' }
     ];
     window._avatars = fallback;
     buildAvatarGrid(fallback);
@@ -3690,14 +3752,14 @@ $('#mute-btn').onclick = () => {
    GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS)
    ============================================================= */
 const FM_CARDS = [
-  { id: 'alpha',   name: 'Alpha',         img: 'Flip Game Pictures/Alpha.png' },
-  { id: 'beta',    name: 'Beta',          img: 'Flip Game Pictures/Beta.png' },
-  { id: 'diamond', name: 'Baby Diamond',  img: 'assets/fm_diamond.jpg' },
-  { id: 'junior',  name: 'Junior',        img: 'assets/fm_junior.jpg' },
-  { id: 'tulip',   name: 'Tulip',         img: 'assets/fm_tulip.jpg' },
-  { id: 'toady',   name: 'Pigeon Toady',  img: 'assets/fm_toady.jpg' },
-  { id: 'nate',    name: 'Nate Gardner',  img: 'assets/fm_nate.jpg' },
-  { id: 'hunter',  name: 'Hunter',        img: 'assets/fm_hunter.jpg' }
+  { id: 'pip-fox',       name: 'Pip the Fox',       img: 'assets/avatars/pip-fox.svg' },
+  { id: 'orbit-cat',     name: 'Orbit the Cat',     img: 'assets/avatars/orbit-cat.svg' },
+  { id: 'wren-owl',      name: 'Wren the Owl',      img: 'assets/avatars/wren-owl.svg' },
+  { id: 'clover-bunny',  name: 'Clover the Bunny',  img: 'assets/avatars/clover-bunny.svg' },
+  { id: 'tumble-turtle', name: 'Tumble the Turtle', img: 'assets/avatars/tumble-turtle.svg' },
+  { id: 'maple-bear',    name: 'Maple the Bear',    img: 'assets/avatars/maple-bear.svg' },
+  { id: 'skipper-otter', name: 'Skipper the Otter', img: 'assets/avatars/skipper-otter.svg' },
+  { id: 'patch-raccoon', name: 'Patch the Raccoon', img: 'assets/avatars/patch-raccoon.svg' }
 ];
 
 let fmState = {
@@ -4072,6 +4134,8 @@ $('#refresh-lb-btn').onclick = () => {
 loadAssets();
 loadState();
 checkUrlParams();
+syncControlFromFirebase();
+setInterval(syncControlFromFirebase, 3000);
 </script>
 </body>
 </html>

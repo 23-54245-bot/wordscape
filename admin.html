@@ -208,99 +208,49 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 .badge-good { background: rgba(16, 185, 129, 0.2); color: var(--good); }
 .badge-wait { background: rgba(245, 158, 11, 0.2); color: var(--warn); }
 
-/* Fullscreen Projector Overlay */
-#projector-view {
-  position: fixed;
-  inset: 0;
-  background: #090e17;
-  z-index: 100;
-  display: none;
-  flex-direction: column;
-  padding: 30px;
-  overflow: auto;
+.auth-screen {
+  width: min(420px, calc(100% - 32px));
+  margin: auto;
 }
-#projector-view.active { display: flex; }
-.proj-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #1e293b;
-  padding-bottom: 16px;
-}
-.proj-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--accent);
-}
-.proj-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-}
-.proj-row {
-  display: grid;
-  grid-template-columns: 70px 1fr 140px 140px;
-  align-items: center;
-  background: #151f32;
-  border-radius: 16px;
-  padding: 14px 22px;
-  font-size: 1.35rem;
+.auth-screen .card { width: 100%; }
+.auth-screen label {
+  display: block;
+  margin: 12px 0 6px;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  border: 1px solid #24324a;
 }
-.proj-row:nth-child(1) { border-color: #f5b301; background: linear-gradient(90deg, #1f2c44, #2a2012); }
-.proj-row:nth-child(2) { border-color: #94a3b8; }
-.proj-row:nth-child(3) { border-color: #b45309; }
-.proj-rank { font-size: 1.6rem; color: #f5b301; font-weight: 800; }
-.proj-name { color: #fff; }
-.proj-score { text-align: right; color: var(--accent); }
-.proj-time { text-align: right; color: #60a5fa; font-family: monospace; }
-
-/* Podium Overlay */
-#podium-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 120;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-}
-#podium-modal.active { display: flex; }
-.podium-box {
-  max-width: 650px;
+.auth-screen input {
   width: 100%;
-  animation: popUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 10px 12px;
 }
-@keyframes popUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.auth-screen .btn { justify-content: center; width: 100%; margin-top: 16px; }
+.auth-error { color: #fecaca; min-height: 1.25em; margin: 10px 0 0; }
+.app-shell[hidden], .auth-screen[hidden] { display: none !important; }
 
-#confetti-canvas-admin {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 130;
-}
 </style>
 </head>
 <body>
-<canvas id="confetti-canvas-admin"></canvas>
+<section class="auth-screen" id="auth-screen" aria-labelledby="auth-title">
+  <div class="card">
+    <h1 id="auth-title" style="margin:0 0 8px">Host sign in</h1>
+    <p class="switch-sub">Sign in with the authorized host account to open the Control Tower.</p>
+    <form id="host-login-form">
+      <label for="host-email">Email</label>
+      <input class="glass-input" id="host-email" type="email" autocomplete="username" required>
+      <label for="host-password">Password</label>
+      <input class="glass-input" id="host-password" type="password" autocomplete="current-password" required>
+      <p class="auth-error" id="auth-error" role="alert"></p>
+      <button class="btn" id="host-login-btn" type="submit">Sign in</button>
+    </form>
+  </div>
+</section>
 
+<div class="app-shell" id="admin-app" hidden>
 <header>
   <div class="brand">
     <img src="assets/logo.png?v=3" alt="STREAMLINED" style="height:36px;object-fit:contain;mix-blend-mode:screen">
     <span style="font-size:1.1rem;color:var(--text-muted);border-left:2px solid var(--card-border);padding-left:12px;margin-left:4px">Host Control Tower</span>
   </div>
-  <div style="display:flex;gap:10px;align-items:center">
-    <button class="btn btn-outline" id="open-proj-btn">📺 Projector Mode</button>
-    <button class="btn" id="export-csv-btn">📥 Export CSV</button>
-  </div>
+  <button class="btn btn-outline" id="host-sign-out-btn" type="button">Sign out</button>
 </header>
 
 <div class="container">
@@ -561,40 +511,24 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     </div>
   </div>
 </div>
-
-<!-- FULLSCREEN PROJECTOR VIEW -->
-<div id="projector-view">
-  <div class="proj-header">
-    <div class="proj-title">STREAMLINED · Grand Leaderboard 🏆</div>
-    <div style="display:flex;gap:10px">
-      <button class="btn" id="start-ceremony-btn" style="background:#f5b301;color:#1e293b">🎉 Start Podium Ceremony</button>
-      <button class="btn btn-outline" id="close-proj-btn">✕ Close Projector</button>
-    </div>
-  </div>
-  <div class="proj-list" id="proj-tbody"></div>
-</div>
-
-<!-- PODIUM CEREMONY MODAL -->
-<div id="podium-modal">
-  <div class="podium-box">
-    <div style="font-size:3rem">🏆</div>
-    <h1 style="color:#f5b301;font-size:2.4rem;margin:8px 0">CHAMPIONSHIP PODIUM</h1>
-    <div id="podium-content" style="margin:20px 0"></div>
-    <button class="btn btn-outline" onclick="closePodium()">Close Ceremony</button>
-  </div>
 </div>
 
 <script>
 const $ = selector => document.querySelector(selector);
 const CONTROL_KEY = 'streamlined_control_v6';
 const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_API_KEY = 'AIzaSyDASXCfa11-3WtQEy4c_M8RzuFw2LJBRGM';
+const HOST_UID = 'YmwJyK4uOOfSgcbTU6WKVxBLqKv1';
+const AUTH_SESSION_KEY = 'streamlined_host_auth_v1';
 let remoteCouriers = {};
+let authSession = null;
+let courierPollInterval = null;
 
 const STORAGE_PREFIX = 'streamlined_courier_';
 let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
 let seminarCode = 'STORKS2026';
 
-function loadControl() {
+async function loadControl() {
   try {
     const raw = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
     if (raw.gates) gates = raw.gates;
@@ -602,11 +536,54 @@ function loadControl() {
     $('#seminar-code-input').value = seminarCode;
   } catch(e) {}
   updateGateButtons();
+  await loadControlFromRemote();
 }
 
-function saveControl() {
+async function loadControlFromRemote() {
+  if (!FIREBASE_DB_URL) return;
+  try {
+    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, { cache: 'no-store' });
+    if (res.ok) {
+      const remote = await res.json();
+      if (remote && typeof remote === 'object') {
+        let changed = false;
+        if (remote.gates && JSON.stringify(remote.gates) !== JSON.stringify(gates)) {
+          gates = Object.assign({}, gates, remote.gates);
+          changed = true;
+        }
+        if (remote.seminarCode && remote.seminarCode !== seminarCode) {
+          seminarCode = remote.seminarCode;
+          if (document.activeElement !== $('#seminar-code-input')) {
+            $('#seminar-code-input').value = seminarCode;
+          }
+          changed = true;
+        }
+        if (changed || !localStorage.getItem(CONTROL_KEY)) {
+          localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates, seminarCode, updatedAt: remote.updatedAt || Date.now() }));
+          updateGateButtons();
+          refreshCouriers();
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Firebase control load error:', e);
+  }
+}
+
+async function saveControl() {
   const payload = { gates: gates, seminarCode: seminarCode, updatedAt: Date.now() };
   localStorage.setItem(CONTROL_KEY, JSON.stringify(payload));
+  if (FIREBASE_DB_URL) {
+    try {
+      await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {
+      console.warn('Firebase control sync error:', e);
+    }
+  }
 }
 
 function updateGateButtons() {
@@ -640,10 +617,17 @@ function copyLink(stage) {
   });
 }
 
-$('#save-code-btn').onclick = () => {
+$('#save-code-btn').onclick = async () => {
+  const btn = $('#save-code-btn');
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
   seminarCode = $('#seminar-code-input').value.trim().toUpperCase() || 'STORKS2026';
-  saveControl();
-  alert(`Seminar code updated to: ${seminarCode}`);
+  $('#seminar-code-input').value = seminarCode;
+  await saveControl();
+  btn.disabled = false;
+  btn.textContent = origText;
+  alert(`Seminar code updated to: ${seminarCode}\n(Saved locally & synced to cloud)`);
 };
 
 /* =============================================================
@@ -852,9 +836,14 @@ async function deleteCourier(key, name) {
   const cId = key.replace(STORAGE_PREFIX, '');
   if (FIREBASE_DB_URL && cId) {
     try {
-      await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${cId}.json`, { method: 'DELETE' });
+      const token = await getAuthToken();
+      const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${cId}.json?auth=${encodeURIComponent(token)}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(`Courier delete failed (${response.status})`);
       delete remoteCouriers[cId];
-    } catch(e) {}
+    } catch(e) {
+      console.error('Firebase courier delete error:', e);
+      alert('Could not delete this courier from the database. Check your connection and Firebase database rules.');
+    }
   }
   refreshCouriers();
 }
@@ -887,212 +876,169 @@ $('#wipe-all-btn').onclick = () => {
 
 $('#search-input').oninput = refreshCouriers;
 
-/* =============================================================
-   PROJECTOR MODE & PODIUM CEREMONY
-   ============================================================= */
-$('#open-proj-btn').onclick = () => {
-  $('#projector-view').classList.add('active');
-  renderProjector();
-};
-$('#close-proj-btn').onclick = () => {
-  $('#projector-view').classList.remove('active');
-};
-
-function renderProjector() {
-  const couriers = getAllCouriers().sort(sortCouriers).slice(0, 10);
-  const el = $('#proj-tbody');
-  if (couriers.length === 0) {
-    el.innerHTML = '<div style="text-align:center;font-size:1.6rem;color:var(--text-muted);margin-top:60px">No couriers on the leaderboard yet.</div>';
-    return;
-  }
-  el.innerHTML = couriers.map((c, i) => {
-    let medal = `#${i + 1}`;
-    if (i === 0) medal = '🥇';
-    else if (i === 1) medal = '🥈';
-    else if (i === 2) medal = '🥉';
-
-    const t = getCourierTimeData(c);
-    const timeDisplay = t.elapsedStr !== '—' ? `⏱️ ${t.elapsedStr}` : (t.clockStr !== '—' ? `🕒 ${t.clockStr}` : '—');
-
-    return `
-      <div class="proj-row">
-        <span class="proj-rank">${medal}</span>
-        <span class="proj-name">
-          ${c.avatar && c.avatar.img ? `<img src="${c.avatar.img}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;border:2px solid #f5b301">` : ''}
-          ${escapeHtml(c.name)}
-        </span>
-        <span class="proj-time" title="Finish: ${t.clockStr}">${timeDisplay}</span>
-        <span class="proj-score">⭐ ${calculateScore(c)} pts</span>
-      </div>
-    `;
-  }).join('');
-}
-
-setInterval(() => {
-  if ($('#projector-view').classList.contains('active')) {
-    renderProjector();
-  }
-}, 3000);
-
-// Podium sequence
-$('#start-ceremony-btn').onclick = () => {
-  const top3 = getAllCouriers().sort(sortCouriers).slice(0, 3);
-  if (top3.length === 0) return alert('No couriers available for podium.');
-
-  $('#podium-modal').classList.add('active');
-  startAdminConfetti();
-
-  const c1 = top3[0] || { name: '—', pid: '—' };
-  const c2 = top3[1] || { name: '—', pid: '—' };
-  const c3 = top3[2] || { name: '—', pid: '—' };
-
-  $('#podium-content').innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:24px 0">
-      <div style="background:#1e293b;border:2px solid #94a3b8;border-radius:18px;padding:16px;width:170px">
-        <div style="font-size:2rem">🥈</div>
-        <div style="font-weight:800;font-size:1.2rem;margin:6px 0">${escapeHtml(c2.name)}</div>
-        <div style="color:var(--text-muted);font-size:0.85rem">${escapeHtml(c2.pid || '')}</div>
-        <div style="color:var(--accent);font-weight:800;margin-top:6px">⭐ ${calculateScore(c2)} pts</div>
-      </div>
-      <div style="background:#2a2012;border:3px solid #f5b301;border-radius:20px;padding:22px;width:210px">
-        <div style="font-size:2.8rem">🥇</div>
-        <div style="font-weight:800;font-size:1.4rem;color:#f5b301;margin:6px 0">${escapeHtml(c1.name)}</div>
-        <div style="color:var(--text-muted);font-size:0.9rem">${escapeHtml(c1.pid || '')}</div>
-        <div style="color:#f5b301;font-weight:800;font-size:1.3rem;margin-top:6px">⭐ ${calculateScore(c1)} pts</div>
-      </div>
-      <div style="background:#1e293b;border:2px solid #b45309;border-radius:18px;padding:14px;width:160px">
-        <div style="font-size:1.8rem">🥉</div>
-        <div style="font-weight:800;font-size:1.15rem;margin:6px 0">${escapeHtml(c3.name)}</div>
-        <div style="color:var(--text-muted);font-size:0.85rem">${escapeHtml(c3.pid || '')}</div>
-        <div style="color:var(--accent);font-weight:800;margin-top:6px">⭐ ${calculateScore(c3)} pts</div>
-      </div>
-    </div>
-  `;
-};
-
-function closePodium() {
-  $('#podium-modal').classList.remove('active');
-  stopAdminConfetti();
-}
-
-/* =============================================================
-   CSV EXPORT
-   ============================================================= */
-$('#export-csv-btn').onclick = () => {
-  const couriers = getAllCouriers().sort(sortCouriers);
-  let csv = 'Rank,Name,PlayerID,Stage1_Score,Stage2_Score,Stage3_Score,Stage4_Score,Stage5_Score,Stage6_Score,Bonus_Score,GrandTotal_Score,StopsCompleted,FinishTime\n';
-
-  couriers.forEach((c, idx) => {
-    const res = c.results || [];
-    const r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
-    const r2 = (res[4]?.pts||0) + (res[5]?.pts||0) + (res[6]?.pts||0);
-    const r3 = (res[8]?.pts||0) + (res[9]?.pts||0) + (res[10]?.pts||0);
-    const r4 = (res[12]?.pts||0) + (res[13]?.pts||0) + (res[14]?.pts||0);
-    const r5 = (res[16]?.pts||0) + (res[17]?.pts||0) + (res[18]?.pts||0);
-    const r6 = (res[20]?.pts||0) + (res[21]?.pts||0) + (res[22]?.pts||0);
-    const rBon = (res[24]?.pts||0);
-    const total = calculateScore(c);
-    const stopsCount = res.filter(r => r && !r.gate).length;
-    const t = getCourierTimeData(c);
-    const timeVal = t.elapsedStr !== '—' ? t.elapsedStr : t.clockStr;
-
-    csv += `${idx + 1},"${c.name.replace(/"/g, '""')}","${c.pid || ''}",${r1},${r2},${r3},${r4},${r5},${r6},${rBon},${total},${stopsCount},"${timeVal}"\n`;
-  });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `STREAMLINED_Seminar_Leaderboard_${Date.now()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-/* =============================================================
-   CONFETTI (ADMIN)
-   ============================================================= */
-const cvsAdmin = document.getElementById('confetti-canvas-admin');
-const ctxAdmin = cvsAdmin.getContext('2d');
-let adminPieces = [], adminConfettiActive = false;
-
-function resizeAdminCvs() {
-  cvsAdmin.width = window.innerWidth;
-  cvsAdmin.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeAdminCvs);
-resizeAdminCvs();
-
-function startAdminConfetti() {
-  const colors = ['#f5b301', '#ff8a1f', '#3b82f6', '#10b981', '#ec4899'];
-  adminPieces = [];
-  for (let i = 0; i < 110; i++) {
-    adminPieces.push({
-      x: window.innerWidth / 2,
-      y: window.innerHeight * 0.45,
-      vx: (Math.random() - 0.5) * 18,
-      vy: (Math.random() - 0.8) * 18,
-      size: Math.random() * 9 + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      rotation: Math.random() * 360,
-      vRot: (Math.random() - 0.5) * 10,
-      life: 1
-    });
-  }
-  if (!adminConfettiActive) animAdminConfetti();
-}
-function stopAdminConfetti() {
-  adminPieces = [];
-  ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
-}
-function animAdminConfetti() {
-  if (adminPieces.length === 0) {
-    adminConfettiActive = false;
-    ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
-    return;
-  }
-  adminConfettiActive = true;
-  ctxAdmin.clearRect(0, 0, cvsAdmin.width, cvsAdmin.height);
-  adminPieces = adminPieces.filter(p => p.life > 0);
-  adminPieces.forEach(p => {
-    p.x += p.vx; p.y += p.vy; p.vy += 0.38; p.vx *= 0.98;
-    p.rotation += p.vRot; p.life -= 0.016;
-    ctxAdmin.save();
-    ctxAdmin.translate(p.x, p.y);
-    ctxAdmin.rotate((p.rotation * Math.PI) / 180);
-    ctxAdmin.fillStyle = p.color;
-    ctxAdmin.globalAlpha = Math.max(0, p.life);
-    ctxAdmin.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-    ctxAdmin.restore();
-  });
-  requestAnimationFrame(animAdminConfetti);
-}
-
 // Start
 
 // Real-time polling from Firebase Realtime DB
 async function pollFirebaseCouriers() {
-  if (!FIREBASE_DB_URL) return;
+  if (!FIREBASE_DB_URL || !authSession) return;
   try {
-    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json`, { cache: 'no-store' });
+    const token = await getAuthToken();
+    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       remoteCouriers = data || {};
       refreshCouriers();
-      if ($('#projector-view') && $('#projector-view').classList.contains('active')) {
-        renderProjector();
-      }
+    } else {
+      throw new Error(`Firebase courier poll failed (${res.status})`);
     }
   } catch(e) {
     console.warn('Firebase poll error:', e);
   }
+  await loadControlFromRemote();
 }
 
-// Poll every 3 seconds for real-time player updates
-setInterval(pollFirebaseCouriers, 3000);
-pollFirebaseCouriers();
+function saveAuthSession(session) {
+  authSession = session;
+  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+}
 
-loadControl();
-refreshCouriers();
+function clearAuthSession() {
+  authSession = null;
+  sessionStorage.removeItem(AUTH_SESSION_KEY);
+}
+
+function showAuthError(message) {
+  $('#auth-error').textContent = message;
+}
+
+function showAdmin() {
+  $('#auth-screen').hidden = true;
+  $('#admin-app').hidden = false;
+  loadControl();
+  refreshCouriers();
+  if (courierPollInterval === null) {
+    pollFirebaseCouriers();
+    courierPollInterval = setInterval(pollFirebaseCouriers, 3000);
+  }
+}
+
+function showLogin(message) {
+  clearAuthSession();
+  remoteCouriers = {};
+  if (courierPollInterval !== null) {
+    clearInterval(courierPollInterval);
+    courierPollInterval = null;
+  }
+  $('#admin-app').hidden = true;
+  $('#auth-screen').hidden = false;
+  $('#host-password').value = '';
+  showAuthError(message || '');
+}
+
+function sessionFromAuthResponse(data) {
+  if (data.localId !== HOST_UID) {
+    throw new Error('This account is not authorized to access the Host Control Tower.');
+  }
+  return {
+    uid: data.localId,
+    idToken: data.idToken,
+    refreshToken: data.refreshToken,
+    expiresAt: Date.now() + Number(data.expiresIn) * 1000 - 60000
+  };
+}
+
+async function getAuthToken() {
+  if (!authSession || authSession.uid !== HOST_UID) {
+    throw new Error('Host sign-in is required.');
+  }
+  if (authSession.expiresAt > Date.now()) return authSession.idToken;
+
+  const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(FIREBASE_API_KEY)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: authSession.refreshToken
+    })
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    showLogin('Your sign-in expired. Please sign in again.');
+    throw new Error(data.error && data.error.message ? data.error.message : `Host token refresh failed (${response.status})`);
+  }
+  if (data.user_id !== HOST_UID) {
+    showLogin('This account is not authorized to access the Host Control Tower.');
+    throw new Error('Refreshed account UID does not match the authorized host.');
+  }
+
+  const session = {
+    uid: data.user_id,
+    idToken: data.id_token,
+    refreshToken: data.refresh_token,
+    expiresAt: Date.now() + Number(data.expires_in) * 1000 - 60000
+  };
+  saveAuthSession(session);
+  return session.idToken;
+}
+
+function authErrorMessage(error) {
+  const code = error && error.error && error.error.message;
+  if (code === 'INVALID_LOGIN_CREDENTIALS' || code === 'EMAIL_NOT_FOUND' || code === 'INVALID_PASSWORD') {
+    return 'Email or password is incorrect.';
+  }
+  if (code === 'USER_DISABLED') return 'This host account is disabled.';
+  if (code === 'TOO_MANY_ATTEMPTS_TRY_LATER') return 'Too many attempts. Wait a while and try again.';
+  return 'Could not sign in. Check the account and your connection, then try again.';
+}
+
+$('#host-login-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = $('#host-login-btn');
+  button.disabled = true;
+  showAuthError('');
+  try {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(FIREBASE_API_KEY)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: $('#host-email').value.trim(),
+        password: $('#host-password').value,
+        returnSecureToken: true
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      showAuthError(authErrorMessage(data));
+      return;
+    }
+    const session = sessionFromAuthResponse(data);
+    saveAuthSession(session);
+    $('#host-password').value = '';
+    showAdmin();
+  } catch(error) {
+    showAuthError(error.message || 'Could not sign in. Please try again.');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#host-sign-out-btn').onclick = () => showLogin('');
+
+try {
+  const savedSession = JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY) || 'null');
+  if (savedSession && savedSession.uid === HOST_UID && savedSession.idToken && savedSession.refreshToken) {
+    authSession = savedSession;
+    getAuthToken().then(showAdmin).catch(error => {
+      console.warn('Host session restore error:', error);
+      showLogin('Your sign-in expired. Please sign in again.');
+    });
+  } else {
+    showLogin('');
+  }
+} catch(error) {
+  console.warn('Host session restore error:', error);
+  showLogin('Your saved sign-in could not be restored. Please sign in again.');
+}
 </script>
 </body>
 </html>

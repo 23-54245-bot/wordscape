@@ -1,34 +1,34 @@
-﻿[
-    {
-        "img":  "assets/avatars/fm_diamond.jpg",
-        "name":  "Baby Diamond"
-    },
-    {
-        "img":  "assets/avatars/fm_hunter.jpg",
-        "name":  "Hunter"
-    },
-    {
-        "img":  "assets/avatars/fm_junior.jpg",
-        "name":  "Junior"
-    },
-    {
-        "img":  "assets/avatars/fm_nate.jpg",
-        "name":  "Nate Gardner"
-    },
-    {
-        "img":  "assets/avatars/fm_toady.jpg",
-        "name":  "Pigeon Toady"
-    },
-    {
-        "img":  "assets/avatars/fm_tulip.jpg",
-        "name":  "Tulip"
-    },
-    {
-        "img":  "assets/avatars/Alpha.png",
-        "name":  "Alpha"
-    },
-    {
-        "img":  "assets/avatars/Beta.png",
-        "name":  "Beta"
-    }
+[
+  {
+    "img": "assets/avatars/pip-fox.svg",
+    "name": "Pip the Fox"
+  },
+  {
+    "img": "assets/avatars/orbit-cat.svg",
+    "name": "Orbit the Cat"
+  },
+  {
+    "img": "assets/avatars/wren-owl.svg",
+    "name": "Wren the Owl"
+  },
+  {
+    "img": "assets/avatars/clover-bunny.svg",
+    "name": "Clover the Bunny"
+  },
+  {
+    "img": "assets/avatars/tumble-turtle.svg",
+    "name": "Tumble the Turtle"
+  },
+  {
+    "img": "assets/avatars/maple-bear.svg",
+    "name": "Maple the Bear"
+  },
+  {
+    "img": "assets/avatars/skipper-otter.svg",
+    "name": "Skipper the Otter"
+  },
+  {
+    "img": "assets/avatars/patch-raccoon.svg",
+    "name": "Patch the Raccoon"
+  }
 ]
