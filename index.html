@@ -316,10 +316,26 @@ header {
   margin: -12px -14px 14px -14px;
   border-bottom: 3px solid #ff9736;
 }
-.hrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-#mapv > header .hrow > div:first-child { min-width: 0; }
-#mapv > header .hrow > div:first-child > div { min-width: 0; }
-#mapv > header .hrow > div:last-child { flex-shrink: 0; }
+.map-header-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+.map-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.map-profile-info { min-width: 0; }
+.map-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
 .change-avatar-btn {
   display: inline-flex;
   align-items: center;
@@ -331,10 +347,10 @@ header {
   color: #fff;
   font-weight: 700;
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
 }
-.nm { font-weight: 800; font-size: 1.12rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-.ttl { font-size: 0.8rem; color: #ffb347; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+.nm { font-weight: 800; font-size: 1.12rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); overflow-wrap: anywhere; }
+.ttl { font-size: 0.8rem; color: #ffb347; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; overflow-wrap: anywhere; }
 .score {
   font-weight: 800;
   background: linear-gradient(135deg, #fff3df 0%, #fed7aa 100%);
@@ -425,6 +441,7 @@ header {
 /* Sticky top nav header (play screen) */
 #play-sticky-header {
   background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(241,245,249,0.95) 100%) !important;
+  color: #1e293b !important;
   box-shadow:
     0 5px 0 rgba(0,0,0,0.1),
     0 8px 20px rgba(0,0,0,0.12),
@@ -1174,17 +1191,100 @@ select option {
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 460px) {
-  #mapv > header .hrow {
+@media (max-width: 640px) {
+  main {
+    padding: 10px 12px 28px;
+  }
+  #mapv > header {
+    padding: 12px;
+  }
+  .map-header-row {
+    gap: 12px;
+  }
+  .map-actions {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  .map-actions > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .card,
+  .bar,
+  #play > section {
+    min-width: 0;
+  }
+  .bar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 12px;
+    padding: 8px 12px;
+    border-radius: 16px;
+  }
+  .bar > * {
+    min-width: 0;
+  }
+  #play-sticky-header {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 7px !important;
+  }
+  #play-sticky-header > * {
+    min-width: 0;
+  }
+  #play-sticky-header > .sm,
+  #nav-stage-indicator {
+    color: #1e293b !important;
+  }
+  #nav-next-btn {
+    width: auto;
+    max-width: 100%;
+    padding: 7px 9px !important;
+    font-size: 0.82rem;
+  }
+  #g6 .game-hud > div {
     flex-wrap: wrap;
     gap: 8px;
   }
-  #mapv > header .hrow > div:first-child {
-    flex: 1 1 100%;
+  #fm-grid {
+    gap: clamp(6px, 2.5vw, 12px);
   }
-  #mapv > header .hrow > div:last-child {
-    flex: 1 1 100%;
-    justify-content: flex-end;
+  #cur-word .tile {
+    width: clamp(27px, 8vw, 38px);
+    height: clamp(30px, 9vw, 40px);
+    font-size: clamp(1rem, 4vw, 1.25rem);
+  }
+  .mbox {
+    padding: 20px 14px;
+  }
+  .lb-item {
+    grid-template-columns: 36px minmax(0, 1fr) 68px;
+    padding: 9px 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .map-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .map-actions .change-avatar-btn,
+  .map-actions #map-lb-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.82rem;
+  }
+  .map-actions #mute-btn,
+  .map-actions #hs {
+    justify-self: start;
+  }
+  #play-sticky-header {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  #nav-next-btn {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
@@ -1271,18 +1371,18 @@ select option {
 <!-- MAP SCREEN (HUB DASHBOARD) -->
 <div id="mapv" hidden>
  <header>
-  <div class="hrow">
-    <div style="display:flex;align-items:center;gap:10px">
+  <div class="map-header-row">
+    <div class="map-profile">
       <div style="position:relative;flex-shrink:0">
         <img id="hav" src="" alt="avatar">
       </div>
-      <div>
+      <div class="map-profile-info">
         <div class="nm" id="hn">Courier</div>
         <div class="ttl" id="ht">Junior Dispatch Courier</div>
       </div>
-      <button class="change-avatar-btn" id="change-avatar-btn" type="button">🎭 Change avatar</button>
     </div>
-    <div style="display:flex;gap:6px;align-items:center">
+    <div class="map-actions">
+      <button class="change-avatar-btn" id="change-avatar-btn" type="button">🎭 Change avatar</button>
       <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)">🏆 Leaderboard</button>
       <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem">🔊</button>
       <span class="score" id="hs">⭐ 0</span>
