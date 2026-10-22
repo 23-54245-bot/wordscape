@@ -2064,7 +2064,7 @@ const STORY = {
  0: { w:['machine', 'junior', 'baby'], t:'A new baby has just come out of the Baby Making Machine! Junior and Tulip must prepare Diamond Destiny for her journey.' },
  4: { w:['junior','tulip','wolves','toady'], t:'Junior and Tulip face roadblocks on the highway! Match the courier identity cards and resolve the dispatch breakdowns.' },
  9: { w:['junior','tulip'], t:'The delivery is delayed at the dispatch tower. Junior and Tulip must investigate the evidence to uncover the bottleneck.' },
- 13: { w:['baby','family'], t:'At last the baby reaches Nate Gardner's family home, and the storks' true delivery mission is restored!' }
+ 13: { w:['baby','family'], t:"At last the baby reaches Nate Gardner's family home, and the storks' true delivery mission is restored!" }
 };
 const story = i => {
  if (!CUE[i]) return '';
@@ -3256,7 +3256,7 @@ function sfEnd() {
  sfUp();
  $('#sf-q').innerHTML = '';
  const snb = $('#sf-next-btn'); if (snb) snb.hidden = false;
- res($('#sf-r'), isAllFixed ? 'All Errors Fixed! ' : 'Time's Up', finalScore, maxPts, `Speed bonus +${b}.`);
+ res($('#sf-r'), isAllFixed ? 'All Errors Fixed! ' : "Time's Up", finalScore, maxPts, `Speed bonus +${b}.`);
  onStopCompleted(finalScore, maxPts);
 }
 $('#sf-a').onclick = () => sfStart(sfCurLevel);
@@ -3440,7 +3440,7 @@ const BD_SCENARIOS = [
  faults: [
  { q: ' Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
  { q: ' Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
- { q: ' Fault 3: Nate's family updated the handoff drop coordinates mid-route.', o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
+  { q: "Fault 3: Nate's family updated the handoff drop coordinates mid-route.", o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
  { q: ' Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
  ]
  }
@@ -3547,8 +3547,8 @@ const DT_CASES = [
  'Message log: At 08:55 Rico sent a message to Lando: "Hold the basket until I release it."',
  'Dock record: Delivery Truck 2 was ready at Bay 3 from 08:30. Rico released the hold at 12:05 and loading began at 12:10.',
  'GPS log: Truck 2 departed at 12:15 and drive time was 1 hr 45 min, standard duration for this route.',
- 'Dani's statement: Dani waited in the courier break room until summoned at 12:00.',
- 'Lando's statement: Lando held the parcel specifically following Rico's hold order.'
+ "Dani's statement: Dani waited in the courier break room until summoned at 12:00.",
+ "Lando's statement: Lando held the parcel specifically following Rico's hold order."
  ],
  places: ['Packing station', 'Loading dock', 'Delivery route'],
  causes: ['A hold instruction that delayed loading', 'A truck engine breakdown', 'A wrong address label'],
@@ -3563,9 +3563,9 @@ const DT_CASES = [
  'Scanner log: Sector 4 barcode read accurately upon arrival at intake at 10:15.',
  'Sorting belt report: Conveyor diverter jam occurred at 10:30 at Sorting Belt 2.',
  'Badge log: Jasper was the sole operator stationed at Sorting Belt 2 during the jam.',
- 'Doug's statement: Doug transported the pallets only after they were marked and palletized.',
- 'Sarah's inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.',
- 'Tulip's log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given.'
+ "Doug's statement: Doug transported the pallets only after they were marked and palletized.",
+ "Sarah's inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.",
+ "Tulip's log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given."
  ],
  places: ['Intake bay', 'Sorting belt 2', 'Airfield hangar'],
  causes: ['Manual diverter override during conveyor jam', 'Forklift collision damage', 'Radio transmission static'],
@@ -3574,14 +3574,14 @@ const DT_CASES = [
  },
  {
  title: 'Case 3: The Sabotaged Dispatch Coordinates',
- brief: 'Flight navigational coordinates for Nate's delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!',
+ brief: "Flight navigational coordinates for Nate's delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!",
  suspects: ['Pigeon Toady (Informant)', 'Junior (Lead Courier)', 'Tulip (Mechanic)', 'Alpha Wolf (Tracker)', 'Beta Wolf (Scout)'],
  clues: [
  'Security camera: An unidentified figure entered the Control Tower console room at 22:15.',
- 'Console audit: Flight coordinates for Nate's sector were overwritten with blizzard waypoint data at 22:18.',
- 'Access keycard log: Pigeon Toady's executive keycard unlocked the console room door at 22:14.',
- 'Junior's alibi: Junior was in the hangar briefing room with Nate until 22:45.',
- 'Tulip's alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.',
+ "Console audit: Flight coordinates for Nate's sector were overwritten with blizzard waypoint data at 22:18.",
+ "Access keycard log: Pigeon Toady's executive keycard unlocked the console room door at 22:14.",
+ "Junior's alibi: Junior was in the hangar briefing room with Nate until 22:45.",
+ "Tulip's alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.",
  'Forest ranger report: Alpha and Beta wolves remained north of the valley perimeter all evening.'
  ],
  places: ['Hangar briefing room', 'Control tower console room', 'Crane workshop'],
