@@ -1562,8 +1562,14 @@ select option {
 
 <script>
 /* =============================================================
-   SOUND ENGINE (Procedural Web Audio API)
+   SOUND ENGINE & MOBILE HAPTIC FEEDBACK
    ============================================================= */
+function haptic(pattern = 25) {
+  try {
+    if (navigator && navigator.vibrate) navigator.vibrate(pattern);
+  } catch(e) {}
+}
+
 class SoundEngine {
   constructor() {
     this.ctx = null;
@@ -1596,17 +1602,23 @@ class SoundEngine {
   letterPick(index) {
     const note = this.pentatonic[Math.min(index, this.pentatonic.length - 1)];
     this.playTone(note, 'triangle', 0.1, 0.22);
+    haptic(15);
   }
   wordSuccess() {
     [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
       setTimeout(() => this.playTone(freq, 'sine', 0.22, 0.2), i * 55);
     });
+    haptic([30, 40, 30]);
   }
-  error() { this.playTone(180, 'sawtooth', 0.18, 0.15); }
+  error() {
+    this.playTone(180, 'sawtooth', 0.18, 0.15);
+    haptic([60, 50, 60]);
+  }
   roundWin() {
     [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
       setTimeout(() => this.playTone(f, 'triangle', 0.3, 0.22), i * 70);
     });
+    haptic([50, 60, 50, 60, 100]);
   }
 }
 const audio = new SoundEngine();
@@ -1824,32 +1836,42 @@ async function restoreAccount(localState) {
   return true;
 }
 
+let pendingSync = false;
 async function syncToFirebase(payload) {
   if (!FIREBASE_DB_URL || !courierKey) return;
+  const data = payload || JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || 'null');
+  if (!data) return;
   try {
-    const totalScore = (payload.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
-    const stopsCleared = (payload.results || []).filter(r => r && !r.gate).length;
+    const totalScore = (data.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
+    const stopsCleared = (data.results || []).filter(r => r && !r.gate).length;
     const body = {
-      name: payload.name || 'Courier',
-      pid: payload.pid || '',
+      name: data.name || 'Courier',
+      pid: data.pid || '',
       score: totalScore,
       stops: stopsCleared,
-      cur: payload.cur || 0,
-      avatar: (payload.avatar && payload.avatar.name) ? payload.avatar : (chosenAvatar || null),
-      results: payload.results || [],
-      startTime: payload.startTime || null,
-      finishTime: payload.finishTime || null,
-      updatedAt: payload.updatedAt || Date.now()
+      cur: data.cur || 0,
+      avatar: (data.avatar && data.avatar.name) ? data.avatar : (chosenAvatar || null),
+      results: data.results || [],
+      startTime: data.startTime || null,
+      finishTime: data.finishTime || null,
+      updatedAt: data.updatedAt || Date.now()
     };
-    await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
+    const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error('Sync status ' + res.status);
+    pendingSync = false;
   } catch(e) {
-    console.warn('Firebase sync error:', e);
+    console.warn('Firebase sync queued for retry:', e);
+    pendingSync = true;
   }
 }
+
+// Automatically retry queued score upload if network reconvenes
+window.addEventListener('online', () => { if (pendingSync) syncToFirebase(); });
+setInterval(() => { if (pendingSync && navigator.onLine) syncToFirebase(); }, 5000);
 
 function saveState() {
   if (!courierKey) return;
@@ -1927,39 +1949,39 @@ async function syncControlFromFirebase() {
 const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
   // STAGE 1: WORD PUZZLE (Crossword Sorting)
-  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)',   e:'🧩', cap:500 },
-  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER (Medium)', e:'🧩', cap:500 },
+  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)',   e:'🧩', cap:450 },
+  { t:'game', k:'wp', r:1, n:'Word Puzzle: LOADER (Medium)', e:'🧩', cap:480 },
   { t:'game', k:'wp', r:2, n:'Word Puzzle: DELIVER (Hard)',  e:'🧩', cap:500 },
   { t:'gate', g:1 },
 
   // STAGE 2: BABY DELIVERY MAZE (Canyon Navigation)
-  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:500 },
-  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:500 },
+  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)',   e:'👶', cap:450 },
+  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'👶', cap:480 },
   { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)',   e:'👶', cap:500 },
   { t:'gate', g:2 },
 
   // STAGE 3: FIX THE BROKEN DELIVERY (Roadblock Scenarios)
-  { t:'game', k:'bd', scen:0, n:'Broken Delivery: Scenario 1 (Easy)',   e:'🚚', cap:500 },
-  { t:'game', k:'bd', scen:1, n:'Broken Delivery: Scenario 2 (Medium)', e:'🚚', cap:500 },
+  { t:'game', k:'bd', scen:0, n:'Broken Delivery: Scenario 1 (Easy)',   e:'🚚', cap:450 },
+  { t:'game', k:'bd', scen:1, n:'Broken Delivery: Scenario 2 (Medium)', e:'🚚', cap:480 },
   { t:'game', k:'bd', scen:2, n:'Broken Delivery: Scenario 3 (Hard)',   e:'🚚', cap:500 },
   { t:'gate', g:3 },
 
   // STAGE 4: DETECTIVE CASE INVESTIGATION (Suspect Deduction)
-  { t:'game', k:'dt', caseIdx:0, n:'Detective Case: Case 1 (Easy)',   e:'🕵️', cap:500 },
-  { t:'game', k:'dt', caseIdx:1, n:'Detective Case: Case 2 (Medium)', e:'🕵️', cap:500 },
+  { t:'game', k:'dt', caseIdx:0, n:'Detective Case: Case 1 (Easy)',   e:'🕵️', cap:450 },
+  { t:'game', k:'dt', caseIdx:1, n:'Detective Case: Case 2 (Medium)', e:'🕵️', cap:480 },
   { t:'game', k:'dt', caseIdx:2, n:'Detective Case: Case 3 (Hard)',   e:'🕵️', cap:500 },
   { t:'gate', g:4 },
 
   // STAGE 5: FLIP N MATCH (Courier Badges)
-  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:500 },
-  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:500 },
+  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)',    e:'🃏', cap:450 },
+  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'🃏', cap:480 },
   { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)',   e:'🃏', cap:500 },
   { t:'gate', g:5 },
 
   // STAGE 6: SPOT & FIX THE ERRORS (Defect Inspection)
-  { t:'game', k:'sf', lv:0, n:'Spot & Fix: 3 Errors (Easy)',   e:'🔎', cap:500 },
-  { t:'game', k:'sf', lv:1, n:'Spot & Fix: 4 Errors (Medium)', e:'🔎', cap:500 },
-  { t:'game', k:'sf', lv:2, n:'Spot & Fix: 5 Errors (Hard)',   e:'🔎', cap:500 },
+  { t:'game', k:'sf', lv:0, n:'Spot & Fix: Depot Floor (Easy)',       e:'🔎', cap:450 },
+  { t:'game', k:'sf', lv:1, n:'Spot & Fix: Conveyor Chute (Medium)',  e:'🔎', cap:480 },
+  { t:'game', k:'sf', lv:2, n:'Spot & Fix: Flight Deck (Hard)',       e:'🔎', cap:500 },
   { t:'gate', g:6 },
 
   // FINAL STAGE: HOME ARRIVAL
@@ -2493,8 +2515,10 @@ function launch(i) {
   if (topLbl) topLbl.textContent = nextLabel;
   const topNavBtn = $('#nav-next-btn');
   if (topNavBtn) {
-    topNavBtn.style.animation = isDone ? 'navPulse 1.8s infinite' : '';
-    topNavBtn.title = 'Proceed to ' + (nextIdx < N ? (I[nextIdx].n || 'Next Checkpoint') : 'Finish');
+    topNavBtn.style.animation = isDone ? 'navPulse 1.8s infinite' : 'none';
+    topNavBtn.style.opacity = isDone ? '1' : '0.45';
+    topNavBtn.style.cursor = isDone ? 'pointer' : 'not-allowed';
+    topNavBtn.title = isDone ? ('Proceed to ' + (nextIdx < N ? (I[nextIdx].n || 'Next Checkpoint') : 'Finish')) : 'Complete this delivery stop to advance';
   }
   const ind = $('#nav-stage-indicator');
   if (ind) {
@@ -2546,7 +2570,8 @@ function leave() {
 function nextStop() {
   X();
   if (activeStopIndex !== null && !R[activeStopIndex] && I[activeStopIndex] && I[activeStopIndex].t !== 'gate' && I[activeStopIndex].t !== 'fin') {
-    onStopCompleted(250, (I[activeStopIndex] && I[activeStopIndex].cap) || 500);
+    alert('Please complete this delivery challenge first to unlock the next stop! 🚚');
+    return;
   }
   const targetStop = (activeStopIndex !== null ? activeStopIndex + 1 : cur);
   if (targetStop < N) {
@@ -2608,6 +2633,14 @@ function onStopCompleted(score, max) {
 
   audio.roundWin();
   burstConfetti();
+
+  const topNavBtn = $('#nav-next-btn');
+  if (topNavBtn) {
+    topNavBtn.style.animation = 'navPulse 1.8s infinite';
+    topNavBtn.style.opacity = '1';
+    topNavBtn.style.cursor = 'pointer';
+    topNavBtn.title = 'Proceed to next stop';
+  }
 
   if (I[i].t === 'bonus') {
     evalCard();

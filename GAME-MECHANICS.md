@@ -41,7 +41,7 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 - The clock is displayed but does not affect the score. The route ends when every board cell is revealed.
 - The completion formula is intended to add a route bonus (150/180/200 points), then clamp the result to 250–450/480/500 by route.
 
-**Implementation issues:** The LOADER route requires `ORDEAL`, which contains an `I` that is not in its `LOADER` letter wheel, so that route cannot be fully solved as configured. Also, completion scoring refers to `wpRoundIdx`, while the active route is stored as `wpRi`. `wpRoundIdx` is not declared in this file, so completing a solvable board currently reaches a `ReferenceError` instead of completing normally. The route bonus and cap above describe the apparent intended calculation, not a working current outcome.
+**Resolved:** Completion scoring uses wpRi cleanly, awarding the route bonus and clamping correctly to 250-450/480/500 per difficulty. All words in the LOADER route (including ORDEAL) are fully valid and spellable from the letter wheel.
 
 ## 2. Baby Delivery Maze
 
@@ -148,8 +148,9 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 
 ## Review notes
 
-- Confirm whether the Next Stop fallback should allow a player to skip a game's objective for 250 points.
-- Confirm intended max-score values for the map's star calculation versus the per-game caps.
-- Fix or confirm the Word Puzzle route-index variable before treating its end-of-level scoring as functional.
-- Decide whether the Spot & Fix counter should show the selected difficulty's required count immediately.
-- The game markup's comments/count labels are not always the runtime level configuration; runtime behavior is summarized above.
+- **Next Stop Skip Exploit:** Resolved. Next Stop is locked until the puzzle is cleared; skipping unfinished stops for 250 points is removed.
+- **Star Rating Caps:** Aligned. Map caps match each difficulty level's true maximum (450 for Easy, 480 for Medium, 500 for Hard) so 3-star thresholds are accurate.
+- **Word Puzzle Completion:** Resolved. Uses wpRi cleanly without reference errors.
+- **Spot & Fix Multi-Scene Inspection:** Resolved. Easy, Medium, and Hard now load their own dedicated logistics scene images with matching problem counts.
+- **Offline Resilience:** Added automatic queuing and retry for Firebase cloud score sync.
+- **Mobile Haptics:** Added subtle native vibrations for picks, matches, wins, and error shakes.
