@@ -19,7 +19,7 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 ## Shared progression and scoring
 
 - Each completed game stop records points and awards 1–3 stars based on score divided by that stop's maximum: 3 stars at 85% or higher, 2 at 60% or higher, otherwise 1.
-- Replaying an already passed stop is strictly for practice; no additional points or score overrides are awarded to the player's total.
+- Replaying an already passed stop is no additional points or score overrides are awarded to the player's total.
 - Some games have their own maximum score per difficulty (usually 450, 480, then 500). The stage data itself labels all game stops with a 500-point cap, so star thresholds can differ from the game's displayed maximum.
 - The Next Stop control can complete an unfinished non-gate stop with a fallback score of 250. This means a player may advance without meeting that game's normal win condition.
 - Gate authorization is separate from game completion and can be released by the host/control system. A demo-unlock control is also available in the gate dialog.

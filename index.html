@@ -2452,7 +2452,7 @@ function tap(i) {
     return info('🔒 Final Delivery', 'Clear the earlier stops and gates first.');
   }
   if (done) {
-    return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Recorded Score: <b>${R[i].pts}</b></p>` + bt('Replay Stop (Practice)', `launch(${i})`) + bt('Close', 'X()', 1));
+    return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Recorded Score: <b>${R[i].pts}</b></p>` + bt('Replay Stop', `launch(${i})`) + bt('Close', 'X()', 1));
   }
   if (i === cur) {
     return modal(`<h2>${it.e} ${it.n}</h2>${cue}<p>${DESC[it.k]}</p>` + bt('Start Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
@@ -2603,7 +2603,7 @@ function onStopCompleted(score, max) {
     }
     saveState();
   } else {
-    // Replay on already passed stop: practice-only, no additional scores or overrides awarded
+    // Replay on already passed stop: no additional scores or overrides awarded
   }
 
   audio.roundWin();
@@ -2613,9 +2613,9 @@ function onStopCompleted(score, max) {
     evalCard();
   } else {
     modal(`
-      <h2>${fresh ? '📦 Delivered!' : '📦 Practice Replay Complete!'}</h2>
+      <h2>${fresh ? '📦 Delivered!' : '📦 Replay Complete!'}</h2>
       ${st(fresh ? stars : R[i].stars)}
-      <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' Stars Earned! ⭐' : 'Practice Score: ' + score + ' pts'}</b></p>
+      <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' Stars Earned! ⭐' : 'Replay Score: ' + score + ' pts'}</b></p>
       ${!fresh ? '<p class="sub" style="color:var(--text-muted);font-weight:700">Official Recorded Score: ' + R[i].pts + ' pts (No additional points added)</p>' : ''}
       ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
       ${bt('Next ➜', 'nextStop()')}
