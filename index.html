@@ -1371,6 +1371,7 @@ select option {
  <button class="btn" id="go">Start Delivering 🚀</button>
 </section>
 
+
 <!-- MAP SCREEN (HUB DASHBOARD) -->
 <div id="mapv" hidden>
  <header>
@@ -2468,11 +2469,11 @@ function tap(i) {
   if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info('🔒 Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
   if (it.t === 'gate') {
     if (done) return modal(`<h2>🔓 ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ⏩', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
-    if (i === cur) return modal(`<h2>🔒 ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization…</p>` + bt('Demo Unlock (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
+    if (i === cur) return modal(`<h2>🔒 ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization…</p>` + bt('Unlock Gate (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
     return info('🔒 Gate ' + it.g, 'Clear all previous stops to reach this gate.');
   }
   if (it.t === 'bonus') {
-    if (done) return modal(`<h2>⚡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus (Demo)', `launch(${i})`) + bt('Close', 'X()', 1));
+    if (done) return modal(`<h2>⚡ Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus Round', `launch(${i})`) + bt('Close', 'X()', 1));
     if (i === cur) return modal(`<h2>🏠 Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
     return info('🔒 Final Delivery', 'Clear the earlier stops and gates first.');
   }
@@ -3686,7 +3687,7 @@ function bnStart() {
 
 $('#bn-unlock-btn').onclick = () => {
   const entered = $('#bn-code-input').value.trim().toUpperCase();
-  if (entered === seminarCode.toUpperCase() || entered === 'DEMO') {
+  if (entered === seminarCode.toUpperCase()) {
     audio.wordSuccess();
     $('#bn-quiz-area').hidden = false;
     $('#bn-code-input').disabled = true;
