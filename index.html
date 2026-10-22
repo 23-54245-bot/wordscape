@@ -453,21 +453,6 @@ header {
  backdrop-filter: blur(18px) saturate(145%);
  -webkit-backdrop-filter: blur(18px) saturate(145%);
 }
-#nav-next-btn {
- background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%) !important;
- box-shadow:
- 0 4px 0 #047857,
- 0 6px 14px rgba(16,185,129,0.35),
- inset 0 2px 0 rgba(255,255,255,0.5) !important;
- border-radius: 14px !important;
- transition: transform 0.08s, box-shadow 0.08s;
- border: none;
- text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-}
-#nav-next-btn:active {
- transform: translateY(3px) !important;
- box-shadow: 0 1px 0 #047857, 0 3px 8px rgba(16,185,129,0.2), inset 0 1px 0 rgba(255,255,255,0.4) !important;
-}
 
 /* Clue & suspect buttons in detective */
 .clue, .sus {
@@ -1404,9 +1389,6 @@ select option {
  <div class="row" id="play-sticky-header" style="justify-content:space-between;align-items:center;margin:0 0 10px;position:sticky;top:0;z-index:90;background:rgba(12,24,43,0.92);backdrop-filter:blur(12px);padding:8px 12px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.16)">
  <button class="sm" onclick="leave()" style="display:flex;align-items:center;gap:4px;font-weight:700">L Map</button>
  <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
- <button class="btn sm" id="nav-next-btn" onclick="nextStop()" style="display:flex;align-items:center;gap:6px;padding:8px 16px">
- <span id="nav-next-label">Next Stop</span>
-</button>
 </div>
 
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
