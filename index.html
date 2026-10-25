@@ -1736,7 +1736,7 @@ let user = '', pid = '', courierKey = '';
 let cur = 0;
 let R = []; // Results per stop index
 let O = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; // Host gate controls (1=Stage2, 2=Stage3, 3=Bonus, 4=Eval)
-let seminarCode = 'STORKS2026';
+let seminarCode = '';
 
 function normalizeId(name, id) {
  const norm = (name + '_' + id).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1913,10 +1913,16 @@ async function syncControlFromFirebase() {
  O = Object.assign({}, O, data.gates);
  changed = true;
  }
- if (data.seminarCode && data.seminarCode !== seminarCode) {
- seminarCode = data.seminarCode;
- changed = true;
- }
+         if (data.seminarCode && data.seminarCode !== seminarCode) {
+          seminarCode = data.seminarCode;
+          changed = true;
+          const ci = $('#bn-code-input');
+          if (ci && !$('#g5').hidden && ci.placeholder === 'Waiting for host code...') {
+            ci.placeholder = 'Enter Seminar Code';
+            ci.disabled = false;
+            $('#bn-unlock-btn').disabled = false;
+          }
+        }
  if (changed || !localStorage.getItem(CONTROL_KEY)) {
  try {
  localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates: O, seminarCode: seminarCode, updatedAt: data.updatedAt || Date.now() }));
@@ -2451,7 +2457,7 @@ function tap(i) {
  if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info(' Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
  if (it.t === 'gate') {
  if (done) return modal(`<h2> ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
- if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Unlock Gate (Host Preview)', `openGate(${it.g})`) + bt('Close', 'X()', 1));
+ if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
  return info(' Gate ' + it.g, 'Clear all previous stops to reach this gate.');
  }
  if (it.t === 'bonus') {
@@ -2468,14 +2474,6 @@ function tap(i) {
  info(' ' + it.n, 'Clear the earlier stops in order first.');
 }
 
-function openGate(g) {
- O[g] = 1;
- adv();
- saveState();
- draw();
- modal(`<h2> ${GL[g]} Cleared!</h2><p>Dispatch authorization granted for <b>${GN[g]}</b>. You are cleared for departure!</p>` + bt('Launch Next Stop ', `launch(${cur})`) + bt('View Delivery Map ', 'X()', 1));
- setTimeout(focusCur, 100);
-}
 
 let activeStopIndex = null;
 function launch(i) {
@@ -3656,20 +3654,35 @@ const BN_QUESTIONS = [
 
 let bnTimer = null, bnSec = 0;
 function bnStart() {
- $('#bn-code-input').value = '';
- $('#bn-quiz-area').hidden = true;
- $('#bn-r').innerHTML = '';
- clearInterval(bnTimer);
- bnSec = 0;
- bnTimer = setInterval(() => {
- bnSec++;
- $('#bn-t').textContent = Math.floor(bnSec / 60) + ':' + String(bnSec % 60).padStart(2, '0');
- }, 1000);
+  $('#bn-code-input').value = '';
+  if (!seminarCode) {
+    $('#bn-code-input').placeholder = 'Waiting for host code...';
+    $('#bn-code-input').disabled = true;
+    $('#bn-unlock-btn').disabled = true;
+  } else {
+    $('#bn-code-input').placeholder = 'Enter Seminar Code';
+    $('#bn-code-input').disabled = false;
+    $('#bn-unlock-btn').disabled = false;
+  }
+  $('#bn-quiz-area').hidden = true;
+  $('#bn-r').innerHTML = '';
+  clearInterval(bnTimer);
+  bnSec = 0;
+  bnTimer = setInterval(() => {
+    bnSec++;
+    $('#bn-t').textContent = Math.floor(bnSec / 60) + ':' + String(bnSec % 60).padStart(2, '0');
+  }, 1000);
 }
 
 $('#bn-unlock-btn').onclick = () => {
- const entered = $('#bn-code-input').value.trim().toUpperCase();
- if (entered === seminarCode.toUpperCase()) {
+  if (!seminarCode) {
+    audio.error();
+    shake($('#bn-code-input'));
+    alert('Waiting for host code. The seminar host has not published a code yet.');
+    return;
+  }
+  const entered = $('#bn-code-input').value.trim().toUpperCase();
+  if (entered === seminarCode.toUpperCase()) {
  audio.wordSuccess();
  $('#bn-quiz-area').hidden = false;
  $('#bn-code-input').disabled = true;
