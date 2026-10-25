@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg_s1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="conveyor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle & Tech Glow Ring -->
+  <circle cx="128" cy="128" r="120" fill="url(#bg_s1)" stroke="#38bdf8" stroke-width="8"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,6"/>
+  
+  <!-- Factory / Terminal Silhouette -->
+  <rect x="74" y="80" width="108" height="85" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="4"/>
+  <polygon points="74,80 100,50 128,80" fill="#334155" stroke="#38bdf8" stroke-width="3"/>
+  <polygon points="128,80 154,50 182,80" fill="#334155" stroke="#38bdf8" stroke-width="3"/>
+  
+  <!-- Glowing Control Windows -->
+  <rect x="88" y="94" width="22" height="20" rx="3" fill="#38bdf8"/>
+  <rect x="118" y="94" width="20" height="20" rx="3" fill="#facc15"/>
+  <rect x="146" y="94" width="22" height="20" rx="3" fill="#38bdf8"/>
+  
+  <!-- Chute / Conveyor Base -->
+  <path d="M50 178 L206 178 L190 205 L66 205 Z" fill="url(#conveyor)" stroke="#94a3b8" stroke-width="4"/>
+  <!-- Rollers -->
+  <circle cx="80" cy="191" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="3"/>
+  <circle cx="112" cy="191" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="3"/>
+  <circle cx="144" cy="191" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="3"/>
+  <circle cx="176" cy="191" r="8" fill="#0f172a" stroke="#cbd5e1" stroke-width="3"/>
+  
+  <!-- Outgoing Parcel with Ribbon -->
+  <rect x="108" y="138" width="40" height="34" rx="4" fill="#ea580c" stroke="#fed7aa" stroke-width="3"/>
+  <rect x="124" y="138" width="8" height="34" fill="#fef08a"/>
+  <rect x="108" y="151" width="40" height="8" fill="#fef08a"/>
+
+  <!-- Dispatch Badge Emblem -->
+  <circle cx="128" cy="46" r="18" fill="url(#gold)" stroke="#fff" stroke-width="3"/>
+  <polygon points="128,34 133,44 143,44 135,50 138,60 128,54 118,60 121,50 113,44 123,44" fill="#fff"/>
+</svg>

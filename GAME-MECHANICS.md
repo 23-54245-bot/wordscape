@@ -18,12 +18,13 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 
 ## Shared progression and scoring
 
-- Each completed game stop records points and awards 1–3 stars based on score divided by that stop's maximum: 3 stars at 85% or higher, 2 at 60% or higher, otherwise 1.
-- Replaying an already passed stop is no additional points or score overrides are awarded to the player's total.
-- Some games have their own maximum score per difficulty (usually 450, 480, then 500). The stage data itself labels all game stops with a 500-point cap, so star thresholds can differ from the game's displayed maximum.
-- The Next Stop control can complete an unfinished non-gate stop with a fallback score of 250. This means a player may advance without meeting that game's normal win condition.
-- Gate authorization is separate from game completion and can be released by the host/control system. A demo-unlock control is also available in the gate dialog.
-- The final evaluation totals saved points. Grades are A+ at 7,000+, A at 5,500+, B+ at 4,000+, otherwise B.
+- Each completed game stop records points and awards 1–3 stars based on its difficulty cap: 3 stars at 85% or higher, 2 at 60% or higher, otherwise 1. The caps are 450 (Easy), 480 (Medium), and 500 (Hard).
+- Game scores share a 250-point completion baseline, a game-specific accuracy bonus (up to 150/180/200 by difficulty), and any applicable 50-point no-help bonus, clamped to the stop's cap. The final quiz awards 500 points. Results show the score and star rating separately.
+- Replaying an already passed stop updates its saved result only when the new score is higher; the best result is retained.
+- The Next Stop control is available only after the active stop has been completed.
+- Gate authorization is separate from game completion and can be released by the host/control system.
+- The final evaluation totals points from all 19 playable stops (maximum 9,080 points). Grade bands use the course maximum: A+ at 85%+, A at 70%+, B+ at 60%+, otherwise B.
+- The certificate is available only after every game and bonus stop is complete, all host checkpoints are released, and the courier reaches the final evaluation. It shows the courier name, grade, points, stars, and completion date, and can be printed or saved as a PDF.
 
 ## 1. Word Puzzle
 
@@ -36,12 +37,12 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 | Kickstart Sustainable Delivery | DELIVER | DELIVER, DRIVE, LIVER, LIVED, VEIL, RIDE |
 
 - Select letters by tapping or swiping around the letter wheel; Enter submits. Clear resets the current selection and Shuffle changes letter positions.
-- Each newly found required word reveals its cells and scores 10 points per letter. Extra words in the route's bonus list score 15 points each.
-- Three hints are available per route. A hint reveals one unrevealed board cell and deducts 15 points (not below zero).
+- Each newly found required word reveals its cells. Extra words in the route's bonus list are accepted but do not affect the completion score.
+- Three hints are available per route. A hint reveals one unrevealed board cell. Using any hint removes the no-help bonus.
 - The clock is displayed but does not affect the score. The route ends when every board cell is revealed.
-- The completion formula is intended to add a route bonus (150/180/200 points), then clamp the result to 250–450/480/500 by route.
+- Completion score is 250 points, plus an accuracy bonus of up to 150/180/200 based on the proportion of required words found without a prior incorrect submission, plus 50 points if no hints were used. The result is capped at 450/480/500 by route.
 
-**Resolved:** Completion scoring uses wpRi cleanly, awarding the route bonus and clamping correctly to 250-450/480/500 per difficulty. All words in the LOADER route (including ORDEAL) are fully valid and spellable from the letter wheel.
+**Resolved:** Completion scoring uses wpRi cleanly and clamps to 250-450/480/500 per difficulty. All words in the LOADER route (including ORDEAL) are fully valid and spellable from the letter wheel.
 
 ## 2. Baby Delivery Maze
 
@@ -69,10 +70,9 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 | Severe Weather & Route Recalibration (Hard) | 7 | 4 |
 
 - The process steps are shuffled. Correct picks are removed and added to an ordered list. Incorrect picks remain available and increment the wrong-pick count.
-- Once all steps are ordered, the process portion starts with `max(40, 100 − 20 × wrong picks)` points.
-- For each fault, select one of three corrective actions. The correct choice awards 40 points if correct on the first try, 20 after one wrong try, and 0 after two or more wrong tries. Incorrect choices are disabled; there is no attempt limit.
-- A timer runs from scenario start. Completion adds up to 120 points for speed (120 minus elapsed seconds, minimum zero).
-- Final score is floored at 250 and capped at 450/480/500. There is no timeout loss condition.
+- For each fault, select one of three corrective actions. Incorrect process and fault choices provide guidance and can be retried.
+- A correct fault action is followed by its safety/operations rationale and a Continue control; completed rationales can be reviewed at the end.
+- Completion awards 250 points, an accuracy bonus of up to 150/180/200 based on first-try process and fault choices, and a 50-point no-help bonus. The result is capped at 450/480/500. The timer does not affect score.
 
 ## 4. Detective Investigation
 
@@ -84,11 +84,10 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 | The Swapped Stork Bundle | Identify the sorter responsible for a routing error |
 | The Sabotaged Dispatch Coordinates | Identify who overwrote the flight coordinates |
 
-- Players can open clues and toggle suspect buttons to cross suspects off. The toggles are visual aids; the answer is selected separately using culprit, location, and cause dropdowns.
-- A correct accusation solves the case. There are two total accusation attempts.
-- The first incorrect accusation costs 40 points. The second closes the case and records a score of 120.
-- Correct-case score is `250 + max(0, 200 − elapsed seconds) − 40 × wrong accusations`, with a 250 floor and case cap of 450/480/500.
-- The case timer begins when the case starts. No separate time-out failure is implemented.
+- Players review and optionally pin six evidence records, then mark suspects cleared as a visual note. These notes do not change the answer.
+- The accusation is made in three steps: culprit, location, and cause. Incorrect answers provide a clue-based nudge and can be retried; progressive hints are available for each step.
+- Completing the case awards 250 points, an accuracy bonus of up to 150/180/200 based on first-try answers, and a 50-point no-help bonus if no direct-answer hint was used. The result is capped at 450/480/500.
+- The case timer begins when the case starts and does not affect score. The final hint for a step reveals and selects its answer.
 
 ## 5. Flip n Match
 
@@ -111,9 +110,9 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 
 | Difficulty | Scene Image | Focus Area | Required fixes | Time limit |
 |---|---|---|---:|---:|
-| Depot Warehouse Floor (Easy) | ssets/spot_depot.jpg | Packaging, stacking, and pallet handling | 3 | 150 sec |
-| Conveyor Chute & Sorter (Medium) | ssets/spot_conveyor.jpg | Automated sorting lines, chutes, and conveyor motors | 4 | 120 sec |
-| Flight Deck Launchpad (Hard) | ssets/spot_flightdeck.jpg | Stork aerial dispatch, runway hazards, and storm warnings | 5 | 90 sec |
+| Depot Warehouse Floor (Easy) | `assets/spot_depot.jpg` | Packaging, stacking, and pallet handling | 3 | 150 sec |
+| Conveyor Chute & Sorter (Medium) | `assets/spot_conveyor.jpg` | Automated sorting lines, chutes, and conveyor motors | 4 | 120 sec |
+| Flight Deck Launchpad (Hard) | `assets/spot_flightdeck.jpg` | Stork aerial dispatch, runway hazards, and storm warnings | 5 | 90 sec |
 
 - **Depot Floor (Easy) Deficiencies:**
   1. Fragile wooden crate placed upside-down under heavy boxes.
@@ -130,27 +129,27 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
   3. Conveyor junction bottleneck parcel jam.
   4. Dispatch weather terminal flashing an unattended lightning storm warning.
   5. Departing delivery stork missing required high-altitude flight goggles and pilot cap.
-- Tapping a valid defect adds 100 points and opens three fix choices. A correct fix adds 40 points if the first choice is correct, or 20 after one or more incorrect choices.
-- An incorrect tap costs 20 points. An incorrect fix choice costs 10 points and is disabled.
-- The player must complete the difficulty's required number of fixes to finish early. On timeout, the level still records a score, even if fewer than the required fixes were completed.
-- A speed bonus of up to 100 is awarded only if all required fixes are completed. Final score is floored at 200 and capped at 450/480/500.
-
-**Display mismatch:** The HTML's initial counter and image alt text say “5 errors,” but the game logic changes the required count to 3, 4, or 5 according to difficulty.
+- Tapping a valid defect opens three fix choices. Correct fixes explain their safety rationale and are collected for review; incorrect choices prompt the player to reconsider the risk without revealing the answer.
+- The player can finish early by completing the difficulty's required number of fixes. On timeout, the level still records a score, even if fewer than the required fixes were completed.
+- Completion score is 250 points, plus an accuracy bonus of up to 150/180/200 based on first-try fixes, plus 50 points. The result is capped at 450/480/500 by difficulty; elapsed time and the number of fixes completed do not change the score.
 
 ## 7. Final Delivery (seminar bonus)
 
 **Goal:** Unlock and answer the final handoff quiz.
 
-- Enter the current seminar code. The default code in the page is `STORKS2026`; the control system can replace it. `DEMO` is also accepted.
+- Enter the current seminar code published by the host through the control system. The code field remains unavailable until a code is published.
 - The quiz has two multiple-choice questions: one on last-mile delivery efficiency, and one on how Junior and Tulip resolved roadblocks.
-- Wrong choices are disabled but do not consume a limited number of attempts. Correct answers advance immediately.
+- Wrong choices are disabled but do not consume a limited number of attempts. A short lesson explains each correct answer before the player continues; lessons remain available to review on the result. Questions must be answered in order, and host code updates cannot restart an unlocked attempt.
 - Completing both questions awards a fixed 500 points. The displayed timer does not affect scoring.
 
 ## Review notes
 
 - **Next Stop Skip Exploit:** Resolved. Next Stop is locked until the puzzle is cleared; skipping unfinished stops for 250 points is removed.
-- **Star Rating Caps:** Aligned. Map caps match each difficulty level's true maximum (450 for Easy, 480 for Medium, 500 for Hard) so 3-star thresholds are accurate.
+- **Star Rating Caps:** Aligned. Map caps match each difficulty level's maximum (450 for Easy, 480 for Medium, 500 for Hard) so 3-star thresholds are accurate.
+- **Replay Scoring:** Resolved. Replays retain the player's best score and star result.
 - **Word Puzzle Completion:** Resolved. Uses wpRi cleanly without reference errors.
-- **Spot & Fix Multi-Scene Inspection:** Resolved. Easy, Medium, and Hard now load their own dedicated logistics scene images with matching problem counts.
+- **Detective Investigation Board:** Redesigned with reviewable/pinnable evidence, suspect notes, and explicit Who/Where/Why progress. Removed the control that exposed the culprit answer directly.
+- **Spot & Fix Inspection:** Easy, Medium, and Hard load their own scene images; the counter and image description reflect each level's required fix count.
 - **Offline Resilience:** Added automatic queuing and retry for Firebase cloud score sync.
+- **Completion and Persistence Safety:** Stops only the active game's timer on navigation while preserving its final elapsed time, rejects invalid stop launches and scores, ignores duplicate completion callbacks, clamps saved results to the stop cap, and sanitizes restored progress.
 - **Mobile Haptics:** Added subtle native vibrations for picks, matches, wins, and error shakes.

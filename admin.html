@@ -273,7 +273,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     <div class="card">
       <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">LIVE SEMINAR CODE</div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="seminar-code-input" class="glass-input" value="STORKS2026" style="font-weight:700;flex:1;text-transform:uppercase">
+        <input id="seminar-code-input" class="glass-input" placeholder="No code published" style="font-weight:700;flex:1;text-transform:uppercase">
         <button class="btn btn-sm" id="save-code-btn">Update</button>
       </div>
       <div class="switch-sub" style="margin-top:4px">Required for couriers to unlock the Bonus Stop.</div>
@@ -526,13 +526,13 @@ let courierPollInterval = null;
 
 const STORAGE_PREFIX = 'streamlined_courier_';
 let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
-let seminarCode = 'STORKS2026';
+let seminarCode = '';
 
 async function loadControl() {
   try {
     const raw = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
     if (raw.gates) gates = raw.gates;
-    if (raw.seminarCode) seminarCode = raw.seminarCode;
+    if (typeof raw.seminarCode === 'string') seminarCode = raw.seminarCode;
     $('#seminar-code-input').value = seminarCode;
   } catch(e) {}
   updateGateButtons();
@@ -551,7 +551,7 @@ async function loadControlFromRemote() {
           gates = Object.assign({}, gates, remote.gates);
           changed = true;
         }
-        if (remote.seminarCode && remote.seminarCode !== seminarCode) {
+        if (typeof remote.seminarCode === 'string' && remote.seminarCode !== seminarCode) {
           seminarCode = remote.seminarCode;
           if (document.activeElement !== $('#seminar-code-input')) {
             $('#seminar-code-input').value = seminarCode;
@@ -622,12 +622,14 @@ $('#save-code-btn').onclick = async () => {
   const origText = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Saving...';
-  seminarCode = $('#seminar-code-input').value.trim().toUpperCase() || 'STORKS2026';
+  seminarCode = $('#seminar-code-input').value.trim().toUpperCase();
   $('#seminar-code-input').value = seminarCode;
   await saveControl();
   btn.disabled = false;
   btn.textContent = origText;
-  alert(`Seminar code updated to: ${seminarCode}\n(Saved locally & synced to cloud)`);
+  alert(seminarCode
+    ? `Seminar code updated to: ${seminarCode}\n(Saved locally & synced to cloud)`
+    : 'Seminar code cleared. Couriers will wait until the host publishes a code.');
 };
 
 /* =============================================================

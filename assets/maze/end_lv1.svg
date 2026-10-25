@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg_e1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="roof1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle & Green Delivery Glow Ring -->
+  <circle cx="128" cy="128" r="120" fill="url(#bg_e1)" stroke="#34d399" stroke-width="8"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6,6"/>
+
+  <!-- Cozy Cottage -->
+  <rect x="68" y="112" width="120" height="90" rx="10" fill="#fef3c7" stroke="#78350f" stroke-width="4"/>
+  <!-- Roof -->
+  <polygon points="52,118 128,50 204,118" fill="url(#roof1)" stroke="#7f1d1d" stroke-width="5"/>
+  <!-- Chimney with gentle puffs -->
+  <rect x="162" y="62" width="22" height="34" rx="2" fill="#991b1b" stroke="#7f1d1d" stroke-width="3"/>
+  <circle cx="173" cy="50" r="7" fill="#e2e8f0" opacity="0.8"/>
+  <circle cx="180" cy="38" r="9" fill="#f8fafc" opacity="0.6"/>
+
+  <!-- Warm Nursery Window (Glowing) -->
+  <rect x="86" y="132" width="34" height="34" rx="6" fill="#fef08a" stroke="#d97706" stroke-width="3"/>
+  <line x1="103" y1="132" x2="103" y2="166" stroke="#d97706" stroke-width="3"/>
+  <line x1="86" y1="149" x2="120" y2="149" stroke="#d97706" stroke-width="3"/>
+
+  <!-- Welcome Door with Heart -->
+  <rect x="138" y="140" width="36" height="62" rx="4" fill="#92400e" stroke="#78350f" stroke-width="3"/>
+  <circle cx="145" cy="172" r="3.5" fill="#facc15"/>
+  <path d="M152 150 a 4,4 0 0,1 4,4 a 4,4 0 0,1 -8,0 a 4,4 0 0,1 4,-4" fill="#f43f5e"/>
+
+  <!-- Baby Cradle / Welcome Crest -->
+  <circle cx="128" cy="208" r="26" fill="#10b981" stroke="#ecfdf5" stroke-width="3"/>
+  <path d="M116 208 C116 216, 140 216, 140 208 Z" fill="#fff"/>
+  <circle cx="124" cy="203" r="5" fill="#fed7aa"/>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg_e2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#042f2e"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="roof2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle & Emerald Glow Ring -->
+  <circle cx="128" cy="128" r="120" fill="url(#bg_e2)" stroke="#10b981" stroke-width="8"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="6,6"/>
+
+  <!-- River Stream & Bridge Silhouette -->
+  <path d="M40 180 Q 128 160 216 180 L 216 216 L 40 216 Z" fill="#0284c7" opacity="0.6"/>
+  <path d="M50 192 Q 128 176 206 192" stroke="#bae6fd" stroke-width="3" fill="none"/>
+
+  <!-- Riverside Chalet House -->
+  <rect x="68" y="104" width="120" height="88" rx="8" fill="#fef3c7" stroke="#78350f" stroke-width="4"/>
+  <!-- Multi-layered Timber Roof -->
+  <polygon points="52,110 128,48 204,110" fill="url(#roof2)" stroke="#042f2e" stroke-width="5"/>
+  
+  <!-- Chimney with Smoke -->
+  <rect x="156" y="58" width="22" height="34" rx="2" fill="#b45309" stroke="#78350f" stroke-width="3"/>
+  <circle cx="167" cy="46" r="6" fill="#e2e8f0" opacity="0.8"/>
+  <circle cx="174" cy="34" r="8" fill="#f8fafc" opacity="0.6"/>
+
+  <!-- Nursery Attic Window (Star Shape Glowing) -->
+  <circle cx="128" cy="84" r="14" fill="#fef08a" stroke="#d97706" stroke-width="2"/>
+  <polygon points="128,74 131,81 138,81 133,85 135,92 128,88 121,92 123,85 118,81 125,81" fill="#f59e0b"/>
+
+  <!-- Warm Lower Windows -->
+  <rect x="84" y="126" width="30" height="28" rx="4" fill="#fef08a" stroke="#b45309" stroke-width="2.5"/>
+  <rect x="142" y="126" width="30" height="28" rx="4" fill="#fef08a" stroke="#b45309" stroke-width="2.5"/>
+
+  <!-- Delivery Welcome Landing Deck with Nursery Ribbon -->
+  <rect x="96" y="174" width="64" height="26" rx="4" fill="#10b981" stroke="#ecfdf5" stroke-width="3"/>
+  <circle cx="128" cy="187" r="8" fill="#fff"/>
+  <path d="M125 187 L128 183 L131 187 Z" fill="#10b981"/>
+</svg>

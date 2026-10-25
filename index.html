@@ -605,10 +605,62 @@ header {
 .dim { color: #cbd5e1; }
 #qr { display: flex; justify-content: center; margin: 12px 0; background: #fff; padding: 12px; border-radius: 14px; }
 .link { word-break: break-all; font-size: 0.82rem; color: var(--mut); margin: 6px 0; }
+.certificate {
+ border: 5px double #b7791f;
+ border-radius: 18px;
+ padding: 28px 20px;
+ margin: 8px 0 18px;
+ background: linear-gradient(145deg, #fffdf5, #fff7dc);
+ color: #1e293b;
+}
+.certificate-kicker { color: #8a5a12; font-size: 0.8rem; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; }
+.certificate h1 { color: #172554; font-size: 1.65rem; margin: 10px 0; }
+.certificate-name { font-size: 1.5rem; font-weight: 900; overflow-wrap: anywhere; margin: 16px 0; }
+.certificate-grade { font-size: 1.15rem; font-weight: 900; color: #8a5a12; }
+.certificate-score { margin-top: 8px; font-weight: 700; }
+.certificate-date { margin-top: 20px; font-size: 0.85rem; color: #475569; }
+@media print {
+ @page { size: landscape; margin: 12mm; }
+ body { background: #fff !important; color: #111 !important; }
+ body * { visibility: hidden !important; }
+ #modal, #modal.on {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+  backdrop-filter: none !important;
+  visibility: visible !important;
+ }
+ #modal #mbox {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+ }
+ #certificate-card, #certificate-card * { visibility: visible !important; }
+ #certificate-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 175mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-width: 7px;
+ }
+ #certificate-actions { display: none !important; }
+}
 
 /* Spot & Fix */
-.imgw { position: relative; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 2px solid var(--line); }
-.imgw img { width: 100%; display: block; }
+.imgw { position: relative; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 2px solid var(--line); aspect-ratio: 1376 / 768; }
+.imgw img { width: 100%; height: 100%; object-fit: contain; display: block; }
 #sf-ov { position: absolute; inset: 0; pointer-events: none; }
 .ring { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border: 4px solid var(--acc); border-radius: 50%; background: rgba(255, 138, 31, 0.25); }
 .ring.ok { border-color: #10b981; background: rgba(16, 185, 129, 0.3); }
@@ -628,9 +680,33 @@ header {
 .ol li { margin: 4px 0; font-weight: 700; color: #10b981; }
 
 /* Detective */
-.clue { display: block; width: 100%; text-align: left; background: var(--cell); border: 2px dashed var(--line); border-radius: 12px; padding: 11px 13px; margin: 6px 0; font-weight: 700; }
-.clue.open { border-style: solid; border-color: var(--acc); background: rgba(255, 138, 31, 0.08); }
-.sus.cl { text-decoration: line-through; opacity: 0.45; }
+/* Detective */
+.dt-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 10px; }
+.dt-progress-step { padding: 9px 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--cell); color: var(--mut); font-size: 0.82rem; font-weight: 800; text-align: center; }
+.dt-progress-step[aria-current="step"] { border-color: var(--acc); color: var(--ink); box-shadow: 0 0 0 2px rgba(255,138,31,0.16); }
+.dt-progress-step[data-state="complete"] { border-color: var(--good); color: var(--good); }
+.dt-progress-step[data-state="complete"]::before { content: "✓ "; }
+.dt-case-file { border-left: 4px solid var(--acc); line-height: 1.5; }
+.dt-evidence-list { display: grid; gap: 8px; }
+.clue { display: block; background: var(--cell); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.clue.open { border-color: var(--acc); background: rgba(255, 138, 31, 0.06); }
+.clue.pinned { border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+.dt-evidence-head { display: flex; align-items: center; gap: 8px; }
+.dt-evidence-toggle { flex: 1; text-align: left; padding: 3px 0; background: transparent; color: var(--ink); font: inherit; font-weight: 800; }
+.dt-evidence-toggle:focus-visible, .clue-pin-tag:focus-visible, .dt-progress-step:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+.dt-evidence-text { margin: 8px 0 0; color: var(--ink); font-size: 0.92rem; line-height: 1.5; }
+.clue-pin-tag { flex: none; font-size: 0.75rem; padding: 5px 8px; border-radius: 8px; background: var(--card); color: var(--ink); border: 1px solid var(--line); cursor: pointer; }
+.clue-pin-tag[aria-pressed="true"] { border-color: #38bdf8; background: rgba(56, 189, 248, 0.16); }
+.sus { display: inline-flex; align-items: center; padding: 8px 12px; border-radius: 12px; margin: 3px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+.sus.cl { text-decoration: line-through; opacity: 0.45; filter: grayscale(1); }
+.sus.pinned { border-color: #38bdf8; background: rgba(56, 189, 248, 0.2); }
+.dt-opt-btn { display: block; width: 100%; text-align: left; padding: 11px 14px; margin: 6px 0; border-radius: 14px; background: var(--cell); border: 1.5px solid var(--line); font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; }
+.dt-opt-btn:hover { border-color: var(--acc); background: rgba(255,138,31,0.1); }
+.dt-opt-btn.selected, .dt-opt-btn[aria-pressed="true"] { border-color: #0284c7; background: rgba(56, 189, 248, 0.16); box-shadow: 0 0 0 2px rgba(56,189,248,0.12); }
+.learning-review { margin-top: 8px; text-align: left; }
+.learning-review summary { cursor: pointer; font-weight: 800; }
+.learning-review li { margin: 8px 0; line-height: 1.45; }
+
 select { width: 100%; padding: 11px; border-radius: 12px; background: var(--cell); border: 2px solid var(--line); margin: 5px 0; font-weight: 700; }
 .big { font-size: 2.2rem; font-weight: 800; color: var(--acc); margin: 6px 0; }
 .shake { animation: sh 0.35s; }
@@ -1389,6 +1465,7 @@ select option {
  <div class="row" id="play-sticky-header" style="justify-content:space-between;align-items:center;margin:0 0 10px;position:sticky;top:0;z-index:90;background:rgba(12,24,43,0.92);backdrop-filter:blur(12px);padding:8px 12px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.16)">
  <button class="sm" onclick="leave()" style="display:flex;align-items:center;gap:4px;font-weight:700">L Map</button>
  <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+ <button class="sm" id="challenge-toggle-btn" onclick="toggleChallengeMode()" style="font-size:0.78rem;padding:6px 10px" title="Toggle Challenge Mode (Timer display)">⏱️ Challenge: OFF</button>
 </div>
 
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
@@ -1408,7 +1485,7 @@ select option {
  <div id="wheel"></div>
 </div>
  <div class="row" style="margin-top:12px">
- <button class="sm" id="wp-hint"> Hint (<span id="wp-hc">3</span>) [-15]</button>
+ <button class="sm" id="wp-hint"> Hint (<span id="wp-hc">3</span>)</button>
  <button class="sm" id="wp-shuf"> Shuffle</button>
  <button class="sm" id="wp-clr"> Clear</button>
  <button class="sm" id="wp-ent" style="background:linear-gradient(180deg,#ffac47,#ff8a1f,#ea6000);color:#fff;border-color:#b84600;box-shadow:0 4px 0 #b84600,inset 0 2px 0 rgba(255,255,255,0.55)"> Enter</button>
@@ -1419,8 +1496,8 @@ select option {
 
  <!-- GAME 1: SPOT & FIX THE ERRORS -->
  <section id="g1" hidden>
- <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0/5 fixed</span><span id="sf-s"> 0</span></div>
- <div class="imgw"><img id="sf-i" alt="Find the 5 errors" src="assets/spot_errors.jpg"><div id="sf-ov"></div></div>
+ <div class="bar"><span id="sf-t">0:00</span><span id="sf-c">0 fixed</span><span id="sf-s"> 0</span></div>
+ <div class="imgw"><img id="sf-i" alt="Logistics inspection scene" src="assets/spot_depot.jpg"><div id="sf-ov"></div></div>
  <details id="sf-admin-answers" class="card" hidden>
  <summary>Admin answer key</summary>
  <ol id="sf-admin-answer-list"></ol>
@@ -1432,12 +1509,18 @@ select option {
  <!-- GAME 2: BABY DELIVERY MAZE -->
  <section id="g2" hidden>
  <div class="bar"><span id="mz-t">0:00</span><span id="mz-m">0 moves</span><span id="mz-p"> 0/3</span></div>
+ <div id="mz-banner-wrap" class="card" style="padding:12px 16px;margin-bottom:10px;text-align:left;border-color:var(--cell-border);background:linear-gradient(135deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.95) 100%)">
+  <div id="mz-banner-title" style="font-weight:800;font-size:1.05rem;color:#f8fafc">Canyon Route 1</div>
+  <div id="mz-banner-sub" style="font-size:0.82rem;color:#ffb347;font-weight:700;margin-top:3px">Sunny Valley Gorge — From Dispatch Hub to Valley Nursery</div>
+ </div>
+ <div id="mz-fact-card" class="card" style="background:rgba(255,138,31,0.14);border-color:var(--acc);padding:10px 14px;margin-bottom:10px;display:none;font-size:0.88rem;line-height:1.4"></div>
+ <div id="mz-legend" class="card" style="padding:6px 10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-around;font-size:0.78rem;background:rgba(15,23,42,0.65);border-color:rgba(255,255,255,0.12);flex-wrap:wrap;gap:6px"></div>
  <div id="mz"></div>
  <div class="pad">
- <span></span><button class="dpad-btn" data-d="-1,0">U</button><span></span>
- <button class="dpad-btn" data-d="0,-1">L</button><button class="dpad-btn" data-d="1,0">D</button><button class="dpad-btn" data-d="0,1">R</button>
+ <span></span><button class="dpad-btn" data-d="-1,0" aria-label="Move Up"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></button><span></span>
+ <button class="dpad-btn" data-d="0,-1" aria-label="Move Left"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M4 12l8-8v5h8v6h-8v5z"/></svg></button><button class="dpad-btn" data-d="1,0" aria-label="Move Down"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg></button><button class="dpad-btn" data-d="0,1" aria-label="Move Right"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M20 12l-8 8v-5H4v-6h8V4z"/></svg></button>
 </div>
- <p class="sub" style="margin-top:8px">Swipe, tap arrows, or use keyboard keys. Deliver the baby to the Nursery !</p>
+ <p class="sub" style="margin-top:8px">Swipe, tap arrow buttons, or use keyboard arrow keys.</p>
  <div id="mz-r"></div>
  <div class="row"><button class="sm" id="mz-a">Restart</button><button class="btn sm green" id="mz-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop</button></div>
 </section>
@@ -1450,17 +1533,42 @@ select option {
  <div class="row"><button class="sm" id="bd-a">Restart Scenario</button><button class="btn sm green" id="bd-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop</button></div>
 </section>
 
- <!-- GAME 4: DETECTIVE GAME (CASES 1, 2, 3) -->
+ <!-- GAME 4: DETECTIVE INVESTIGATION BOARD -->
  <section id="g4" hidden>
- <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-s-count"> 0</span></div>
- <div class="card" id="dt-brief"><b>The Case:</b> Loading delay investigation.</div>
- <div id="dt-c"></div>
- <div class="card"><b>Suspects</b> (Tap to cross off cleared couriers)<div id="dt-s"></div></div>
- <div class="card"><b>Submit Accusation</b> (2 attempts max)
- <select id="dt-cu"></select><select id="dt-pl"></select><select id="dt-ca"></select>
- <button class="btn" id="dt-go">Submit Accusation</button>
- <div class="msg" id="dt-m"></div>
-</div>
+ <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-step-badge" style="color:var(--acc);font-weight:800">Who?</span></div>
+ <div class="card dt-case-file" id="dt-brief"><b>CASE FILE</b><br>Loading investigation details...</div>
+ <div class="dt-progress" aria-label="Investigation progress" aria-live="polite">
+  <div class="dt-progress-step" id="dt-progress-0" aria-current="step" data-state="current">1 · Who?</div>
+  <div class="dt-progress-step" id="dt-progress-1" data-state="pending">2 · Where?</div>
+  <div class="dt-progress-step" id="dt-progress-2" data-state="pending">3 · Why?</div>
+ </div>
+ <div class="card" style="margin-bottom:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+   <b style="font-size:0.95rem">Evidence board</b>
+   <span id="dt-clues-read-count" class="sub" style="margin:0;font-size:0.8rem">0/6 reviewed</span>
+  </div>
+  <p class="sub" style="text-align:left;margin:0 0 8px">Open each record and pin evidence you want to revisit.</p>
+  <div id="dt-c" class="dt-evidence-list"></div>
+ </div>
+ <div class="card" style="margin-bottom:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+   <b>Suspects & alibis</b>
+   <span class="sub" style="margin:0;font-size:0.78rem">Your notes</span>
+  </div>
+  <p class="sub" style="text-align:left;font-size:0.82rem;margin:0 0 6px">Mark suspects as cleared while you compare the evidence.</p>
+  <div id="dt-s" class="row" style="justify-content:flex-start;gap:6px"></div>
+ </div>
+ <div class="card" id="dt-question-card">
+  <div id="dt-step-title" style="font-size:1.05rem;font-weight:800;margin-bottom:6px">Who is responsible?</div>
+  <p id="dt-step-desc" class="sub" style="text-align:left;margin:0 0 10px;font-size:0.88rem">Use the evidence to identify the person responsible.</p>
+  <div id="dt-step-options"></div>
+  <div class="row" style="margin-top:10px;gap:8px">
+   <button class="btn sm" id="dt-confirm-btn" onclick="dtConfirmStep()" style="flex:1">Confirm & Lock Answer 🔒</button>
+   <button class="sm" id="dt-hint-btn" onclick="dtRequestHint()" style="font-size:0.82rem;padding:6px 12px" title="Get progressive investigation hint">💡 Hint (0/3)</button>
+  </div>
+  <div id="dt-hint-box" class="card" style="margin-top:10px;padding:10px;background:rgba(255,138,31,0.12);border-color:var(--acc)" hidden></div>
+  <div class="msg" id="dt-m" style="margin-top:8px" role="status" aria-live="polite"></div>
+ </div>
  <div id="dt-r"></div>
  <div class="row"><button class="sm" id="dt-a">Restart Case</button><button class="btn sm green" id="dt-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop</button></div>
 </section>
@@ -1505,11 +1613,13 @@ select option {
  <div class="card">
  <h2> The Final Delivery</h2>
  <p>Enter the live seminar code announced by the host to unlock the bonus handoff challenge!</p>
- <input id="bn-code-input" placeholder="Enter Seminar Code" style="text-transform:uppercase">
- <button class="btn" id="bn-unlock-btn">Verify Code & Play</button>
+ <input id="bn-code-input" placeholder="Waiting for host code…" aria-label="Live seminar code" style="text-transform:uppercase">
+ <p class="sub">Press Enter to verify the code.</p>
  <div id="bn-quiz-area" hidden style="margin-top:16px">
  <div id="bn-q-text" style="font-weight:700;margin-bottom:10px"></div>
+ <div id="bn-q-feedback" class="msg" role="status" aria-live="polite" style="margin:8px 0"></div>
  <div id="bn-q-opts"></div>
+ <button class="btn" id="bn-q-continue" hidden>Continue</button>
 </div>
 </div>
  <div class="row" style="margin-top:14px;justify-content:center">
@@ -1674,17 +1784,43 @@ function animateConfetti() {
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const shuf = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+let challengeMode = false;
+function updateChallengeUI() {
+ const btn = $('#challenge-toggle-btn');
+ if (btn) {
+  btn.textContent = challengeMode ? '⏱️ Challenge: ON' : '⏱️ Challenge: OFF';
+  btn.style.background = challengeMode ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'rgba(255,255,255,0.12)';
+ }
+ const timerSelectors = ['#wp-t', '#sf-t', '#mz-t', '#bd-t', '#dt-t', '#fm-t', '#bn-t'];
+ timerSelectors.forEach(sel => {
+  const el = document.querySelector(sel);
+  if (el) el.style.visibility = challengeMode ? 'visible' : 'hidden';
+ });
+}
+function toggleChallengeMode() {
+ challengeMode = !challengeMode;
+ updateChallengeUI();
+}
+
 function Timer(el) {
- let t0 = 0, iv = null;
+ let t0 = 0, iv = null, elapsed = 0;
  const f = () => {
- const s = Math.floor((Date.now() - t0) / 1000);
+ elapsed = Math.floor((Date.now() - t0) / 1000);
+ const s = elapsed;
  if (el) el.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
  return s;
  };
  return {
  start() { t0 = Date.now(); clearInterval(iv); iv = setInterval(f, 500); f(); },
- stop() { clearInterval(iv); return f(); },
- reset() { clearInterval(iv); if (el) el.textContent = '0:00'; }
+ stop() {
+  if (iv !== null) {
+   clearInterval(iv);
+   iv = null;
+   f();
+  }
+  return elapsed;
+ },
+ reset() { clearInterval(iv); iv = null; t0 = 0; elapsed = 0; if (el) el.textContent = '0:00'; }
  };
 }
 function shake(el) {
@@ -1692,6 +1828,28 @@ function shake(el) {
  el.classList.remove('shake');
  void el.offsetWidth;
  el.classList.add('shake');
+}
+function getStopCap(stopIndex = activeStopIndex) {
+ const stop = I[stopIndex];
+ return stop && typeof stop.cap === 'number' ? stop.cap : 500;
+}
+function calculateAccuracyBonus(successes, total, maxBonus) {
+ return total > 0
+  ? Math.min(maxBonus, Math.round((successes / total) * maxBonus))
+  : 0;
+}
+function calculateStars(score, max) {
+ const ratio = max > 0 ? Math.min(1, score / max) : 0;
+ return ratio >= 0.85 ? 3 : ratio >= 0.6 ? 2 : 1;
+}
+function calculateStopScore(accuracyBonus = 0, noHelpBonus = 0, base = 250) {
+ const max = getStopCap();
+ return {
+  score: Math.max(250, Math.min(max, base + accuracyBonus + noHelpBonus)),
+  max,
+  accuracyBonus,
+  noHelpBonus
+ };
 }
 function res(el, title, score, max, extra) {
  const nextIdx = (activeStopIndex !== null ? activeStopIndex : cur) + 1;
@@ -1714,7 +1872,10 @@ function res(el, title, score, max, extra) {
  <div class="card" style="text-align:center;margin-top:14px">
  <h2>${title}</h2>
  <div class="big"> ${score}</div>
- <p style="margin:6px 0;font-size:1.05rem"><b>+${score} Stars Earned!</b> ${extra ? `<br><span class="sub">${extra}</span>` : ''}</p>
+ ${st(calculateStars(score, max))}
+ <p class="sub">Star rating: ${calculateStars(score, max)} / 3</p>
+ <p style="margin:6px 0;font-size:1.05rem"><b>Score: ${score} / ${max} points</b></p>
+ ${extra ? `<div class="sub">${extra}</div>` : ''}
  <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
  <button class="btn green" onclick="nextStop()" style="font-size:1.05rem">${nextLabel}</button>
  <button class="btn alt" onclick="leave()">Return to Map</button>
@@ -1744,13 +1905,44 @@ function normalizeId(name, id) {
 }
 const HOST_ADMIN_COURIER_KEY = normalizeId('Host Admin', 'ADMIN-01');
 
+function sanitizeResults(results) {
+ if (!Array.isArray(results)) return [];
+ return Array.from({ length: N }, (_, index) => {
+  const result = results[index];
+  if (!result || typeof result !== 'object') return null;
+  if (result.gate === 1 || result.gate === true) return { gate: 1 };
+  const points = Number(result.pts);
+  if (!Number.isFinite(points) || points < 0) return null;
+  const max = getStopCap(index);
+  const pts = Math.min(max, points);
+  return {
+   ...result,
+   pts,
+   score: Number.isFinite(result.score) ? Math.max(0, Math.min(max, result.score)) : pts,
+   max,
+   stars: calculateStars(pts, max)
+  };
+ });
+}
+
+function sanitizeGates(gates) {
+ const normalized = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+ if (!gates || typeof gates !== 'object') return normalized;
+ Object.keys(normalized).forEach(key => {
+  normalized[key] = gates[key] === 1 || gates[key] === true ? 1 : 0;
+ });
+ return normalized;
+}
+
 function loadState() {
  // Load host control switches
  try {
  const ctrl = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
- if (ctrl.gates) O = ctrl.gates;
- if (ctrl.seminarCode) seminarCode = ctrl.seminarCode;
- } catch(e) {}
+ if (ctrl.gates) O = sanitizeGates(ctrl.gates);
+ if (typeof ctrl.seminarCode === 'string') seminarCode = ctrl.seminarCode;
+ } catch(e) {
+  console.warn('Unable to read saved host controls:', e);
+ }
 
  if (!courierKey) return null;
  if (courierKey === HOST_ADMIN_COURIER_KEY) {
@@ -1761,11 +1953,13 @@ function loadState() {
  }
  try {
  const data = JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || '{}');
- if (data.results) R = data.results;
- if (typeof data.cur === 'number') cur = data.cur;
+ R = sanitizeResults(data.results);
+ if (Number.isFinite(data.cur)) cur = Math.max(0, Math.min(N - 1, Math.floor(data.cur)));
  if (data.avatar && !chosenAvatar) restoreAvatar(data.avatar);
  return data;
- } catch(e) {}
+ } catch(e) {
+  console.warn('Unable to restore saved courier progress:', e);
+ }
  return null;
 }
 
@@ -1814,8 +2008,8 @@ async function restoreAccount(localState) {
  const localUpdatedAt = Number(localState && localState.updatedAt) || 0;
  const remoteUpdatedAt = Number(remote.updatedAt) || 0;
  if (remoteUpdatedAt >= localUpdatedAt) {
- if (Array.isArray(remote.results)) R = remote.results;
- if (typeof remote.cur === 'number') cur = remote.cur;
+ if (Array.isArray(remote.results)) R = sanitizeResults(remote.results);
+ if (Number.isFinite(remote.cur)) cur = Math.max(0, Math.min(N - 1, Math.floor(remote.cur)));
  // Only restore previous remote avatar if user hasn't explicitly selected a new avatar on the login screen
  if (remote.avatar && !chosenAvatar) restoreAvatar(remote.avatar);
  }
@@ -1823,35 +2017,59 @@ async function restoreAccount(localState) {
 }
 
 let pendingSync = false;
+let syncInFlight = false;
+let syncQueued = false;
+let queuedSyncPayload = null;
 async function syncToFirebase(payload) {
  if (!FIREBASE_DB_URL || !courierKey) return;
- const data = payload || JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || 'null');
- if (!data) return;
+ if (syncInFlight) {
+ syncQueued = true;
+ if (payload) queuedSyncPayload = payload;
+ return;
+ }
+ syncInFlight = true;
  try {
+ let nextPayload = payload;
+ do {
+ syncQueued = false;
+ const data = nextPayload || queuedSyncPayload || JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierKey) || 'null');
+ queuedSyncPayload = null;
+ nextPayload = null;
+ if (!data) break;
  const totalScore = (data.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
  const stopsCleared = (data.results || []).filter(r => r && !r.gate).length;
  const body = {
- name: data.name || 'Courier',
- pid: data.pid || '',
- score: totalScore,
- stops: stopsCleared,
- cur: data.cur || 0,
- avatar: (data.avatar && data.avatar.name) ? data.avatar : (chosenAvatar || null),
- results: data.results || [],
- startTime: data.startTime || null,
- finishTime: data.finishTime || null,
- updatedAt: data.updatedAt || Date.now()
+  name: data.name || 'Courier',
+  pid: data.pid || '',
+  score: totalScore,
+  stops: stopsCleared,
+  cur: data.cur || 0,
+  avatar: (data.avatar && data.avatar.name) ? data.avatar : (chosenAvatar || null),
+  results: data.results || [],
+  startTime: data.startTime || null,
+  finishTime: data.finishTime || null,
+  updatedAt: data.updatedAt || Date.now()
  };
  const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
- method: 'PUT',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(body)
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body)
  });
  if (!res.ok) throw new Error('Sync status ' + res.status);
  pendingSync = false;
+ } while (syncQueued && navigator.onLine);
+ if (syncQueued && !navigator.onLine) pendingSync = true;
  } catch(e) {
  console.warn('Firebase sync queued for retry:', e);
  pendingSync = true;
+ } finally {
+ syncInFlight = false;
+ if (syncQueued && navigator.onLine && !pendingSync) {
+  syncQueued = false;
+  const nextPayload = queuedSyncPayload;
+  queuedSyncPayload = null;
+  syncToFirebase(nextPayload);
+ }
  }
 }
 
@@ -1866,10 +2084,17 @@ function saveState() {
  return;
  }
  const startKey = 'streamlined_start_' + courierKey;
- let startTime = Number(localStorage.getItem(startKey));
+ let startTime = 0;
+ try {
+  startTime = Number(localStorage.getItem(startKey));
+ } catch(e) {
+  console.warn('Unable to read courier start time locally:', e);
+ }
  if (!startTime) {
  startTime = Date.now();
- try { localStorage.setItem(startKey, String(startTime)); } catch(e) {}
+ try { localStorage.setItem(startKey, String(startTime)); } catch(e) {
+  console.warn('Unable to persist courier start time locally:', e);
+ }
  }
  const completedStops = (R || []).filter(r => r && r.completedAt);
  const isFinished = Boolean(R[16] || completedStops.length >= 13);
@@ -1887,7 +2112,9 @@ function saveState() {
  };
  try {
  localStorage.setItem(STORAGE_PREFIX + courierKey, JSON.stringify(payload));
- } catch(e) {}
+ } catch(e) {
+  console.warn('Unable to persist courier progress locally; cloud sync will still be attempted:', e);
+ }
  syncToFirebase(payload);
 }
 
@@ -1913,14 +2140,13 @@ async function syncControlFromFirebase() {
  O = Object.assign({}, O, data.gates);
  changed = true;
  }
-         if (data.seminarCode && data.seminarCode !== seminarCode) {
+         if (typeof data.seminarCode === 'string' && data.seminarCode !== seminarCode) {
           seminarCode = data.seminarCode;
           changed = true;
           const ci = $('#bn-code-input');
-          if (ci && !$('#g5').hidden && ci.placeholder === 'Waiting for host code...') {
-            ci.placeholder = 'Enter Seminar Code';
-            ci.disabled = false;
-            $('#bn-unlock-btn').disabled = false;
+          if (ci && !$('#g5').hidden && !bnQuizUnlocked) {
+            ci.placeholder = seminarCode ? 'Enter live seminar code' : 'Waiting for host code…';
+            ci.disabled = !seminarCode;
           }
         }
  if (changed || !localStorage.getItem(CONTROL_KEY)) {
@@ -2065,7 +2291,7 @@ const story = i => {
 
 const DESC = {
  wp: 'Unscramble logistics vocabulary across 3 anagram routes (STREAM, LOADER, DELIVER).',
- sf: 'Find the 5 packaging and dispatch errors in the poster image, then select each fix.',
+ sf: 'Inspect the logistics scene and fix every required packaging and dispatch error.',
  mz: 'Pilot courier through the depot maze to the nursery while gathering 3 bonus parcels.',
  fm: 'Flip and match 6 character card pairs in the fewest tries and fastest time.',
  bd: 'Sequence the process operations in correct logistics order, then resolve active roadblocks.',
@@ -2476,9 +2702,16 @@ function tap(i) {
 
 
 let activeStopIndex = null;
+let activeStopCompleted = false;
 function launch(i) {
  X();
+ if (!Number.isInteger(i) || i < 0 || i >= N || I[i].t === 'gate' || I[i].t === 'fin') {
+  console.error('Cannot launch invalid or non-playable stop:', i);
+  return;
+ }
+ if (activeStopIndex !== null) stopActiveGameTimers();
  activeStopIndex = i;
+ activeStopCompleted = false;
  $$('#play section').forEach(s => s.hidden = true);
  const it = I[i];
  V('#play');
@@ -2510,6 +2743,7 @@ function launch(i) {
  const levelNumber = (it.r ?? it.lv ?? it.scen ?? it.caseIdx ?? 0) + 1;
  ind.textContent = `Game ${gameNumber} - Level ${levelNumber}: ${it.n || (it.t === 'bonus' ? 'Final Delivery' : 'Checkpoint')}`;
  }
+ updateChallengeUI();
 
  ['#wp-next-btn', '#sf-next-btn', '#mz-next-btn', '#fm-next-btn', '#bd-next-btn', '#dt-next-btn', '#bn-next-btn'].forEach(sel => {
  const el = document.querySelector(sel);
@@ -2540,11 +2774,30 @@ function launch(i) {
  }
 }
 
+function stopActiveGameTimers() {
+ const gameType = activeStopIndex === null ? null : I[activeStopIndex]?.k;
+ if (gameType === 'wp' && wpTimer) {
+  clearInterval(wpTimer);
+  wpTimer = null;
+ }
+ if (gameType === 'sf' && sf && sf.to) {
+  clearTimeout(sf.to);
+  sf.to = null;
+ }
+ if (gameType === 'sf') sfT.stop();
+ if (gameType === 'mz') mzT.stop();
+ if (gameType === 'bd') bdT.stop();
+ if (gameType === 'dt') dtT.stop();
+ if (gameType === 'bn' && bnTimer) {
+  clearInterval(bnTimer);
+  bnTimer = null;
+ }
+ if (gameType === 'fm') fmTimer.stop();
+}
+
 function leave() {
+ stopActiveGameTimers();
  activeStopIndex = null;
- if (wpTimer) clearInterval(wpTimer);
- if (sf && sf.to) clearTimeout(sf.to);
- if (fmTimer) fmTimer.stop();
  $$('#play section').forEach(s => s.hidden = true);
  V('#mapv');
  draw();
@@ -2594,25 +2847,37 @@ function nextStop() {
 }
 
 function onStopCompleted(score, max) {
- if (activeStopIndex === null) return;
+ if (activeStopIndex === null || activeStopCompleted) return;
  const i = activeStopIndex;
- const maxPts = max || (I[i] && I[i].cap) || 500;
- const ratio = maxPts ? Math.min(1, score / maxPts) : 0;
- const stars = ratio >= 0.85 ? 3 : ratio >= 0.6 ? 2 : 1;
- // 1:1 DIRECT SCORING: What players earn in the game is directly awarded as stars! No artificial downscaling!
- const pts = score;
+ const maxPts = max || getStopCap(i);
+ if (!Number.isFinite(score) || score < 0 || !Number.isFinite(maxPts) || maxPts <= 0) {
+  console.error('Cannot record invalid stop score:', { score, max, activeStopIndex });
+  return;
+ }
+ activeStopCompleted = true;
+ const pts = Math.min(maxPts, score);
+ const stars = calculateStars(pts, maxPts);
  let fresh = false;
+ let improved = false;
+ let prevPts = 0;
 
  if (!R[i]) {
- R[i] = { stars: stars, pts: pts, score: score, max: maxPts, completedAt: Date.now() };
- fresh = true;
- if (i === cur) {
- cur++;
- adv();
- }
- saveState();
+  // First time completing this stop
+  R[i] = { stars: stars, pts: pts, score: pts, max: maxPts, completedAt: Date.now() };
+  fresh = true;
+  if (i === cur) {
+   cur++;
+   adv();
+  }
+  saveState();
  } else {
- // Replay on already passed stop: no additional scores or overrides awarded
+  // Replay: keep the BEST score — update only if the new score is higher
+  prevPts = R[i].pts;
+  if (pts > R[i].pts) {
+   improved = true;
+   R[i] = { stars: stars, pts: pts, score: pts, max: maxPts, completedAt: Date.now() };
+   saveState();
+  }
  }
 
  audio.roundWin();
@@ -2620,25 +2885,33 @@ function onStopCompleted(score, max) {
 
  const topNavBtn = $('#nav-next-btn');
  if (topNavBtn) {
- topNavBtn.style.animation = 'navPulse 1.8s infinite';
- topNavBtn.style.opacity = '1';
- topNavBtn.style.cursor = 'pointer';
- topNavBtn.title = 'Proceed to next stop';
+  topNavBtn.style.animation = 'navPulse 1.8s infinite';
+  topNavBtn.style.opacity = '1';
+  topNavBtn.style.cursor = 'pointer';
+  topNavBtn.title = 'Proceed to next stop';
  }
 
  if (I[i].t === 'bonus') {
- evalCard();
+  evalCard();
  } else {
- modal(`
- <h2>${fresh ? ' Delivered!' : ' Replay Complete!'}</h2>
- ${st(fresh ? stars : R[i].stars)}
- <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' Stars Earned! ' : 'Replay Score: ' + score + ' pts'}</b></p>
- ${!fresh ? '<p class="sub" style="color:var(--text-muted);font-weight:700">Official Recorded Score: ' + R[i].pts + ' pts (No additional points added)</p>' : ''}
- ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
- ${bt('Next ', 'nextStop()')}
- ${bt('Return to Map', 'leave();X()')}
- ${bt('Review Result', 'X()', 1)}
- `);
+  let replayMsg = '';
+  if (!fresh) {
+   if (improved) {
+    replayMsg = `<p class="sub" style="color:var(--good);font-weight:700">🏆 New Best Score! +${pts - prevPts} pts improvement (was ${prevPts} pts)</p>`;
+   } else {
+    replayMsg = `<p class="sub" style="font-weight:700">Your best score remains: <b>${R[i].pts} pts</b> — keep practicing to beat it!</p>`;
+   }
+  }
+  modal(`
+  <h2>${fresh ? '🎉 Delivered!' : '🔄 Replay Complete!'}</h2>
+  ${st(fresh ? stars : R[i].stars)}
+  <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' pts Earned! 🌟' : 'Replay Score: ' + score + ' pts'}</b></p>
+  ${replayMsg}
+  ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
+  ${bt('Next ➡', 'nextStop()')}
+  ${bt('Return to Map', 'leave();X()')}
+  ${bt('Review Result', 'X()', 1)}
+  `);
  }
 }
 
@@ -2666,15 +2939,16 @@ const WP_ROUNDS = [
  }
 ];
 
-let wpRi = 0, wpScore = 0, wpTotalSec = 0, wpTimer = null, wpSel = [], wpOrder = [];
+let wpRi = 0, wpTotalSec = 0, wpTimer = null, wpSel = [], wpOrder = [];
 let wpHintsLeft = 3, wpActiveWordBoard = null, wpDragging = false, wpCurrentPointer = null;
 
 function wpStart(routeIdx = 0) {
- wpRi = routeIdx;
- wpScore = 0;
+ wpRi = Math.max(0, Math.min(WP_ROUNDS.length - 1, Number.isInteger(routeIdx) ? routeIdx : 0));
  wpHintsLeft = 3;
  wpTotalSec = 0;
- $('#wp-s').textContent = ' 0';
+ wpFailedAttempts = 0;
+ wpFirstTryWords = 0;
+ $('#wp-s').textContent = ' 250';
  $('#wp-hc').textContent = wpHintsLeft;
  $('#wp-r').innerHTML = '';
  startWpRoute();
@@ -2970,21 +3244,19 @@ function wpSubmit() {
  });
  if (newlyFound) {
  audio.wordSuccess();
- wpScore += word.length * 10;
- $('#wp-s').textContent = ' ' + wpScore;
- $('#wp-msg').textContent = `Awesome! Found"${word}" (+${word.length * 10})`;
+ if (wpFailedAttempts === 0) wpFirstTryWords = (wpFirstTryWords || 0) + 1;
+ $('#wp-msg').textContent = `Awesome! Found "${word}"!`;
  renderWpGrid();
  checkWpClear();
  } else {
- $('#wp-msg').textContent = `Already found"${word}"!`;
+ $('#wp-msg').textContent = `Already found "${word}"!`;
  }
  } else if (B.r.bonus && B.r.bonus.includes(word)) {
  audio.wordSuccess();
- wpScore += 15;
- $('#wp-s').textContent = ' ' + wpScore;
- $('#wp-msg').textContent = ` Bonus Word!"${word}" (+15)`;
+ $('#wp-msg').textContent = `Bonus Word! "${word}"`;
  } else {
  audio.error();
+ wpFailedAttempts = (wpFailedAttempts || 0) + 1;
  $('#wp-msg').textContent = `"${word}" is not on the board.`;
  shake($('#cur-word'));
  }
@@ -2995,16 +3267,22 @@ function wpSubmit() {
 }
 
 function checkWpClear() {
+ if (activeStopCompleted) return;
  const B = wpActiveWordBoard;
  const allRevealed = B.cells.every(c => B.revealed.has(c.key));
  if (allRevealed) {
  audio.roundWin();
  clearInterval(wpTimer);
- const maxPts = wpRi === 0 ? 450 : wpRi === 1 ? 480 : 500;
- const totalPts = Math.max(250, Math.min(maxPts, wpScore + (wpRi === 0 ? 150 : wpRi === 1 ? 180 : 200)));
+ const maxPts = getStopCap();
+ const accMax = maxPts - 300;
+ const totalTargetWords = (B.placed && B.placed.length) || 1;
+ const firstTryWords = wpFirstTryWords || 0;
+ const accuracyBonus = calculateAccuracyBonus(firstTryWords, totalTargetWords, accMax);
+ const noHelpBonus = (wpHintsLeft === 3) ? 50 : 0;
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
  const wnb = $('#wp-next-btn'); if (wnb) wnb.hidden = false;
- res($('#wp-r'), 'Word Puzzle Cleared! ', totalPts, maxPts, 'Route delivered successfully!');
- onStopCompleted(totalPts, maxPts);
+ res($('#wp-r'), 'Word Puzzle Cleared! 🚚', scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} | No-help bonus: +${noHelpBonus}`);
+ onStopCompleted(scoring.score, scoring.max);
  }
 }
 
@@ -3026,8 +3304,6 @@ $('#wp-hint').onclick = () => {
  wpActiveWordBoard.revealed.add(pick.key);
  wpHintsLeft--;
  $('#wp-hc').textContent = wpHintsLeft;
- wpScore = Math.max(0, wpScore - 15);
- $('#wp-s').textContent = ' ' + wpScore;
  audio.letterPick(2);
  renderWpGrid();
  checkWpClear();
@@ -3036,7 +3312,7 @@ $('#wp-hint').onclick = () => {
 /* =============================================================
  GAME 1: SPOT & FIX THE ERRORS (3 DISTINCT LOGISTICS SCENES)
  ============================================================= */
-let sf, dbg = false;
+let sf, dbg = false, sfChallengeMode = false;
 const sfT = Timer($('#sf-t'));
 function sfUp() {
  const req = sf ? (sf.targetCount || 5) : 5;
@@ -3054,19 +3330,22 @@ const SF_LEVEL_CONFIGS = [
  basePts: 60,
  hotspots: [
  {
- x: 0.31, y: 0.30, r: 0.045, tapR: 0.075,
+ x: 0.30, y: 0.30, r: 0.045, tapR: 0.07,
  q: 'Fragile wooden parcel is placed upside-down under heavy crates. How should this be corrected?',
- o: ['Rotate upright (arrows pointing UP) and place safely atop the stack', 'Leave upside-down and wrap with extra packing tape', 'Scratch off the fragile label']
+ why: 'Fragile labels and orientation marks must be followed; placing heavy freight above a fragile parcel can damage its contents.',
+ o: ['Rotate upright and restack atop pile', 'Leave upside-down with extra tape', 'Scratch off fragile warning label']
  },
  {
- x: 0.45, y: 0.73, r: 0.045, tapR: 0.075,
+ x: 0.41, y: 0.76, r: 0.045, tapR: 0.07,
  q: 'Shipping barcode label is torn and unreadable. How should this be corrected?',
- o: ['Rescan manifest ID and reprint a clean optical barcode label', 'Write a guessed tracking number with a marker pen', 'Ship the parcel with no barcode']
+ why: 'A verified, readable label preserves tracking and routing accuracy. Never guess missing shipment data.',
+ o: ['Rescan manifest ID and reprint label', 'Write guessed tracking number on box', 'Dispatch parcel without any barcode']
  },
  {
- x: 0.86, y: 0.58, r: 0.045, tapR: 0.075,
+ x: 0.78, y: 0.66, r: 0.045, tapR: 0.07,
  q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?',
- o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation']
+ why: 'Secure the parcel and latch the hatch before movement to prevent a load shift or dropped cargo.',
+ o: ['Secure bundle inside and latch door', 'Tie hatch door loosely with string', 'Leave open for extra ventilation']
  }
  ]
  },
@@ -3079,24 +3358,28 @@ const SF_LEVEL_CONFIGS = [
  basePts: 60,
  hotspots: [
  {
- x: 0.18, y: 0.32, r: 0.045, tapR: 0.075,
- q: 'Conveyor chute is missing its safety guardrail and a parcel is tilting off. How should this be corrected?',
- o: ['Halt conveyor, retrieve parcel, and install safety retaining guardrail', 'Let parcel fall and clean up later', 'Push the parcel faster so it clears the gap']
+ x: 0.18, y: 0.31, r: 0.045, tapR: 0.07,
+ q: 'Hazardous material parcel is stored on open warehouse shelving without hazmat containment. How should this be corrected?',
+ why: 'Designated containment reduces exposure and fire risk; ordinary shelves do not provide hazardous-material protection.',
+ o: ['Transfer to fireproof hazmat locker', 'Stack heavy cardboard crates on top', 'Leave on shelf near depot windows']
  },
  {
- x: 0.47, y: 0.58, r: 0.045, tapR: 0.075,
+ x: 0.40, y: 0.67, r: 0.045, tapR: 0.07,
  q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?',
- o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation']
+ why: 'Secure the parcel and latch the hatch before movement to prevent a load shift or dropped cargo.',
+ o: ['Secure bundle inside and latch door', 'Tie hatch door loosely with string', 'Leave open for extra ventilation']
  },
  {
- x: 0.72, y: 0.43, r: 0.045, tapR: 0.075,
+ x: 0.73, y: 0.33, r: 0.045, tapR: 0.07,
  q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?',
- o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor']
+ why: 'Stopping the belt before clearing the jam prevents further pileup and protects people from moving machinery.',
+ o: ['Press pause, clear jam, and resume', 'Speed up belt to force boxes through', 'Shovel overflowing boxes onto floor']
  },
  {
- x: 0.82, y: 0.75, r: 0.045, tapR: 0.075,
+ x: 0.82, y: 0.74, r: 0.045, tapR: 0.07,
  q: 'Conveyor drive motor is overheating with smoke and an alarm strobe. How should this be corrected?',
- o: ['Trigger emergency motor cooldown, lubricate gear drive, and inspect belt tension', 'Pour water directly into the electric motor', 'Ignore the alarm until the belt stops completely']
+ why: 'An overheating motor must be isolated and serviced under the equipment procedure; water near live electrical equipment can cause severe injury.',
+ o: ['Trigger motor cooldown and lubricate', 'Pour bucket of water onto live motor', 'Ignore warning strobe until stopped']
  }
  ]
  },
@@ -3109,29 +3392,34 @@ const SF_LEVEL_CONFIGS = [
  basePts: 60,
  hotspots: [
  {
- x: 0.21, y: 0.58, r: 0.045, tapR: 0.075,
+ x: 0.12, y: 0.68, r: 0.045, tapR: 0.07,
  q: 'Cargo transport hatch is unlatched and the delivery parcel is slipping out. How should this be corrected?',
- o: ['Secure the delivery bundle inside and engage the dual-safety latch', 'Tie the hatch door loosely with string', 'Leave the door open for ventilation']
+ why: 'Secure the parcel and latch the hatch before movement to prevent a load shift or dropped cargo.',
+ o: ['Secure bundle inside and latch door', 'Tie hatch door loosely with string', 'Leave open for extra ventilation']
  },
  {
- x: 0.38, y: 0.82, r: 0.045, tapR: 0.075,
+ x: 0.39, y: 0.82, r: 0.045, tapR: 0.07,
  q: 'Slippery hydraulic oil puddle discovered on the stork takeoff runway. How should this be corrected?',
- o: ['Deploy absorbent granules, clean the runway strip, and flag the runway clear', 'Walk around the spill and takeoff anyway', 'Cover the oil with cardboard']
+ why: 'Absorb and remove oil before reopening the runway; covering it can hide the slip hazard.',
+ o: ['Apply absorbent granules and wipe dry', 'Taxi directly through puddle anyway', 'Place cardboard sheets over wet oil']
  },
  {
- x: 0.48, y: 0.43, r: 0.045, tapR: 0.075,
+ x: 0.50, y: 0.32, r: 0.045, tapR: 0.07,
  q: 'Conveyor junction is blocked, causing an emergency parcel pileup. How should this be corrected?',
- o: ['Press emergency pause, clear the bottleneck, and resume conveyor flow', 'Accelerate the belt to jam packages through', 'Kick overflowing packages onto the warehouse floor']
+ why: 'Stopping the belt before clearing the jam prevents further pileup and protects people from moving machinery.',
+ o: ['Press pause, clear jam, and resume', 'Speed up belt to force boxes through', 'Shovel overflowing boxes onto floor']
  },
  {
- x: 0.68, y: 0.18, r: 0.045, tapR: 0.075,
+ x: 0.68, y: 0.18, r: 0.045, tapR: 0.07,
  q: 'Dispatch weather terminal is alarming with an incoming lightning storm warning. How should this be corrected?',
- o: ['Issue immediate flight hold and re-chart delivery corridors around storm cells', 'Mute the alarm speaker so pilots don\'t panic', 'Send storks directly into the thunderstorm']
+ why: 'Hold flights and use an approved bypass so couriers and cargo avoid lightning and severe turbulence.',
+ o: ['Hold flights and chart bypass route', 'Mute siren so pilots do not panic', 'Dispatch storks right into thunderstorm']
  },
  {
- x: 0.86, y: 0.26, r: 0.045, tapR: 0.075,
+ x: 0.85, y: 0.24, r: 0.045, tapR: 0.07,
  q: 'Departing delivery stork is missing required safety goggles and courier pilot cap. How should this be corrected?',
- o: ['Equip high-altitude anti-glare goggles and standard courier flight cap', 'Allow unequipped flight as long as the sky is sunny', 'Instruct courier to fly with eyes closed']
+ why: 'Required protective equipment must be fitted before departure; clear weather does not remove that requirement.',
+ o: ['Equip courier goggles and flight cap', 'Permit departure if weather is sunny', 'Instruct courier to fly eyes closed']
  }
  ]
  }
@@ -3141,7 +3429,7 @@ function sfStart(lvIdx = 0) {
  sfCurLevel = typeof lvIdx === 'number' ? Math.max(0, Math.min(2, lvIdx)) : sfCurLevel;
  const cfg = SF_LEVEL_CONFIGS[sfCurLevel];
  if (sf && sf.to) clearTimeout(sf.to);
- sf = { f: new Set(), x: new Set(), p: null, s: 0, tries: 0, done: false, targetCount: cfg.required };
+ sf = { f: new Set(), x: new Set(), p: null, s: 0, tries: 0, done: false, targetCount: cfg.required, firstTryCorrect: 0, feedback: [] };
  
  // Set distinct picture for this level
  const imgEl = $('#sf-i');
@@ -3160,8 +3448,11 @@ function sfStart(lvIdx = 0) {
  $('#sf-r').innerHTML = '';
  $('#sf-m').textContent = '';
  sfUp();
+ sfT.reset();
  sfT.start();
- sf.to = setTimeout(() => { if (!sf.done) sfEnd(); }, cfg.timeSec * 1000);
+ if (challengeMode) {
+  sf.to = setTimeout(() => { if (!sf.done) sfEnd(); }, cfg.timeSec * 1000);
+ }
 }
 
 $('#sf-i').onclick = e => {
@@ -3176,10 +3467,8 @@ $('#sf-i').onclick = e => {
 
  if (i < 0) {
  audio.error();
- sf.s = Math.max(0, sf.s - 20);
- sfUp();
  shake($('#sf-i'));
- if (!dbg) $('#sf-m').textContent = 'Nothing wrong there (-20)';
+ if (!dbg) $('#sf-m').textContent = 'Nothing wrong there — keep searching!';
  return;
  }
 
@@ -3187,7 +3476,6 @@ $('#sf-i').onclick = e => {
  sf.f.add(i);
  sf.p = i;
  sf.tries = 0;
- sf.s += 100;
  sfUp();
  audio.wordSuccess();
 
@@ -3204,20 +3492,20 @@ $('#sf-i').onclick = e => {
  btEl.onclick = () => {
  if (t === h.o[0]) {
  audio.wordSuccess();
- sf.s += sf.tries ? 20 : 40;
+ if (sf.tries === 0) sf.firstTryCorrect = (sf.firstTryCorrect || 0) + 1;
  sf.x.add(i);
+ sf.feedback.push({ issue: h.q, explanation: h.why });
  sf.p = null;
  c.classList.add('ok');
- $('#sf-q').innerHTML = ' Fixed! Find the next error.';
+ $('#sf-q').innerHTML = `<b>Correct SOP:</b> ${h.why}<p class="sub" style="text-align:left;margin:6px 0 0">Continue inspecting the scene for the next issue.</p>`;
  sfUp();
  if (sf.x.size >= (sf.targetCount || 5)) sfEnd();
  } else {
  audio.error();
  sf.tries++;
- sf.s = Math.max(0, sf.s - 10);
- sfUp();
  shake(btEl);
  btEl.disabled = true;
+ $('#sf-m').textContent = 'Not quite the recommended SOP action. Consider the risk shown and choose a procedure that controls it.';
  }
  };
  $('#sf-q').appendChild(btEl);
@@ -3225,19 +3513,26 @@ $('#sf-i').onclick = e => {
 };
 
 function sfEnd() {
+ if (sf.done || activeStopCompleted) return;
  sf.done = true;
- clearTimeout(sf.to);
- const t = sfT.stop();
+ if (sf.to) clearTimeout(sf.to);
+ sfT.stop();
  const target = sf.targetCount || 5;
  const isAllFixed = sf.x.size >= target;
- const b = isAllFixed ? Math.max(0, 100 - t) : 0;
- const maxPts = sfCurLevel === 0 ? 450 : sfCurLevel === 1 ? 480 : 500;
- const finalScore = Math.max(200, Math.min(maxPts, sf.s + b));
+ const maxPts = getStopCap();
+ const accMax = maxPts - 300;
+ const firstTries = sf.firstTryCorrect || 0;
+ const accuracyBonus = calculateAccuracyBonus(firstTries, target, accMax);
+ const noHelpBonus = 50; // Spot & fix has no hint mechanism, full no-help awarded
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
  sfUp();
  $('#sf-q').innerHTML = '';
  const snb = $('#sf-next-btn'); if (snb) snb.hidden = false;
- res($('#sf-r'), isAllFixed ? 'All Errors Fixed! ' : "Time's Up", finalScore, maxPts, `Speed bonus +${b}.`);
- onStopCompleted(finalScore, maxPts);
+ const learningReview = sf.feedback.length
+  ? `<details class="learning-review"><summary>Review the safety procedures</summary><ol>${sf.feedback.map(item => `<li><b>${item.issue}</b><br>${item.explanation}</li>`).join('')}</ol></details>`
+  : '';
+ res($('#sf-r'), isAllFixed ? 'All Errors Fixed! 🛠️' : "Inspection Completed! 📋", scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} (${firstTries}/${target} first-try) | No-help bonus: +${noHelpBonus}<br>${learningReview}`);
+ onStopCompleted(scoring.score, scoring.max);
 }
 $('#sf-a').onclick = () => sfStart(sfCurLevel);
 $('#sf-d').onclick = () => {
@@ -3251,9 +3546,21 @@ $('#sf-d').onclick = () => {
 /* 3 Maze Canyon Levels (Easy, Medium, Hard) */
 const MZ_LEVELS = [
  {
- name: 'Canyon Route 1 (Easy)',
+ name: 'Canyon Route 1: Lower Mountain Pass (Easy)',
  targetMoves: 18,
+ theme: 'Sunny Valley Gorge',
+ banner: 'assets/zone2.jpg',
+ startImg: 'assets/maze/start_lv1.svg',
+ endImg: 'assets/maze/end_lv1.svg',
+ parcelImg: 'assets/maze/parcel_lv1.svg',
+ startLabel: 'Dispatch Hub',
+ endLabel: 'Valley Nursery',
  pk: ['1,7', '5,6', '7,1'],
+ facts: [
+  '📦 <b>Last-Mile Logistics:</b> "Last mile" refers to the final leg of delivery from a transportation hub to the recipient\'s door — typically accounting for up to 53% of total shipping costs!',
+  '📦 <b>Dynamic Routing:</b> Real-time GPS rerouting helps couriers bypass sudden valley rockslides and traffic bottlenecks, reducing delivery transit times.',
+  '📦 <b>Manifest Verification:</b> Every parcel barcode must match the flight dispatch manifest before courier departure to guarantee zero dropped packages.'
+ ],
  m: [
  '#########',
  '#S..#...#',
@@ -3267,9 +3574,21 @@ const MZ_LEVELS = [
  ]
  },
  {
- name: 'Canyon Route 2 - Broken Bridge (Medium)',
+ name: 'Canyon Route 2: Broken Bridge Ridge (Medium)',
  targetMoves: 28,
+ theme: 'River Canyon & Suspended Bridge',
+ banner: 'assets/zone3.jpg',
+ startImg: 'assets/maze/start_lv2.svg',
+ endImg: 'assets/maze/end_lv2.svg',
+ parcelImg: 'assets/maze/parcel_lv2.svg',
+ startLabel: 'Canyon Outpost',
+ endLabel: 'River Haven',
  pk: ['1,9', '5,1', '9,5'],
+ facts: [
+  '📦 <b>Cold-Chain Integrity:</b> Temperature-sensitive and fragile parcels use insulated thermal pods with real-time shock sensors throughout mountain transit.',
+  '📦 <b>Cross-Docking Efficiency:</b> Parcels are transferred directly from arriving transit trucks to outgoing flight pods with zero long-term warehouse storage delay.',
+  '📦 <b>Courier Redundancy:</b> Tandem dispatch routes ensure that if a mountain bridge is washed out, an alternate ridge trail maintains on-time delivery.'
+ ],
  m: [
  '###########',
  '#S....#...#',
@@ -3285,9 +3604,22 @@ const MZ_LEVELS = [
  ]
  },
  {
- name: 'Canyon Route 3 - Storm Pass & Wolves (Hard)',
+ name: 'Canyon Route 3: Blizzard Peak & Wolf Pass (Hard)',
  targetMoves: 40,
+ theme: 'Snowy Summit & Alpine Blizzard',
+ banner: 'assets/zone4.jpg',
+ startImg: 'assets/maze/start_lv3.svg',
+ endImg: 'assets/maze/end_lv3.svg',
+ parcelImg: 'assets/maze/parcel_lv3.svg',
+ startLabel: 'Summit Launchpad',
+ endLabel: 'Gardner Home',
  pk: ['1,11', '5,5', '7,1', '11,7'],
+ facts: [
+  '📦 <b>Weather Corridor Management:</b> Dispatchers continuously analyze satellite Doppler radar to chart high-altitude flight lanes around thunderstorm and blizzard cells.',
+  '📦 <b>Predictive Dispatch:</b> Machine learning predicts weather and obstacle delays before take-off, pre-calibrating fuel and battery reserves.',
+  '📦 <b>Autonomous Beacon Recovery:</b> If communications fail in heavy fog, auxiliary radio beacons broadcast telemetry to the nearest landing pad for pickup.',
+  '📦 <b>Doorstep Proof of Delivery:</b> Digital biometric signature or barcode scanning upon recipient handoff securely closes out the delivery tracking lifecycle.'
+ ],
  m: [
  '#############',
  '#S....#.....#',
@@ -3318,14 +3650,21 @@ function mzDraw() {
  let t = '';
  const k = r + ',' + c;
  if (r === mz.r && c === mz.c) {
- const pImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : okA.baby;
- t = pImg ? `<img src="${pImg}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f">` : '';
+ const pImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : (okA.baby || 'assets/baby.png');
+ t = `<img src="${pImg}" alt="Courier" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f;box-shadow:0 0 10px #ff8a1f;display:block">`;
  } else if (ch === 'E') {
- t = okA.family ? `<img src="${okA.family}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #10b981">` : '';
+ const endImg = L.endImg || okA.family || 'assets/family.png';
+ t = `<img src="${endImg}" alt="${L.endLabel || 'Destination'}" title="${L.endLabel || 'Destination'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #10b981;box-shadow:0 0 10px #10b981;display:block">`;
  } else if (ch === 'S') {
- t = okA.machine ? `<img src="${okA.machine}" style="width:26px;height:26px;object-fit:contain">` : '';
+ const sImg = L.startImg || okA.machine || 'assets/machine.png';
+ t = `<img src="${sImg}" alt="${L.startLabel || 'Dispatch Hub'}" title="${L.startLabel || 'Dispatch Hub'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #38bdf8;box-shadow:0 0 10px #38bdf8;display:block">`;
  } else if (L.pk.includes(k) && !mz.p.has(k)) {
- t = '';
+ const pImg = L.parcelImg;
+ if (pImg) {
+  t = `<img src="${pImg}" alt="Parcel" style="width:24px;height:24px;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">`;
+ } else {
+  t = '<span style="font-size:1.25rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">📦</span>';
+ }
  }
  return `<div class="c ${ch === '#' ? 'w' : ''}">${t}</div>`;
  }).join('')).join('');
@@ -3335,9 +3674,18 @@ function mzDraw() {
 
 function mzStart(lvIdx = 0) {
  mzCurLv = Math.max(0, Math.min(2, lvIdx));
+ const L = MZ_LEVELS[mzCurLv];
  mzT.reset();
  mz = { r: 1, c: 1, m: 0, p: new Set(), go: false, done: false };
  $('#mz-r').innerHTML = '';
+ const factEl = $('#mz-fact-card');
+ if (factEl) { factEl.style.display = 'none'; factEl.innerHTML = ''; }
+ const bTitle = $('#mz-banner-title'); if (bTitle) bTitle.textContent = L.name;
+ const bSub = $('#mz-banner-sub'); if (bSub) bSub.textContent = L.theme + ' — From ' + L.startLabel + ' to ' + L.endLabel;
+ const legEl = $('#mz-legend');
+ if (legEl) {
+  legEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.startImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #38bdf8"> <b>Start:</b> ${L.startLabel}</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.parcelImg}" style="width:16px;height:16px"> <b>Collect:</b> ${L.pk.length} Parcels</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.endImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #10b981"> <b>Finish:</b> ${L.endLabel}</span>`;
+ }
  mzDraw();
 }
 
@@ -3357,21 +3705,31 @@ function mzMove(dr, dc) {
  if (L.pk.includes(k) && !mz.p.has(k)) {
  mz.p.add(k);
  audio.letterPick(2);
+ const parcelIdx = L.pk.indexOf(k);
+ const fact = (L.facts && L.facts[parcelIdx]) ? L.facts[parcelIdx] : '📦 Parcel secured into flight carrier pod!';
+ const factEl = $('#mz-fact-card');
+ if (factEl) {
+  factEl.style.display = 'block';
+  factEl.innerHTML = fact;
+ }
  } else {
  audio.letterPick(0);
  }
  mzDraw();
 
  if (L.m[r][c] === 'E') {
+ if (mz.done || activeStopCompleted) return;
  mz.done = true;
- const t = mzT.stop();
- const maxScore = mzCurLv === 0 ? 450 : mzCurLv === 1 ? 480 : 500;
- const timeBonus = Math.max(0, 150 - t * 2);
- const movesPenalty = Math.max(0, (mz.m - L.targetMoves) * 3);
- const score = Math.max(250, Math.min(maxScore, (mzCurLv === 0 ? 280 : mzCurLv === 1 ? 320 : 360) + 35 * mz.p.size + timeBonus - movesPenalty));
+ mzT.stop();
+ const maxScore = getStopCap();
+ const accMax = maxScore - 300;
+ const totalParcels = L.pk.length || 1;
+ const accuracyBonus = calculateAccuracyBonus(mz.p.size, totalParcels, accMax);
+ const noHelpBonus = 50; // Maze completed autonomously
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
  const mnb = $('#mz-next-btn'); if (mnb) mnb.hidden = false;
- res($('#mz-r'), 'Canyon Route Cleared! ', score, maxScore, `Completed in ${mz.m} moves (Par: ${L.targetMoves} moves).`);
- onStopCompleted(score, maxScore);
+ res($('#mz-r'), 'Canyon Route Cleared! 📦', scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} (${mz.p.size}/${totalParcels} parcels) | No-help bonus: +${noHelpBonus}`);
+ onStopCompleted(scoring.score, scoring.max);
  }
 }
 
@@ -3401,27 +3759,27 @@ const BD_SCENARIOS = [
  title: 'Scenario 1: Baby Basket Order #101',
  steps: ['Receive the order', 'Pick the items', 'Pack the order', 'Ship the parcel', 'Deliver to the customer'],
  faults: [
- { q: ' Fault 1: The shipping label displays an invalid delivery address.', o: ['Verify address with customer and reprint label', 'Send it anyway to local depot', 'Cancel the order entirely'] },
- { q: ' Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute delivery via highway bypass and notify family', 'Wait at the roadblock until cleared', 'Return the package to dispatch depot'] }
+ { q: ' Fault 1: The shipping label displays an invalid delivery address.', o: ['Contact recipient and reprint label', 'Ship parcel anyway to local depot', 'Cancel customer order immediately'], why: 'Verifying the address with the recipient and printing a corrected label protects delivery accuracy and traceability.' },
+ { q: ' Fault 2: The delivery carrier is delayed by downtown traffic congestion.', o: ['Reroute via bypass and alert family', 'Wait at gridlock until path clears', 'Return entire shipment to depot hub'], why: 'A safe alternate route and an updated arrival notice reduce delay without abandoning the delivery.' }
  ]
  },
  {
  title: 'Scenario 2: Mountain Highway & Wolf Roadblock',
  steps: ['Inspect bundle', 'Load dispatch van', 'Verify flight manifest', 'Deploy courier', 'Navigate roadblock', 'Deliver to doorstep'],
  faults: [
- { q: ' Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare distraction and take the ridge bypass', 'Confront the wolves directly', 'Turn back to factory'] },
- { q: ' Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Engage auxiliary solar beacon channel', 'Continue blind without communication', 'Drop parcel at nearest tree'] },
- { q: ' Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Execute soft suspension recalibration and inspect bundle', 'Ignore the sensor', 'Shake the basket'] }
+ { q: ' Fault 1: A pack of wolves has blocked the mountain mountain crossing.', o: ['Deploy sonic flare and take ridge bypass', 'Confront the pack directly with vehicle', 'Abandon route and return to central base'], why: 'Use the planned safe diversion to avoid the obstruction while keeping the delivery moving.' },
+ { q: ' Fault 2: Stork radio battery dead during heavy fog transmission.', o: ['Activate backup solar beacon channel', 'Fly blind without radio communication', 'Drop parcel onto nearest forest clearing'], why: 'Reliable communication is essential for coordinated navigation in low visibility; use the backup channel.' },
+ { q: ' Fault 3: Shock sensor on the baby basket triggered yellow warning.', o: ['Recalibrate suspension and inspect bundle', 'Ignore blinking alert light on dashboard', 'Shake transport cradle to test latching'], why: 'Treat a sensor alert as a real signal: inspect the load and correct the suspension before continuing.' }
  ]
  },
  {
  title: 'Scenario 3: Severe Weather & Route Recalibration',
  steps: ['Order intake', 'Express sorting', 'Security clearance', 'Flight manifest signing', 'Airborne ascent', 'Storm evasion', 'Family doorstep handoff'],
  faults: [
- { q: ' Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Perform manual optical scan and reset conveyor guide', 'Force parcel through chute', 'Discard label'] },
- { q: ' Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Ascend to upper jetstream corridor above turbulence', 'Dive below cloud base into crosswinds', 'Hover indefinitely'] },
-  { q: "Fault 3: Nate's family updated the handoff drop coordinates mid-route.", o: ['Sync revised GPS beacon coordinates to pilot flight deck', 'Fly to old address anyway', 'Drop parcel at nearest park'] },
- { q: ' Fault 4: Power surge on courier propulsion unit.', o: ['Engage auxiliary lithium backup cell and stabilize wings', 'Cut all engine power', 'Dump cargo'] }
+ { q: ' Fault 1: High-speed sorting barcode optical scanner misread.', o: ['Run manual barcode scan and reset guide', 'Push jammed package through chute gate', 'Tear off label and ship package unverified'], why: 'Manually verify the destination and reset the scanner so the parcel is correctly routed and remains traceable.' },
+ { q: ' Fault 2: Severe thunderstorm squall line directly on primary air corridor.', o: ['Climb to upper jetstream above storm clouds', 'Dive below squall ceiling into crosswinds', 'Hover motionless in front of lightning cell'], why: 'Use an approved route that avoids the storm; diving or hovering near lightning creates additional flight hazards.' },
+ { q: "Fault 3: Nate's family updated the handoff drop coordinates mid-route.", o: ['Transmit updated drop coordinates to cockpit', 'Proceed to obsolete delivery address anyway', 'Release cargo bundle at closest public park'], why: 'Confirm and communicate the authorized destination change so the courier and receiving family share the same handoff plan.' },
+ { q: ' Fault 4: Power surge on courier propulsion unit.', o: ['Switch to backup battery cell and stabilize wings', 'Shut down propulsion systems completely midair', 'Eject cargo basket immediately to shed weight'], why: 'Switching to backup power and stabilizing flight addresses the equipment fault while protecting the courier and cargo.' }
  ]
  }
 ];
@@ -3434,7 +3792,7 @@ function bdStart(scenIdx = 0) {
  bdCurScenario = scenIdx;
  const S = BD_SCENARIOS[bdCurScenario];
  $('#bd-scen-title').textContent = S.title;
- bd = { n: 0, w: 0, fi: 0, tr: 0, s: 0, scenario: S };
+ bd = { n: 0, w: 0, fi: 0, tr: 0, s: 0, scenario: S, firstTrySteps: 0, firstTryFaults: 0, feedback: [] };
  bdT.start();
  $('#bd-r').innerHTML = '';
  $('#bd-h').innerHTML = '<b>Step 1:</b> Tap the logistics process steps in the correct order:';
@@ -3448,13 +3806,14 @@ function bdStart(scenIdx = 0) {
  b.onclick = () => {
  if (t === S.steps[bd.n]) {
  audio.wordSuccess();
+ if (bd.w === 0) bd.firstTrySteps = (bd.firstTrySteps || 0) + 1;
  bd.n++;
+ $('#bd-h').innerHTML = `<b>Correct sequence:</b> ${bd.n} of ${S.steps.length} steps placed. Following the process in order helps prevent missed checks before dispatch.`;
  const li = document.createElement('li');
  li.textContent = t;
  $('#bd-l').appendChild(li);
  b.remove();
  if (bd.n === S.steps.length) {
- bd.s = Math.max(40, 100 - 20 * bd.w);
  bdUp();
  bdFault();
  }
@@ -3462,6 +3821,7 @@ function bdStart(scenIdx = 0) {
  audio.error();
  bd.w++;
  shake(b);
+ $('#bd-h').innerHTML = '<b>Not the next process step.</b> Check which prerequisite must be completed first.';
  }
  };
  box.appendChild(b);
@@ -3485,15 +3845,19 @@ function bdFault() {
  b.onclick = () => {
  if (t === f.o[0]) {
  audio.wordSuccess();
- bd.s += bd.tr === 0 ? 40 : bd.tr === 1 ? 20 : 0;
+ if (bd.tr === 0) bd.firstTryFaults = (bd.firstTryFaults || 0) + 1;
+ bd.feedback.push({ question: f.q, explanation: f.why });
  bd.fi++;
  bdUp();
- bdFault();
+ $('#bd-h').innerHTML = `<b>Recommended action:</b> ${f.why}`;
+ box.innerHTML = '<button class="btn" id="bd-continue">Continue to next step</button>';
+ $('#bd-continue').onclick = bdFault;
  } else {
  audio.error();
  bd.tr++;
  shake(b);
  b.disabled = true;
+ $('#bd-h').innerHTML = '<b>Reassess the hazard.</b> Choose an action that protects people and cargo while preserving safe delivery procedures.';
  }
  };
  box.appendChild(b);
@@ -3501,16 +3865,22 @@ function bdFault() {
 }
 
 function bdEnd() {
- const t = bdT.stop(), b = Math.max(0, 120 - t);
- bd.s += b;
- bdUp();
- $('#bd-h').innerHTML = ' All Process Roadblocks Resolved!';
- $('#bd-b').innerHTML = '';
- const maxPts = bdCurScenario === 0 ? 450 : bdCurScenario === 1 ? 480 : 500;
- const score = Math.max(250, Math.min(maxPts, bd.s));
+ if (bd.done || activeStopCompleted) return;
+ bd.done = true;
+ bdT.stop();
+ $('#bd-h').innerHTML = '✅ All Process Roadblocks Resolved!';
+ $('#bd-b').innerHTML = `<details class="card learning-review"><summary>Review the corrective actions</summary><ol>${bd.feedback.map(item => `<li><b>${item.question}</b><br>${item.explanation}</li>`).join('')}</ol></details>`;
+ const maxPts = getStopCap();
+ const accMax = maxPts - 300;
+ const S = bd.scenario;
+ const totalItems = (S.steps.length || 1) + (S.faults.length || 1);
+ const totalFirstTries = (bd.firstTrySteps || 0) + (bd.firstTryFaults || 0);
+ const accuracyBonus = calculateAccuracyBonus(totalFirstTries, totalItems, accMax);
+ const noHelpBonus = 50; // Autonomous scenario completion
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
  const bnb = $('#bd-next-btn'); if (bnb) bnb.hidden = false;
- res($('#bd-r'), 'Roadblock Cleared! ', score, maxPts, `Speed bonus +${b}.`);
- onStopCompleted(score, maxPts);
+ res($('#bd-r'), 'Roadblock Cleared! 🚚', scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} (${totalFirstTries}/${totalItems} first-try) | No-help bonus: +${noHelpBonus}`);
+ onStopCompleted(scoring.score, scoring.max);
 }
 $('#bd-a').onclick = () => bdStart(bdCurScenario);
 
@@ -3520,122 +3890,366 @@ $('#bd-a').onclick = () => bdStart(bdCurScenario);
 const DT_CASES = [
  {
  title: 'Case 1: The Late Baby Basket',
- brief: 'The basket should have left at 09:00 and arrived by 11:00, but was delayed until 14:00. Open the clues, cross off cleared suspects, and submit your accusation!',
+ brief: 'The delivery basket was held back for over 3 hours. Review the logs, cross off cleared couriers, and solve each question step-by-step.',
  suspects: ['Pia (Packer)', 'Lando (Loader)', 'Dani (Driver)', 'Rico (Dispatcher)'],
+ places: ['Packing station', 'Loading dock', 'Highway transit route'],
+ causes: ['Dispatcher hold instruction', 'Delivery van tire puncture', 'Missing barcode invoice'],
  clues: [
- 'Packing log: The basket was sealed at 08:40.',
- 'Message log: At 08:55 Rico sent a message to Lando: "Hold the basket until I release it."',
- 'Dock record: Delivery Truck 2 was ready at Bay 3 from 08:30. Rico released the hold at 12:05 and loading began at 12:10.',
- 'GPS log: Truck 2 departed at 12:15 and drive time was 1 hr 45 min, standard duration for this route.',
- "Dani's statement: Dani waited in the courier break room until summoned at 12:00.",
- "Lando's statement: Lando held the parcel specifically following Rico's hold order."
+ 'Packing station log: Parcel basket was inspected and sealed on schedule at 08:40 by Pia.',
+ 'Radio transcript: At 08:55 Dispatcher Rico broadcasted: "Lando, hold basket at Loading Dock Bay 3 until my direct clearance."',
+ 'Dock manifest: Truck 2 was staged at Loading Dock Bay 3 from 08:30. Rico released the hold order at 12:05.',
+ 'GPS transit log: Driver Dani departed Bay 3 at 12:15 and completed the drive in normal time (1 hr 45 min).',
+ 'Driver statement: Dani waited in the courier break room until summoned by Rico at 12:00.',
+ 'Loader statement: Lando confirmed the parcel remained untouched on Dock Bay 3 strictly awaiting Rico\'s release.'
  ],
- places: ['Packing station', 'Loading dock', 'Delivery route'],
- causes: ['A hold instruction that delayed loading', 'A truck engine breakdown', 'A wrong address label'],
  answer: { cu: 3, pl: 1, ca: 0 },
- explanation: 'Rico ordered the hold at the loading dock, delaying loading by over 3 hours!'
+ recap: [
+ '• Pia sealed the parcel promptly at 08:40, clearing packing.',
+ '• Dispatcher Rico issued an unscheduled hold order at 08:55.',
+ '• The bundle sat stranded at the Loading Dock until Rico cleared it at 12:05!'
+ ],
+ hints: {
+  cu: [
+   'Re-read Clue 2: Who gave the direct radio order to hold the delivery basket?',
+   'Suspects Pia and Dani followed standard operating procedures. The delay came from dispatch.',
+   'Answer: Rico (Dispatcher) issued the unauthorized hold.'
+  ],
+  pl: [
+   'Check Clues 2 & 3: At which facility was the basket parked during the 3-hour delay?',
+   'The basket was sealed at packing and had not yet departed on the road.',
+   'Answer: Loading dock (Bay 3).'
+  ],
+  ca: [
+   'Check Clue 3: What specific order prevented the truck from being loaded at 08:30?',
+   'The truck and driver were ready; only a verbal hold command stopped loading.',
+   'Answer: Dispatcher hold instruction.'
+  ]
+ },
+ explanation: 'Dispatcher Rico issued an unscheduled hold instruction at the loading dock, delaying departure by over 3 hours!'
  },
  {
  title: 'Case 2: The Swapped Stork Bundle',
- brief: 'A baby bundle intended for Sector 4 was erroneously tagged and routed to Sector 9. Detect who caused the swap, where it occurred, and what failed.',
- suspects: ['Jasper (Sorter)', 'Tulip (Courier)', 'Doug (Forklift Op)', 'Sarah (Inspector)', 'Hunter (Supervisor)'],
+ brief: 'A nursery bundle intended for Sector 4 was erroneously tagged and routed to Sector 9. Trace the sorting sequence and identify the cause.',
+ suspects: ['Jasper (Sorter)', 'Tulip (Courier)', 'Doug (Forklift Op)', 'Sarah (Inspector)'],
+ places: ['Intake staging bay', 'Sorting conveyor belt 2', 'Airfield hangar'],
+ causes: ['Manual diverter misrouting during jam', 'Forklift pallet collision', 'Static radio interference'],
  clues: [
- 'Scanner log: Sector 4 barcode read accurately upon arrival at intake at 10:15.',
- 'Sorting belt report: Conveyor diverter jam occurred at 10:30 at Sorting Belt 2.',
- 'Badge log: Jasper was the sole operator stationed at Sorting Belt 2 during the jam.',
- "Doug's statement: Doug transported the pallets only after they were marked and palletized.",
- "Sarah's inspection note: Sarah verified manifest counts at 11:00 after the labels were already applied.",
- "Tulip's log: Tulip received the pre-loaded cargo carrier and followed the flight coordinates given."
+ 'Intake scanner log: Sector 4 barcode read 100% accurate upon intake arrival at 10:15.',
+ 'Sorting belt log: Conveyor diverter jammed at 10:30 on Sorting Belt 2.',
+ 'Duty roster: Operator Jasper was the sole technician assigned to Sorting Belt 2 during the jam.',
+ 'Forklift log: Doug moved the pallets strictly after sorting tags were already affixed.',
+ 'Quality report: Sarah inspected manifest counts at 11:00 after parcels were already sealed in flight pods.',
+ 'Flight manifest: Tulip received the pre-loaded cargo carrier and followed assigned coordinates.'
  ],
- places: ['Intake bay', 'Sorting belt 2', 'Airfield hangar'],
- causes: ['Manual diverter override during conveyor jam', 'Forklift collision damage', 'Radio transmission static'],
  answer: { cu: 0, pl: 1, ca: 0 },
- explanation: 'Jasper manually misdirected the bundle during the sorting belt jam!'
+ recap: [
+ '• Intake scanner read Sector 4 correctly, proving barcode was originally intact.',
+ '• A mechanical jam hit Sorting Belt 2 where Jasper was sole operator.',
+ '• Jasper manually cleared the diverter and misdirected the bundle toward Sector 9!'
+ ],
+ hints: {
+  cu: [
+   'Check Clues 2 & 3: Who was the only operator on duty at the jammed sorting belt?',
+   'Sarah, Doug, and Tulip handled cargo only before or after sorting belt 2.',
+   'Answer: Jasper (Sorter) operated the jammed belt.'
+  ],
+  pl: [
+   'Check Clue 2: On which exact piece of equipment did the diverter jam take place?',
+   'Intake and airfield hangar records show zero sorting irregularities.',
+   'Answer: Sorting conveyor belt 2.'
+  ],
+  ca: [
+   'Check Clues 2 & 3: What happened during the conveyor jam that caused the wrong destination?',
+   'There was no collision or radio issue; someone manually pushed packages during the belt stoppage.',
+   'Answer: Manual diverter misrouting during jam.'
+  ]
+ },
+ explanation: 'Jasper manually misdirected the bundle during the sorting belt diverter jam!'
  },
  {
  title: 'Case 3: The Sabotaged Dispatch Coordinates',
- brief: "Flight navigational coordinates for Nate's delivery vanished from the flight computer, routing the storks into a blizzard. Uncover the saboteur!",
- suspects: ['Pigeon Toady (Informant)', 'Junior (Lead Courier)', 'Tulip (Mechanic)', 'Alpha Wolf (Tracker)', 'Beta Wolf (Scout)'],
- clues: [
- 'Security camera: An unidentified figure entered the Control Tower console room at 22:15.',
- "Console audit: Flight coordinates for Nate's sector were overwritten with blizzard waypoint data at 22:18.",
- "Access keycard log: Pigeon Toady's executive keycard unlocked the console room door at 22:14.",
- "Junior's alibi: Junior was in the hangar briefing room with Nate until 22:45.",
- "Tulip's alibi: Tulip was servicing the primary delivery crane suspension gear until midnight.",
- 'Forest ranger report: Alpha and Beta wolves remained north of the valley perimeter all evening.'
- ],
+ brief: 'Flight navigational coordinates for Nate\'s delivery vanished from the flight computer, routing storks toward a blizzard. Discover the culprit.',
+ suspects: ['Pigeon Toady (Informant)', 'Junior (Lead Courier)', 'Tulip (Mechanic)', 'Alpha Wolf (Tracker)'],
  places: ['Hangar briefing room', 'Control tower console room', 'Crane workshop'],
- causes: ['Unauthorized waypoint overwrite on flight computer', 'Mechanical gear failure', 'Signal interference'],
+ causes: ['Unauthorized flight console overwrite', 'Delivery crane mechanical failure', 'Radio frequency interference'],
+ clues: [
+ 'Security camera: An unidentified figure slipped into the Control Tower console room at 22:15.',
+ 'Console audit: Flight coordinates for Nate\'s delivery sector were overwritten with blizzard waypoint data at 22:18.',
+ 'Keycard access log: Pigeon Toady\'s executive keycard unlocked the console room door at 22:14.',
+ 'Courier alibi: Junior was in the hangar briefing room with Nate going over safety procedures until 22:45.',
+ 'Mechanic alibi: Tulip was servicing delivery crane suspension gears in the workshop until midnight.',
+ 'Forest perimeter report: Alpha Wolf remained north of the valley perimeter fence all evening.'
+ ],
  answer: { cu: 0, pl: 1, ca: 0 },
+ recap: [
+ '• Junior, Tulip, and Alpha Wolf all have verified alibis outside the tower.',
+ '• Pigeon Toady\'s executive keycard unlocked the console room at 22:14.',
+ '• At 22:18, the flight navigational coordinates were deliberately overwritten!'
+ ],
+ hints: {
+  cu: [
+   'Check Clue 3: Whose keycard logged an entry into the console room at 22:14?',
+   'Junior, Tulip, and Alpha Wolf were verified elsewhere by security logs.',
+   'Answer: Pigeon Toady (Informant) accessed the room.'
+  ],
+  pl: [
+   'Check Clues 1 & 2: In which room was the computer console located where waypoints were overwritten?',
+   'The hangar and crane workshop showed no coordinate modification activity.',
+   'Answer: Control tower console room.'
+  ],
+  ca: [
+   'Check Clue 2: What deliberate digital action was recorded on the flight computer?',
+   'The incident was digital tampering with waypoint data, not mechanical failure or radio static.',
+   'Answer: Unauthorized flight console overwrite.'
+  ]
+ },
  explanation: 'Pigeon Toady snuck into the control tower console room and sabotaged the flight coordinates!'
  }
 ];
 
 let dt, dtCurCase = 0;
 const dtT = Timer($('#dt-t'));
-const fill = (id, ph, arr) => $(id).innerHTML = `<option value="-1">${ph}</option>` + arr.map((a, i) => `<option value="${i}">${a}</option>`).join('');
 
 function dtStart(caseIdx = 0) {
  dtCurCase = caseIdx;
  const C = DT_CASES[dtCurCase];
  $('#dt-case-title').textContent = C.title;
- $('#dt-brief').innerHTML = `<b>The Case:</b> ${C.brief}`;
- dt = { w: 0, done: false, caseData: C };
+ $('#dt-brief').innerHTML = `<b>CASE FILE</b><br>${C.brief}`;
+ dt = {
+  step: 0, // 0: Who (cu), 1: Where (pl), 2: Why (ca)
+  selected: null,
+  answers: { cu: null, pl: null, ca: null },
+  firstTryFields: 0,
+  fieldTries: [0, 0, 0],
+  hintsUsedForStep: [0, 0, 0],
+  helped: false,
+  readClues: new Set(),
+  openClues: new Set(),
+  pinnedClues: new Set(),
+  clearedSuspects: new Set(),
+  caseData: C,
+  done: false
+ };
+ dtT.reset();
  dtT.start();
  $('#dt-r').innerHTML = '';
  $('#dt-m').textContent = '';
+ $('#dt-hint-box').hidden = true;
+ $('#dt-hint-box').innerHTML = '';
 
- $('#dt-c').innerHTML = C.clues.map((c, i) => `<button class="clue" data-i="${i}"> Inspect Clue ${i + 1}</button>`).join('');
- $$('.clue').forEach(b => b.onclick = () => {
- audio.letterPick(1);
- b.classList.add('open');
- b.textContent = `Clue ${+b.dataset.i + 1}: ${C.clues[+b.dataset.i]}`;
- });
-
- $('#dt-s').innerHTML = C.suspects.map(s => `<button class="opt sus">${s}</button>`).join('');
- $$('.sus').forEach(b => b.onclick = () => {
- audio.letterPick(0);
- b.classList.toggle('cl');
- });
-
- fill('#dt-cu', 'Who is the culprit?', C.suspects);
- fill('#dt-pl', 'Where did it happen?', C.places);
- fill('#dt-ca', 'What went wrong?', C.causes);
+ renderDtClues();
+ renderDtSuspects();
+ renderDtProgress();
+ renderDtStep();
 }
 
-$('#dt-go').onclick = () => {
- if (dt.done) return;
- const cu = +$('#dt-cu').value, pl = +$('#dt-pl').value, ca = +$('#dt-ca').value;
- if (cu < 0 || pl < 0 || ca < 0) {
- $('#dt-m').textContent = 'Please choose culprit, location, and cause first.';
- return;
+function renderDtProgress() {
+ const labels = ['Who?', 'Where?', 'Why?'];
+ for (let i = 0; i < labels.length; i++) {
+  const el = $(`#dt-progress-${i}`);
+  const state = i < dt.step ? 'complete' : i === dt.step ? 'current' : 'pending';
+  el.dataset.state = state;
+  el.removeAttribute('aria-current');
+  if (state === 'current') el.setAttribute('aria-current', 'step');
+  el.textContent = `${i + 1} · ${labels[i]}`;
  }
- const ans = dt.caseData.answer;
- if (cu === ans.cu && pl === ans.pl && ca === ans.ca) {
- dt.done = true;
- const t = dtT.stop();
- const maxPts = dtCurCase === 0 ? 450 : dtCurCase === 1 ? 480 : 500;
- const s = Math.max(250, Math.min(maxPts, 250 + Math.max(0, 200 - t) - 40 * dt.w));
- const dnb = $('#dt-next-btn'); if (dnb) dnb.hidden = false;
- res($('#dt-r'), 'Case Solved! ', s, maxPts, `<b>Resolution:</b> ${dt.caseData.explanation}`);
- $('#dt-m').textContent = '';
- onStopCompleted(s, maxPts);
+}
+
+function renderDtClues() {
+ const C = dt.caseData;
+ const container = $('#dt-c');
+ container.innerHTML = C.clues.map((c, i) => {
+  const isRead = dt.readClues.has(i);
+  const isOpen = dt.openClues.has(i);
+  const isPinned = dt.pinnedClues.has(i);
+  return `
+  <article class="clue${isRead ? ' open' : ''}${isPinned ? ' pinned' : ''}" id="dt-clue-${i}">
+   <div class="dt-evidence-head">
+    <button type="button" class="dt-evidence-toggle" aria-expanded="${isOpen}" onclick="dtReadClue(${i})">Record ${String(i + 1).padStart(2, '0')} · ${isOpen ? 'Hide evidence' : isRead ? 'Reviewed evidence' : 'Review evidence'}</button>
+    <button type="button" class="clue-pin-tag" aria-pressed="${isPinned}" onclick="dtTogglePinClue(${i})">${isPinned ? 'Pinned' : 'Pin'}</button>
+   </div>
+   <p class="dt-evidence-text" ${isOpen ? '' : 'hidden'}>${c}</p>
+  </article>`;
+ }).join('');
+ $('#dt-clues-read-count').textContent = `${dt.readClues.size}/${C.clues.length} reviewed`;
+}
+
+function dtReadClue(i) {
+ if (dt.openClues.has(i)) {
+  dt.openClues.delete(i);
  } else {
- audio.error();
- dt.w++;
- if (dt.w >= 2) {
+  audio.letterPick(1);
+  dt.readClues.add(i);
+  dt.openClues.add(i);
+ }
+ renderDtClues();
+}
+
+function dtTogglePinClue(i) {
+ dt.readClues.add(i);
+ if (dt.pinnedClues.has(i)) dt.pinnedClues.delete(i);
+ else dt.pinnedClues.add(i);
+ audio.letterPick(0);
+ renderDtClues();
+}
+
+function renderDtSuspects() {
+ const C = dt.caseData;
+ const container = $('#dt-s');
+ container.innerHTML = C.suspects.map((s, i) => {
+  const isCleared = dt.clearedSuspects.has(i);
+  return `<button type="button" class="opt sus${isCleared ? ' cl' : ''}" aria-pressed="${isCleared}" onclick="dtToggleSuspect(${i})">${isCleared ? 'Cleared · ' : 'Suspect · '}${s}</button>`;
+ }).join('');
+}
+
+function dtToggleSuspect(i) {
+ audio.letterPick(0);
+ if (dt.clearedSuspects.has(i)) dt.clearedSuspects.delete(i);
+ else dt.clearedSuspects.add(i);
+ renderDtSuspects();
+}
+
+function renderDtStep() {
+ dt.selected = null;
+ const C = dt.caseData;
+ const step = dt.step;
+ const stepsInfo = [
+  { key: 'cu', badge: 'Step 1/3: Who?', title: 'Step 1: Who was the culprit?', desc: 'Examine the clues above and identify who is responsible for the incident:', opts: C.suspects },
+  { key: 'pl', badge: 'Step 2/3: Where?', title: 'Step 2: Where did it happen?', desc: 'Identify the exact facility location where the operational breakdown occurred:', opts: C.places },
+  { key: 'ca', badge: 'Step 3/3: Why?', title: 'Step 3: What went wrong?', desc: 'Determine the underlying event or action that caused the delivery problem:', opts: C.causes }
+ ];
+
+ const info = stepsInfo[step];
+ renderDtProgress();
+ $('#dt-step-badge').textContent = info.badge;
+ $('#dt-step-title').textContent = info.title;
+ $('#dt-step-desc').textContent = info.desc;
+ $('#dt-hint-btn').textContent = `💡 Hint (${dt.hintsUsedForStep[step]}/3)`;
+ $('#dt-hint-box').hidden = true;
+ $('#dt-m').textContent = '';
+
+ const container = $('#dt-step-options');
+ container.innerHTML = info.opts.map((opt, idx) => `
+  <button type="button" class="dt-opt-btn" id="dt-opt-${idx}" aria-pressed="false" onclick="dtSelectOption(${idx})">
+   <span aria-hidden="true">${String.fromCharCode(65 + idx)}.</span> ${opt}
+  </button>
+ `).join('');
+}
+
+function dtSelectOption(idx) {
+ dt.selected = idx;
+ audio.letterPick(0);
+ document.querySelectorAll('.dt-opt-btn').forEach((b, i) => {
+  b.classList.toggle('selected', i === idx);
+  b.setAttribute('aria-pressed', String(i === idx));
+ });
+ $('#dt-m').textContent = '';
+}
+
+function dtConfirmStep() {
+ if (dt.selected === null) {
+  $('#dt-m').textContent = 'Please choose an option before confirming.';
+  return;
+ }
+
+ const step = dt.step;
+ const C = dt.caseData;
+ const correctAnswers = [C.answer.cu, C.answer.pl, C.answer.ca];
+ const stepKeys = ['cu', 'pl', 'ca'];
+ const target = correctAnswers[step];
+
+ if (dt.selected === target) {
+  // CORRECT ANSWER FOR THIS STEP!
+  audio.wordSuccess();
+  if (dt.fieldTries[step] === 0) {
+   dt.firstTryFields++;
+  }
+  dt.answers[stepKeys[step]] = dt.selected;
+
+  if (step < 2) {
+   dt.step++;
+   renderDtStep();
+   $('#dt-m').innerHTML = `<span style="color:var(--good);font-weight:700">✅ Correct! Step locked in. Proceeding to ${step === 0 ? 'Where' : 'Why'}.</span>`;
+  } else {
+   // ALL 3 STEPS COMPLETED!
+   dtFinishCase();
+  }
+ } else {
+  // WRONG ANSWER
+  audio.error();
+  dt.fieldTries[step]++;
+  shake($('#dt-question-card'));
+  const nudges = [
+   'Check the clues again — who had direct access or ordered the action?',
+   'Re-read the facility logs — at which station was the cargo held or altered?',
+   'Review what triggered the issue — what specific event broke protocol?'
+  ];
+  $('#dt-m').innerHTML = `<span style="color:var(--bad);font-weight:700">❌ Not quite. ${nudges[step]}</span>`;
+ }
+}
+
+function dtRequestHint() {
+ const step = dt.step;
+ const stepKeys = ['cu', 'pl', 'ca'];
+ const key = stepKeys[step];
+ const C = dt.caseData;
+ const stepHints = C.hints[key];
+ let currentLevel = dt.hintsUsedForStep[step];
+
+ if (currentLevel < 3) {
+  currentLevel++;
+  dt.hintsUsedForStep[step] = currentLevel;
+  if (currentLevel === 3) {
+   dt.helped = true; // Level 3 reveals answer -> forfeits no-help bonus
+  }
+ }
+
+ $('#dt-hint-btn').textContent = `💡 Hint (${currentLevel}/3)`;
+ const hintBox = $('#dt-hint-box');
+ hintBox.hidden = false;
+ const levelsTitle = ['Level 1 (Which clue to re-read):', 'Level 2 (Ruling out suspects/options):', 'Level 3 (Direct Resolution):'];
+ hintBox.innerHTML = `
+  <div style="font-weight:800;color:#f59e0b;margin-bottom:4px">💡 ${levelsTitle[currentLevel - 1]}</div>
+  <div style="font-size:0.9rem;line-height:1.4">${stepHints[currentLevel - 1]}</div>
+  ${currentLevel === 3 ? '<div class="sub" style="margin-top:4px;color:#cbd5e1;font-size:0.8rem">Answer revealed — case completion confirmed (no-help bonus adjusted).</div>' : ''}
+ `;
+ if (currentLevel === 3) {
+  // Auto-select correct option
+  const correctIdx = [C.answer.cu, C.answer.pl, C.answer.ca][step];
+  dtSelectOption(correctIdx);
+ }
+}
+
+function dtFinishCase() {
+ if (dt.done || activeStopCompleted) return;
  dt.done = true;
  dtT.stop();
- $('#dt-m').textContent = '';
+ const maxPts = getStopCap();
+ const accMax = maxPts - 300;
+ const accuracyBonus = calculateAccuracyBonus(dt.firstTryFields, 3, accMax);
+ const noHelpBonus = dt.helped ? 0 : 50;
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
+
+ const C = dt.caseData;
+ const recapHtml = C.recap.map(r => `<div>${r}</div>`).join('');
+
+ $('#dt-question-card').innerHTML = `
+  <div style="text-align:center">
+   <h3 style="color:#10b981;margin:6px 0">🎉 Case Solved Step-by-Step!</h3>
+   <p class="sub" style="margin:0 0 10px">All 3 questions locked with conclusive evidence.</p>
+  </div>
+  <div class="card" style="background:rgba(16,185,129,0.12);border-color:#10b981;padding:12px;text-align:left;line-height:1.5;font-size:0.92rem">
+   <b>🔗 How the Clues Connected:</b>
+   <div style="margin-top:6px">${recapHtml}</div>
+   <div style="margin-top:8px;font-size:0.85rem;color:#cbd5e1"><b>Final Resolution:</b> ${C.explanation}</div>
+  </div>
+ `;
+
  const dnb = $('#dt-next-btn'); if (dnb) dnb.hidden = false;
- res($('#dt-r'), 'Case Closed by Superior ', 120, 450, `<b>Resolution:</b> ${dt.caseData.explanation}`);
- onStopCompleted(120, 450);
- } else {
- $('#dt-m').textContent = 'Inconclusive deduction (-40 pts). 1 accusation remaining!';
- shake($('#dt-go'));
- }
- }
-};
+ res($('#dt-r'), 'Case Solved! 🔍', scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} (${dt.firstTryFields}/3 fields first try) | No-help bonus: +${noHelpBonus}`);
+ onStopCompleted(scoring.score, scoring.max);
+}
+
 $('#dt-a').onclick = () => dtStart(dtCurCase);
 
 /* =============================================================
@@ -3644,27 +4258,35 @@ $('#dt-a').onclick = () => dtStart(dtCurCase);
 const BN_QUESTIONS = [
  {
  q: 'According to today\'s logistics seminar, what is the most critical element of last-mile delivery efficiency?',
- o: ['Dynamic route optimization & real-time dispatch', 'Increasing inventory stockpiles', 'Eliminating tracking barcodes', 'Using larger freight trucks']
+ o: ['Dynamic route optimization and dispatch', 'Increasing warehouse storage stockpiles', 'Eliminating barcodes and package tags', 'Replacing delivery vans with heavy trucks'],
+ lesson: 'Last-mile performance depends on coordinating routes and dispatch as conditions change, rather than adding static inventory or removing shipment tracking.'
  },
  {
  q: 'How did Junior and Tulip resolve the delivery roadblocks on their journey?',
- o: ['Cross-functional collaboration and adaptive problem solving', 'Abandoning the baby bundle', 'Waiting for someone else to fix it', 'Ignoring the recipient coordinates']
+ o: ['Cross-functional teamwork and adaptive thinking', 'Abandoning their delivery assignment midway', 'Waiting idly for external rescue teams to arrive', 'Disregarding recipient instructions completely'],
+ lesson: 'Sharing information and adapting together helps a team respond to new obstacles while keeping the delivery goal in view.'
  }
 ];
 
 let bnTimer = null, bnSec = 0;
+let bnLessons = [];
+let bnQuizUnlocked = false;
+let bnCurrentQuestion = 0;
+let bnQuestionAnswered = false;
 function bnStart() {
+  bnQuizUnlocked = false;
+  bnCurrentQuestion = 0;
+  bnQuestionAnswered = false;
   $('#bn-code-input').value = '';
   if (!seminarCode) {
-    $('#bn-code-input').placeholder = 'Waiting for host code...';
+    $('#bn-code-input').placeholder = 'Waiting for host code…';
     $('#bn-code-input').disabled = true;
-    $('#bn-unlock-btn').disabled = true;
   } else {
-    $('#bn-code-input').placeholder = 'Enter Seminar Code';
+    $('#bn-code-input').placeholder = 'Enter live seminar code';
     $('#bn-code-input').disabled = false;
-    $('#bn-unlock-btn').disabled = false;
   }
   $('#bn-quiz-area').hidden = true;
+  bnLessons = [];
   $('#bn-r').innerHTML = '';
   clearInterval(bnTimer);
   bnSec = 0;
@@ -3674,7 +4296,8 @@ function bnStart() {
   }, 1000);
 }
 
-$('#bn-unlock-btn').onclick = () => {
+function bnVerifyCode() {
+  if (bnQuizUnlocked || activeStopCompleted) return;
   if (!seminarCode) {
     audio.error();
     shake($('#bn-code-input'));
@@ -3683,29 +4306,42 @@ $('#bn-unlock-btn').onclick = () => {
   }
   const entered = $('#bn-code-input').value.trim().toUpperCase();
   if (entered === seminarCode.toUpperCase()) {
+ bnQuizUnlocked = true;
  audio.wordSuccess();
  $('#bn-quiz-area').hidden = false;
  $('#bn-code-input').disabled = true;
- $('#bn-unlock-btn').disabled = true;
  renderBnQuiz(0);
  } else {
  audio.error();
  shake($('#bn-code-input'));
  alert('Invalid seminar code! Please enter the code announced live by the seminar host.');
  }
-};
+}
+
+$('#bn-code-input').addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    bnVerifyCode();
+  }
+});
 
 function renderBnQuiz(idx) {
+ if (!bnQuizUnlocked || idx !== bnCurrentQuestion || bnQuestionAnswered) return;
  if (idx >= BN_QUESTIONS.length) {
+ if (activeStopCompleted || bnLessons.length !== BN_QUESTIONS.length) return;
  clearInterval(bnTimer);
- const bonusPts = 500;
+ $('#bn-q-continue').hidden = true;
+ const scoring = calculateStopScore(0, 0, 500);
  const bnb = $('#bn-next-btn'); if (bnb) bnb.hidden = false;
- res($('#bn-r'), 'Final Delivery Complete! ', bonusPts, 500, 'Mission fulfilled! The baby has arrived home.');
- onStopCompleted(bonusPts, 500);
+ const lessons = `<details class="learning-review"><summary>Review what you learned</summary><ol>${bnLessons.map(lesson => `<li>${lesson}</li>`).join('')}</ol></details>`;
+ res($('#bn-r'), 'Final Delivery Complete! ', scoring.score, scoring.max, `Mission fulfilled! The baby has arrived home.<br>${lessons}`);
+ onStopCompleted(scoring.score, scoring.max);
  return;
  }
  const q = BN_QUESTIONS[idx];
  $('#bn-q-text').textContent = `Question ${idx + 1} of ${BN_QUESTIONS.length}: ${q.q}`;
+ $('#bn-q-feedback').textContent = '';
+ $('#bn-q-continue').hidden = true;
  $('#bn-q-opts').innerHTML = '';
 
  shuf(q.o).forEach(opt => {
@@ -3713,13 +4349,26 @@ function renderBnQuiz(idx) {
  b.className = 'opt';
  b.textContent = opt;
  b.onclick = () => {
+ if (bnQuestionAnswered || activeStopCompleted) return;
  if (opt === q.o[0]) {
+ bnQuestionAnswered = true;
  audio.wordSuccess();
- renderBnQuiz(idx + 1);
+ bnLessons.push(q.lesson);
+ $('#bn-q-feedback').textContent = q.lesson;
+ document.querySelectorAll('#bn-q-opts button').forEach(option => { option.disabled = true; });
+ const continueButton = $('#bn-q-continue');
+ continueButton.hidden = false;
+ continueButton.onclick = () => {
+  if (!bnQuestionAnswered || activeStopCompleted) return;
+  bnQuestionAnswered = false;
+  bnCurrentQuestion = idx + 1;
+  renderBnQuiz(bnCurrentQuestion);
+ };
  } else {
  audio.error();
  shake(b);
  b.disabled = true;
+ $('#bn-q-feedback').textContent = `Not quite. ${q.lesson}`;
  }
  };
  $('#bn-q-opts').appendChild(b);
@@ -3730,23 +4379,69 @@ function renderBnQuiz(idx) {
  EVALUATION & CERTIFIED COURIER DIGITAL PASS
  ============================================================= */
 function evalCard() {
- const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
- const grade = total >= 7000 ? 'A+' : total >= 5500 ? 'A' : total >= 4000 ? 'B+' : 'B';
+ const requiredStops = I.map((stop, index) => ({ stop, index }))
+  .filter(({ stop }) => stop.t === 'game' || stop.t === 'bonus');
+ const missingStops = requiredStops.filter(({ index }) => !R[index] || R[index].gate);
+ const lockedGates = I.filter(stop => stop.t === 'gate' && !O[stop.g]).length;
+ if (missingStops.length || lockedGates || cur < N - 1) {
+  const remaining = missingStops.length
+   ? `${missingStops.length} challenge${missingStops.length === 1 ? '' : 's'} remaining`
+   : lockedGates
+    ? `${lockedGates} host checkpoint${lockedGates === 1 ? '' : 's'} still locked`
+    : 'the final delivery has not been reached';
+  info('Certificate Locked', `Complete the full delivery route before viewing your certificate (${remaining}).`);
+  return;
+ }
+ const total = requiredStops.reduce((sum, { index }) => {
+  const points = Number(R[index].pts);
+  return sum + (Number.isFinite(points) && points > 0 ? points : 0);
+ }, 0);
+ const maxTotal = requiredStops.reduce((sum, { stop }) => sum + stop.cap, 0);
+ const gradeThresholds = {
+  aPlus: Math.ceil(maxTotal * 0.85),
+  a: Math.ceil(maxTotal * 0.70),
+  bPlus: Math.ceil(maxTotal * 0.60)
+ };
+ const grade = total >= gradeThresholds.aPlus ? 'A+'
+  : total >= gradeThresholds.a ? 'A'
+   : total >= gradeThresholds.bPlus ? 'B+'
+    : 'B';
+ const stars = requiredStops.reduce((sum, { index }) => {
+  const points = Number(R[index].pts);
+  return sum + calculateStars(Number.isFinite(points) ? points : 0, R[index].max || I[index].cap);
+ }, 0);
+ const completedOn = new Intl.DateTimeFormat('en-PH', {
+  dateStyle: 'long',
+  timeZone: 'Asia/Manila'
+ }).format(new Date());
+ const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+ })[character]);
+ const courierName = escapeHtml(user || 'Courier');
 
  modal(`
- <h2> Mission Accomplished!</h2>
- <p style="font-size:1.15rem"><b>Delivered! Nate's family welcomes the baby home.</b></p>
- <div style="background:var(--cell);border-radius:18px;padding:14px;border:2px solid var(--acc);margin:12px 0">
- <div style="font-size:0.8rem;text-transform:uppercase;color:var(--mut);font-weight:800">Certified Courier Pass</div>
- <div style="font-size:1.3rem;font-weight:800;color:var(--ink);margin:4px 0">${user || 'Juan Dela Cruz'}</div>
- <div style="font-weight:700;color:var(--acc);font-size:0.95rem">${title()} - Grade ${grade}</div>
- <div style="font-size:1.2rem;font-weight:800;margin-top:6px">Grand Score: ${total} pts</div>
-</div>
- <p>Please complete your seminar evaluation to receive your accredited completion certificate:</p>
+ <div id="certificate-card" class="certificate" role="article" aria-labelledby="certificate-title">
+  <div class="certificate-kicker">Streamlined · Logistics Master Challenge</div>
+  <h1 id="certificate-title">Certificate of Completion</h1>
+  <p>This certificate is presented to</p>
+  <div class="certificate-name">${courierName}</div>
+  <p>for completing all delivery challenges and the final handoff quiz.</p>
+  <div class="certificate-grade">Grade ${grade}</div>
+  <div class="certificate-score">Final score: ${total.toLocaleString()} / ${maxTotal.toLocaleString()} points · ${stars} / ${requiredStops.length * 3} stars</div>
+  <div class="certificate-date">Completed ${completedOn}</div>
+ </div>
+ <div id="certificate-actions">
+ <button class="btn green" type="button" onclick="window.print()">Print or Save Certificate</button>
+ <p>Share your feedback about the seminar:</p>
  <div id="qr"></div>
  <div class="link">${EVAL_URL}</div>
  <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation </a>
  ${bt('Next ', 'leave();X()')}
+ </div>
  `);
 
  try {
@@ -4018,7 +4713,9 @@ function fmStart(lvIdx = 0) {
  tries: 0,
  busy: false,
  score: 0,
- done: false
+ done: false,
+ firstTryPairs: 0,
+ cardSeen: new Set()
  };
 
  const grid = $('#fm-grid');
@@ -4056,6 +4753,8 @@ function fmCardClick(idx) {
  const [c1, c2] = fmState.flipped;
  if (c1.card.id === c2.card.id) {
  // MATCH!
+ const alreadySeen = fmState.cardSeen.has(c1.card.id);
+ if (!alreadySeen) fmState.firstTryPairs = (fmState.firstTryPairs || 0) + 1;
  setTimeout(() => {
  audio.wordSuccess();
  c1.el.classList.add('matched');
@@ -4078,6 +4777,8 @@ function fmCardClick(idx) {
  }, 250);
 
  setTimeout(() => {
+ fmState.cardSeen.add(c1.card.id);
+ fmState.cardSeen.add(c2.card.id);
  c1.el.classList.remove('flipped');
  c2.el.classList.remove('flipped');
  fmState.flipped = [];
@@ -4088,20 +4789,21 @@ function fmCardClick(idx) {
 }
 
 function fmEnd() {
+ if (fmState.done || activeStopCompleted) return;
  fmState.done = true;
- const elapsedMs = fmTimer.stop();
- const elapsedSec = Math.floor(elapsedMs / 1000);
+ fmTimer.stop();
+ const maxScore = getStopCap();
+ const accMax = maxScore - 300;
+ const totalPairs = fmState.totalCards / 2;
+ const firstTries = fmState.firstTryPairs || 0;
+ const accuracyBonus = calculateAccuracyBonus(firstTries, totalPairs, accMax);
+ const noHelpBonus = 50; // Autonomous memory match
+ const scoring = calculateStopScore(accuracyBonus, noHelpBonus);
 
- const maxScore = fmCurLevel === 0 ? 450 : fmCurLevel === 1 ? 480 : 500;
- const targetTries = fmCurLevel === 0 ? 6 : fmCurLevel === 1 ? 10 : 14;
- const speedBonus = Math.max(0, 50 - elapsedSec) * 3;
- const tryPenalty = Math.max(0, fmState.tries - targetTries) * 10;
- const finalScore = Math.max(250, Math.min(maxScore, (fmCurLevel === 0 ? 340 : fmCurLevel === 1 ? 380 : 420) + speedBonus - tryPenalty));
-
- $('#fm-s').textContent = ' ' + finalScore;
+ $('#fm-s').textContent = ' ' + scoring.score;
  const fnb = $('#fm-next-btn'); if (fnb) fnb.hidden = false;
- res($('#fm-r'), 'All Pairs Matched! ', finalScore, maxScore, `Completed in ${elapsedSec}s with ${fmState.tries} tries.`);
- onStopCompleted(finalScore, maxScore);
+ res($('#fm-r'), 'All Pairs Matched! 🎉', scoring.score, scoring.max, `Completion: 250 | Accuracy bonus: +${accuracyBonus} (${firstTries}/${totalPairs} first-try) | No-help bonus: +${noHelpBonus}`);
+ onStopCompleted(scoring.score, scoring.max);
 }
 
 $('#fm-a').onclick = fmStart;

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg_s3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="snow_ramp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0e7ff"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle & Icy Violet Glow Ring -->
+  <circle cx="128" cy="128" r="120" fill="url(#bg_s3)" stroke="#818cf8" stroke-width="8"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#c7d2fe" stroke-width="2" stroke-dasharray="6,6"/>
+
+  <!-- High-Altitude Peak Silhouettes & Snowdrift -->
+  <polygon points="10,195 70,95 130,195" fill="#312e81"/>
+  <polygon points="50,118 70,95 90,118" fill="#e0e7ff"/>
+  
+  <polygon points="120,195 185,85 245,195" fill="#312e81"/>
+  <polygon points="165,112 185,85 205,112" fill="#e0e7ff"/>
+
+  <!-- Launch Flight Deck Catapult Runway -->
+  <polygon points="60,185 196,150 206,170 70,205" fill="url(#snow_ramp)" stroke="#4338ca" stroke-width="3"/>
+  <line x1="75" y1="192" x2="195" y2="160" stroke="#f43f5e" stroke-width="4" stroke-dasharray="12,8"/>
+
+  <!-- Telemetry Radar & Wind Gauge -->
+  <line x1="85" y1="100" x2="85" y2="160" stroke="#cbd5e1" stroke-width="4"/>
+  <path d="M70 100 A 20 20 0 0 1 100 100" fill="none" stroke="#38bdf8" stroke-width="5"/>
+  <circle cx="85" cy="98" r="5" fill="#ef4444"/>
+
+  <!-- Takeoff Flare / Guiding Beacon -->
+  <circle cx="196" cy="150" r="12" fill="#38bdf8" stroke="#fff" stroke-width="3"/>
+  <circle cx="196" cy="150" r="6" fill="#fff"/>
+</svg>
