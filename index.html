@@ -685,6 +685,9 @@ header {
 #mz { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; width: min(100%, 360px); margin: 10px auto; touch-action: none; }
 .c { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: min(5.8vw, 24px); border-radius: 6px; background: var(--cell); border: 1px solid var(--line); }
 .c.w { background: var(--wall); border-color: var(--wall); }
+.mz-courier { position: relative; display: block; width: 32px; height: 32px; }
+.mz-courier img:first-child { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid #ff8a1f; box-shadow: 0 0 10px #ff8a1f; display: block; }
+.mz-courier-baby { position: absolute; right: -3px; bottom: -3px; width: 18px; height: 18px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.5); }
 .pad { display: grid; grid-template-columns: repeat(3, 62px); gap: 8px; justify-content: center; margin-top: 8px; }
 .pad button { height: 52px; border-radius: 14px; background: var(--card-bg); font-size: 1.4rem; font-weight: 800; box-shadow: 0 4px 0 rgba(0,0,0,0.12); border: 1px solid var(--line); }
 
@@ -2114,7 +2117,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
  const drawCursorTrail = now => {
  trailFrame = 0;
  trailContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
- while (trailPoints.length && now - trailPoints[0].time > 650) trailPoints.shift();
+ while (trailPoints.length && now - trailPoints[0].time > 850) trailPoints.shift();
 
  if (trailPoints.length > 1) {
   const last = trailPoints[trailPoints.length - 1];
@@ -2127,7 +2130,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
    const length = Math.hypot(dx, dy) || 1;
    return { x: point.x - (dy / length) * offset, y: point.y + (dx / length) * offset };
   };
-  const opacity = 0.12 * (1 - (now - last.time) / 650);
+  const opacity = 0.12 * (1 - (now - last.time) / 850);
 
   trailColors.forEach((color, colorIndex) => {
    const offset = (colorIndex - (trailColors.length - 1) / 2) * 2.4;
@@ -2154,7 +2157,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 
  for (let i = trailSparkles.length - 1; i >= 0; i--) {
   const sparkle = trailSparkles[i];
-  const progress = (now - sparkle.time) / 480;
+  const progress = (now - sparkle.time) / 620;
   if (progress >= 1) {
    trailSparkles.splice(i, 1);
    continue;
@@ -2891,6 +2894,14 @@ const MAP_LEVEL_PALETTES = [
  { light: '#fecaca', mid: '#f87171', dark: '#991b1b', accent: '#fee2e2' },
  { light: '#fef3c7', mid: '#facc15', dark: '#a16207', accent: '#fef9c3' }
 ];
+const MAP_GATE_ART = {
+ 1: 'assets/map-dock-1.png',
+ 2: 'assets/map-dock-2.png',
+ 3: 'assets/map-dock-3.png',
+ 4: 'assets/map-dock-4.png',
+ 5: 'assets/map-dock-5.png',
+ 6: 'assets/map-dock-6.png?v=2'
+};
 
 const GN = { 
  1:'Stage 2 (Canyon Delivery Maze)', 
@@ -3004,7 +3015,7 @@ function isCourierFinished(results, gateControls = O) {
   return Number.isFinite(points) && points >= 0;
  });
 }
-const MAP_ROUTE_X = [96, 284, 108, 272, 100, 280, 112, 276];
+const MAP_ROUTE_X = [150, 284, 108, 272, 100, 280, 112, 276];
 const P = I.map((_, i) => ({ 
  x: MAP_ROUTE_X[i % MAP_ROUTE_X.length],
  y: H - 110 - i * 148 
@@ -3103,6 +3114,9 @@ function draw() {
  <filter id="pedestal-shadow" x="-30%" y="-30%" width="160%" height="160%">
  <feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#000000" flood-opacity="0.5"/>
 </filter>
+ <filter id="home-ground-shadow" x="-35%" y="-35%" width="170%" height="180%">
+ <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#16435d" flood-opacity="0.28"/>
+</filter>
  <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
  <feGaussianBlur stdDeviation="6" result="blur"/>
  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
@@ -3156,6 +3170,11 @@ function draw() {
  <stop offset="75%" stop-color="#f59e0b"/>
  <stop offset="100%" stop-color="#b45309"/>
 </radialGradient>
+ <radialGradient id="home-ground" cx="50%" cy="50%" r="50%">
+ <stop offset="0%" stop-color="#78a987" stop-opacity="0.3"/>
+ <stop offset="68%" stop-color="#78a987" stop-opacity="0.17"/>
+ <stop offset="100%" stop-color="#78a987" stop-opacity="0"/>
+ </radialGradient>
  <linearGradient id="truck-blue-side" x1="0" y1="0" x2="0" y2="1">
   <stop offset="0%" stop-color="#49b4ff"/>
   <stop offset="48%" stop-color="#168cff"/>
@@ -3232,7 +3251,6 @@ function draw() {
 
  // 1. Continuous Seamless World Canvas
  h += `<rect x="0" y="0" width="${vbW}" height="${H}" fill="url(#world-canvas-grad)"/>`;
-
  // Stylized scenery sits behind the route and follows its matching stages.
  h += `
  <!-- Puffy cartoon clouds with continuous silhouettes and soft highlights -->
@@ -3390,7 +3408,10 @@ function draw() {
  h += `<path d="${clearedD}" fill="none" stroke="#facc15" stroke-width="3" stroke-dasharray="14 18" stroke-linecap="round"/>`;
  }
 
- const truckTargetIndex = Math.min(activeStopIndex ?? cur, N - 1);
+ const currentTruckStop = activeStopIndex ?? cur;
+ const lastPlayableLevelIndex = MAP_LEVEL_NUMBER.lastIndexOf(19);
+ const truckVisible = currentTruckStop <= lastPlayableLevelIndex;
+ const truckTargetIndex = Math.min(currentTruckStop, lastPlayableLevelIndex);
  const truckFromIndex = Math.max(0, truckTargetIndex - 1);
  const truckToIndex = truckTargetIndex;
  const truckFrom = P[truckFromIndex], truckTo = P[truckToIndex];
@@ -3400,18 +3421,45 @@ function draw() {
  const truckP2 = { x: truckTo.x, y: truckMidY };
  const truckP3 = { x: truckTo.x, y: truckTo.y };
  const interpolatePoint = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
- const truckProgress = 0.62;
+ const truckProgress = 0.72;
  const truckQ0 = interpolatePoint(truckP0, truckP1, truckProgress);
  const truckQ1 = interpolatePoint(truckP1, truckP2, truckProgress);
  const truckQ2 = interpolatePoint(truckP2, truckP3, truckProgress);
  const truckR0 = interpolatePoint(truckQ0, truckQ1, truckProgress);
  const truckR1 = interpolatePoint(truckQ1, truckQ2, truckProgress);
  const truckStop = interpolatePoint(truckR0, truckR1, truckProgress);
- const truckPath = `M ${truckP0.x} ${truckP0.y} C ${truckQ0.x} ${truckQ0.y}, ${truckR0.x} ${truckR0.y}, ${truckStop.x} ${truckStop.y}`;
+ const splitCubic = (start, control1, control2, end, progress) => {
+  const first = interpolatePoint(start, control1, progress);
+  const second = interpolatePoint(control1, control2, progress);
+  const third = interpolatePoint(control2, end, progress);
+  const fourth = interpolatePoint(first, second, progress);
+  const fifth = interpolatePoint(second, third, progress);
+  const point = interpolatePoint(fourth, fifth, progress);
+  return {
+   left: [start, first, fourth, point],
+   right: [point, fifth, third, end]
+  };
+ };
+ const routeSegment = splitCubic(truckP0, truckP1, truckP2, truckP3, truckProgress).left;
+ let truckPath = `M ${routeSegment[0].x} ${routeSegment[0].y} C ${routeSegment[1].x} ${routeSegment[1].y}, ${routeSegment[2].x} ${routeSegment[2].y}, ${routeSegment[3].x} ${routeSegment[3].y}`;
+ if (truckTargetIndex === 1) {
+  const previousRoute = splitCubic(truckP0, truckP1, truckP2, truckP3, 0.62).right;
+  const routeFraction = (truckProgress - 0.62) / (1 - 0.62);
+  const approach = splitCubic(previousRoute[0], previousRoute[1], previousRoute[2], previousRoute[3], routeFraction).left;
+  const parked = { x: truckP0.x + 57, y: truckP0.y - 62 };
+  const startControl = interpolatePoint(parked, approach[0], 0.35);
+  const tangent = { x: approach[1].x - approach[0].x, y: approach[1].y - approach[0].y };
+  const endControl = { x: approach[0].x - tangent.x * 0.18, y: approach[0].y - tangent.y * 0.18 };
+  truckPath = `M ${parked.x} ${parked.y} C ${startControl.x} ${startControl.y}, ${endControl.x} ${endControl.y}, ${approach[0].x} ${approach[0].y} C ${approach[1].x} ${approach[1].y}, ${approach[2].x} ${approach[2].y}, ${approach[3].x} ${approach[3].y}`;
+ }
  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- const truckMotion = reducedMotion || truckTargetIndex === 0 ? '' : `<animateMotion dur="3.2s" repeatCount="1" fill="freeze" path="${truckPath}"/>`;
- const truckPosition = reducedMotion || truckTargetIndex === 0 ? ` transform="translate(${truckStop.x} ${truckStop.y})"` : '';
- h += `
+ const truckMotion = reducedMotion || truckTargetIndex === 0 ? '' : `<animateMotion dur="5s" calcMode="paced" rotate="auto" repeatCount="1" fill="freeze" path="${truckPath}"/>`;
+ const parkedTruckPosition = truckTargetIndex === 0
+  ? { x: truckStop.x + 57, y: truckStop.y - 62 }
+  : truckStop;
+ const truckFacing = truckTargetIndex === 0 ? ' rotate(-35 2 -8)' : '';
+ const truckPosition = reducedMotion || truckTargetIndex === 0 ? ` transform="translate(${parkedTruckPosition.x} ${parkedTruckPosition.y})${truckFacing}"` : '';
+ if (truckVisible) h += `
  <g class="map-delivery-truck" aria-hidden="true"${truckPosition} filter="url(#pedestal-shadow)">
   ${truckMotion}
   <g transform="translate(-32 -30)">
@@ -3468,38 +3516,11 @@ function draw() {
  h += `<g class="node" data-stop-index="${i}" role="button" tabindex="0" aria-label="${nodeLabel}" onclick="tap(${i})">`;
 
  if (it.t === 'gate') {
- // Warehouse loading-bay checkpoint
- const gateOpen = done || O[it.g];
- const previousLevel = MAP_LEVEL_NUMBER[i - 1] || 1;
- const gatePalette = MAP_LEVEL_PALETTES[previousLevel - 1] || MAP_LEVEL_PALETTES[0];
- const gateStatus = gateOpen ? '#34d399' : '#fb7185';
- const shutterLines = Array.from({ length: gateOpen ? 2 : 5 }, (_, index) => {
- const y = gateOpen ? p.y - 15 + index * 5 : p.y - 8 + index * 6;
- return `<path d="M ${p.x - 24} ${y} H ${p.x + 24}" stroke="rgba(255,255,255,0.42)" stroke-width="1.5"/>`;
- }).join('');
+ // Each checkpoint uses its matching raised dock illustration.
  h += `
  <g filter="url(#pedestal-shadow)">
-  <ellipse cx="${p.x}" cy="${p.y + 27}" rx="49" ry="8" fill="rgba(15,23,42,0.42)"/>
-  <path d="M ${p.x + 39} ${p.y - 22} L ${p.x + 49} ${p.y - 28} V ${p.y + 16} L ${p.x + 39} ${p.y + 23} Z" fill="#263d50" stroke="#1b2e3e" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M ${p.x - 48} ${p.y - 21} L ${p.x - 39} ${p.y - 25} H ${p.x + 39} L ${p.x + 48} ${p.y - 21} V ${p.y + 23} H ${p.x - 48} Z" fill="#718894" stroke="#344d5c" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M ${p.x - 48} ${p.y - 21} L ${p.x - 39} ${p.y - 25} H ${p.x + 39} L ${p.x + 48} ${p.y - 21} L ${p.x + 41} ${p.y - 15} H ${p.x - 42} Z" fill="#9db0b2" stroke="#526d78" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M ${p.x - 44} ${p.y - 21} L ${p.x} ${p.y - 41} L ${p.x + 47} ${p.y - 22} L ${p.x + 39} ${p.y - 17} L ${p.x} ${p.y - 33} L ${p.x - 39} ${p.y - 16} Z" fill="#426478" stroke="#263f50" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M ${p.x - 38} ${p.y - 22} L ${p.x} ${p.y - 38} L ${p.x + 40} ${p.y - 22}" fill="none" stroke="#c9d7d4" stroke-width="1.5" opacity=".8"/>
-  <path d="M ${p.x - 43} ${p.y - 12} H ${p.x - 34} V ${p.y + 17} H ${p.x - 43} Z M ${p.x + 34} ${p.y - 12} H ${p.x + 43} V ${p.y + 17} H ${p.x + 34} Z" fill="#516b79" stroke="#b8cbca" stroke-width="1.5"/>
-  <rect x="${p.x - 29}" y="${p.y - 14}" width="58" height="36" rx="2" fill="#203849" stroke="#d4dfd9" stroke-width="2"/>
-  <path d="M ${p.x - 25} ${p.y + 19} V ${p.y - 10} H ${p.x + 25} V ${p.y + 19} Z" fill="#122636" stroke="#101f2a" stroke-width="1"/>
-  ${gateOpen ? `<path d="M ${p.x - 24} ${p.y + 15} L ${p.x - 9} ${p.y - 5} H ${p.x + 9} L ${p.x + 24} ${p.y + 15} Z" fill="${gatePalette.accent}" opacity="0.35"/>
-  <path d="M ${p.x - 25} ${p.y + 17} H ${p.x + 25}" stroke="#d8c59d" stroke-width="2"/>` : ''}
-  <rect x="${p.x - 25}" y="${gateOpen ? p.y - 15 : p.y - 8}" width="50" height="${gateOpen ? 11 : 27}" rx="1.5" fill="url(#truck-blue-side)" stroke="${gatePalette.accent}" stroke-width="1.5"/>
-  ${shutterLines}
-  <path d="M ${p.x - 30} ${p.y + 21} H ${p.x + 30} L ${p.x + 36} ${p.y + 27} H ${p.x - 36} Z" fill="#9aa9a8" stroke="#4b626d" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M ${p.x - 27} ${p.y + 23} L ${p.x - 18} ${p.y + 16} M ${p.x + 27} ${p.y + 23} L ${p.x + 18} ${p.y + 16}" stroke="#f4c85a" stroke-width="2.5"/>
-  <rect x="${p.x - 15}" y="${p.y - 31}" width="30" height="8" rx="2" fill="#17344a" stroke="${gatePalette.accent}" stroke-width="1.5"/>
-  <text x="${p.x}" y="${p.y - 25}" text-anchor="middle" font-size="5.5" font-weight="900" fill="#ffffff" letter-spacing=".5">DOCK ${it.g}</text>
-  <rect x="${p.x - 46}" y="${p.y - 10}" width="4" height="7" rx="1" fill="${gateStatus}"/>
-  <rect x="${p.x + 42}" y="${p.y - 10}" width="4" height="7" rx="1" fill="${gateStatus}"/>
-  <rect x="${p.x - 10}" y="${p.y + 3}" width="20" height="15" rx="4" fill="#09264c" stroke="${gateStatus}" stroke-width="2"/>
-  <text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">${gateOpen ? '✓' : it.g}</text>
+  <ellipse cx="${p.x}" cy="${p.y + 34}" rx="31" ry="7" fill="rgba(15,23,42,0.42)"/>
+  <image href="${MAP_GATE_ART[it.g]}" x="${p.x - 43}" y="${p.y - 74}" width="86" height="104" preserveAspectRatio="xMidYMid meet"/>
 </g>
  `;
  } else {
@@ -3509,61 +3530,61 @@ function draw() {
  const bevelColor = levelPalette.dark;
  const isCustomerHome = it.t === 'bonus' && MAP_LEVEL_NUMBER[i] === 19;
 
- if (isC) {
+ if (isC && i !== 0) {
  // Glowing animated ripple ring around current level
  h += `<circle class="pulse" cx="${p.x}" cy="${p.y}" r="45" fill="none" stroke="${levelPalette.accent}" stroke-width="6"/>`;
  }
 
- if (isCustomerHome) {
+ if (i === 0) {
+ h += `<image href="assets/map-warehouse.png" x="${p.x - 65}" y="${p.y - 43}" width="130" height="98" preserveAspectRatio="xMidYMid meet" aria-hidden="true"/>`;
+ } else if (isCustomerHome) {
  h += `
- <g filter="url(#pedestal-shadow)">
- <ellipse cx="${p.x}" cy="${p.y + 31}" rx="43" ry="9" fill="rgba(15,23,42,0.42)"/>
- <path d="M ${p.x - 33} ${p.y + 25} H ${p.x + 34} L ${p.x + 40} ${p.y + 30} H ${p.x - 38} Z" fill="#d2c49f" stroke="#77694d" stroke-width="1.5" stroke-linejoin="round"/>
- <path d="M ${p.x + 25} ${p.y - 5} L ${p.x + 35} ${p.y - 11} V ${p.y + 24} L ${p.x + 25} ${p.y + 29} Z" fill="${levelPalette.dark}" stroke="${bevelColor}" stroke-width="1.5" stroke-linejoin="round"/>
- <path d="M ${p.x - 27} ${p.y - 5} L ${p.x + 25} ${p.y - 5} V ${p.y + 28} L ${p.x - 27} ${p.y + 24} Z" fill="url(#level-node-${(MAP_LEVEL_NUMBER[i] || 1) - 1})" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
- <path d="M ${p.x + 25} ${p.y - 5} L ${p.x + 35} ${p.y - 11} V ${p.y + 24} L ${p.x + 25} ${p.y + 28} Z" fill="${levelPalette.dark}" opacity=".72"/>
- <path d="M ${p.x - 36} ${p.y - 5} L ${p.x} ${p.y - 38} L ${p.x + 36} ${p.y - 5} L ${p.x + 27} ${p.y - 7} L ${p.x} ${p.y - 31} L ${p.x - 27} ${p.y - 7} Z" fill="${bevelColor}" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
- <path d="M ${p.x - 30} ${p.y - 7} L ${p.x} ${p.y - 34} L ${p.x + 30} ${p.y - 7} Z" fill="${levelPalette.mid}"/>
- <path d="M ${p.x} ${p.y - 34} L ${p.x + 36} ${p.y - 5} L ${p.x + 27} ${p.y - 7} L ${p.x} ${p.y - 31} Z" fill="${levelPalette.dark}"/>
- <path d="M ${p.x - 21} ${p.y - 8} L ${p.x - 21} ${p.y - 17} L ${p.x - 12} ${p.y - 17} L ${p.x - 12} ${p.y - 8} Z M ${p.x + 12} ${p.y - 8} L ${p.x + 12} ${p.y - 17} L ${p.x + 21} ${p.y - 17} L ${p.x + 21} ${p.y - 8} Z" fill="#fff1ba" stroke="${bevelColor}" stroke-width="1"/>
- <rect x="${p.x - 11}" y="${p.y - 24}" width="22" height="13" rx="5" fill="${bevelColor}" stroke="#fff1ba" stroke-width="1.5"/>
- <text x="${p.x}" y="${p.y - 15}" text-anchor="middle" font-size="8.5" font-weight="900" fill="#ffffff">19</text>
- <rect x="${p.x - 23}" y="${p.y - 4}" width="11" height="11" rx="1.5" fill="#fff4cc" stroke="${bevelColor}" stroke-width="1.5"/>
- <path d="M ${p.x - 17.5} ${p.y - 4} V ${p.y + 7} M ${p.x - 23} ${p.y + 1.5} H ${p.x - 12}" stroke="${bevelColor}" stroke-width="1"/>
- <rect x="${p.x + 10}" y="${p.y - 4}" width="11" height="11" rx="1.5" fill="#fff4cc" stroke="${bevelColor}" stroke-width="1.5"/>
- <path d="M ${p.x + 15.5} ${p.y - 4} V ${p.y + 7} M ${p.x + 10} ${p.y + 1.5} H ${p.x + 21}" stroke="${bevelColor}" stroke-width="1"/>
- <path d="M ${p.x - 6} ${p.y + 28} V ${p.y + 8} Q ${p.x} ${p.y + 1} ${p.x + 6} ${p.y + 8} V ${p.y + 28} Z" fill="${bevelColor}" stroke="#fff1ba" stroke-width="1.5"/>
- <circle cx="${p.x + 3}" cy="${p.y + 18}" r="1" fill="${levelPalette.accent}"/>
- <path d="M ${p.x - 10} ${p.y + 28} H ${p.x + 10} L ${p.x + 14} ${p.y + 32} H ${p.x - 14} Z" fill="#f3d996" stroke="#806d4b" stroke-width="1"/>
- <path d="M ${p.x - 27} ${p.y - 6} H ${p.x + 25}" stroke="#fff4cc" stroke-width="1.5" opacity=".8"/>
+ <g filter="url(#home-ground-shadow)">
+ <ellipse cx="${p.x}" cy="${p.y + 15}" rx="72" ry="36" fill="url(#home-ground)"/>
+ <ellipse cx="${p.x}" cy="${p.y + 35}" rx="48" ry="8" fill="rgba(22,67,65,0.2)"/>
+ <image href="assets/map-house.png" x="${p.x - 56}" y="${p.y - 53}" width="112" height="97" preserveAspectRatio="xMidYMid meet"/>
+ <circle cx="${p.x}" cy="${p.y + 34}" r="10" fill="${levelPalette.dark}" stroke="#fff1ba" stroke-width="2"/>
+ <text x="${p.x}" y="${p.y + 38}" text-anchor="middle" font-size="9" font-weight="900" fill="#ffffff">19</text>
 </g>
  `;
  } else {
- const pinPath = `M ${p.x} ${p.y + 34} C ${p.x - 7} ${p.y + 24}, ${p.x - 30} ${p.y + 2}, ${p.x - 30} ${p.y - 13} A 30 30 0 1 1 ${p.x + 30} ${p.y - 13} C ${p.x + 30} ${p.y + 2}, ${p.x + 7} ${p.y + 24}, ${p.x} ${p.y + 34} Z`;
+ const markerText = it.t === 'fin' ? '✓' : MAP_LEVEL_NUMBER[i];
+ const pinPath = `M ${p.x} ${p.y + 34} C ${p.x - 9} ${p.y + 25}, ${p.x - 31} ${p.y + 1}, ${p.x - 31} ${p.y - 15} A 31 31 0 1 1 ${p.x + 31} ${p.y - 15} C ${p.x + 31} ${p.y + 1}, ${p.x + 9} ${p.y + 25}, ${p.x} ${p.y + 34} Z`;
  h += `
  <g filter="url(#pedestal-shadow)">
- <ellipse cx="${p.x}" cy="${p.y + 34}" rx="25" ry="7" fill="rgba(15,23,42,0.38)"/>
- <path d="${pinPath}" transform="translate(0 4)" fill="${bevelColor}"/>
- <path d="${pinPath}" fill="${badgeFill}" stroke="#ffffff" stroke-width="3"/>
- <path d="M ${p.x} ${p.y - 42} A 30 30 0 0 1 ${p.x + 30} ${p.y - 13} C ${p.x + 30} ${p.y + 2}, ${p.x + 7} ${p.y + 24}, ${p.x} ${p.y + 34} Z" fill="${bevelColor}" opacity=".28"/>
- <path d="M ${p.x - 20} ${p.y - 29} Q ${p.x - 2} ${p.y - 44} ${p.x + 14} ${p.y - 37}" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
- <circle cx="${p.x}" cy="${p.y - 13}" r="20" fill="rgba(255,255,255,0.9)" stroke="${levelPalette.accent}" stroke-width="2"/>
- ${it.t === 'fin'
-  ? `<path d="M ${p.x - 9} ${p.y - 12} L ${p.x - 2} ${p.y - 5} L ${p.x + 10} ${p.y - 19}" fill="none" stroke="${bevelColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`
-  : `<path d="M ${p.x - 10} ${p.y - 16} L ${p.x} ${p.y - 21} L ${p.x + 10} ${p.y - 16} V ${p.y - 4} L ${p.x} ${p.y + 1} L ${p.x - 10} ${p.y - 4} Z" fill="${levelPalette.light}" stroke="${bevelColor}" stroke-width="1.5" stroke-linejoin="round"/>
- <path d="M ${p.x - 10} ${p.y - 16} L ${p.x} ${p.y - 10} L ${p.x + 10} ${p.y - 16} M ${p.x} ${p.y - 10} V ${p.y + 1} M ${p.x - 5} ${p.y - 19} L ${p.x + 5} ${p.y - 13}" fill="none" stroke="${bevelColor}" stroke-width="1.4" stroke-linejoin="round"/>`}
- <text x="${p.x}" y="${p.y + 22}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff" paint-order="stroke" stroke="${bevelColor}" stroke-width="2.2" stroke-linejoin="round" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.35))">${it.t === 'fin' ? '✓' : MAP_LEVEL_NUMBER[i]}</text>
+ <ellipse cx="${p.x}" cy="${p.y + 35}" rx="27" ry="7" fill="rgba(15,23,42,0.48)"/>
+ <path d="${pinPath}" transform="translate(2 5)" fill="${bevelColor}" stroke="${bevelColor}" stroke-width="2" stroke-linejoin="round"/>
+ <path d="${pinPath}" fill="${badgeFill}" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M ${p.x} ${p.y - 46} A 31 31 0 0 1 ${p.x + 31} ${p.y - 15} C ${p.x + 31} ${p.y + 1}, ${p.x + 9} ${p.y + 25}, ${p.x} ${p.y + 34} Z" fill="${bevelColor}" opacity=".24"/>
+ <path d="M ${p.x - 22} ${p.y - 32} Q ${p.x - 5} ${p.y - 48} ${p.x + 13} ${p.y - 42}" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity=".82"/>
+ <circle cx="${p.x}" cy="${p.y - 15}" r="21" fill="url(#gloss-gold)" stroke="${bevelColor}" stroke-width="2.5"/>
+ <circle cx="${p.x}" cy="${p.y - 15}" r="17" fill="#fffaf0" stroke="#ffffff" stroke-width="2"/>
+ <path d="M ${p.x - 12} ${p.y - 22} L ${p.x} ${p.y - 28} L ${p.x + 12} ${p.y - 22} L ${p.x + 12} ${p.y - 10} L ${p.x} ${p.y - 4} L ${p.x - 12} ${p.y - 10} Z" fill="${levelPalette.mid}" stroke="${bevelColor}" stroke-width="1.2" stroke-linejoin="round"/>
+ <path d="M ${p.x - 12} ${p.y - 22} L ${p.x} ${p.y - 15} L ${p.x + 12} ${p.y - 22} M ${p.x} ${p.y - 15} V ${p.y - 4}" fill="none" stroke="#fff4cc" stroke-width="1.8" stroke-linejoin="round"/>
+ <path d="M ${p.x - 6} ${p.y - 25} L ${p.x + 6} ${p.y - 18} V ${p.y - 15} L ${p.x - 6} ${p.y - 22} Z" fill="#fff4cc" opacity=".9"/>
+ <text x="${p.x}" y="${p.y + 25}" text-anchor="middle" font-size="${it.t === 'fin' ? 21 : 18}" font-weight="900" fill="#fff7df" paint-order="stroke" stroke="${bevelColor}" stroke-width="3" stroke-linejoin="round" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.4))">${markerText}</text>
 </g>
  `;
  }
 
- // 3-Star Crown above cleared level buttons (Crisp Vector Polygons - immune to font/encoding issues!)
- if (done && R[i].stars) {
+ // Raised stars echo the reference markers while still showing earned progress.
+ const earnedStars = done ? (R[i].stars || 0) : 0;
+ if (MAP_LEVEL_NUMBER[i]) {
+ const starOffset = isCustomerHome ? 78 : 58;
+ const starPositions = i === 0
+  ? [
+   { x: p.x - 22, y: p.y - 53, radius: 9 },
+   { x: p.x, y: p.y - 58, radius: 11 },
+   { x: p.x + 22, y: p.y - 53, radius: 9 }
+  ]
+  : [
+   { x: p.x - 21, y: p.y - starOffset + 5, radius: 9 },
+   { x: p.x, y: p.y - starOffset, radius: 11 },
+   { x: p.x + 21, y: p.y - starOffset + 5, radius: 9 }
+  ];
  h += `
  <g filter="url(#shadow-3d)">
- ${renderStarPolygon(p.x - 20, p.y - 42, 9, R[i].stars >= 1)}
- ${renderStarPolygon(p.x, p.y - 49, 13, R[i].stars >= 2)}
- ${renderStarPolygon(p.x + 20, p.y - 42, 9, R[i].stars >= 3)}
+ ${starPositions.map((star, index) => renderStarPolygon(star.x, star.y, star.radius, earnedStars >= index + 1)).join('')}
 </g>
  `;
  }
@@ -3577,10 +3598,11 @@ function draw() {
  const labelPalette = it.t === 'gate'
   ? MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i - 1] || 1) - 1] || MAP_LEVEL_PALETTES[0]
   : MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i] || 1) - 1] || MAP_LEVEL_PALETTES[0];
+ const labelY = i === 0 ? p.y + 62 : p.y + 40;
  h += `
  <g class="map-node-label" filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="20" data-map-max="${nodeLabelMax}">
-   <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="7" fill="#102d54" stroke="${labelPalette.accent}" stroke-width="1.8"/>
-   <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="${labelPalette.accent}">${nodeName}</text>
+   <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${labelY}" width="${nodeLabelWidth}" height="22" rx="7" fill="#102d54" stroke="${labelPalette.accent}" stroke-width="1.8"/>
+   <text x="${nodeLabelX}" y="${labelY + 15}" text-anchor="middle" font-size="10" font-weight="800" fill="${labelPalette.accent}">${nodeName}</text>
  </g>
  `;
 
@@ -4669,8 +4691,9 @@ function mzDraw() {
  let t = '';
  const k = r + ',' + c;
  if (r === mz.r && c === mz.c) {
- const pImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : (okA.baby || 'assets/baby.png');
- t = `<img src="${pImg}" alt="Courier" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #ff8a1f;box-shadow:0 0 10px #ff8a1f;display:block">`;
+ const courierImg = (chosenAvatar && chosenAvatar.img) ? chosenAvatar.img : (okA.baby || 'assets/baby.png');
+ const babyImg = okA.baby || 'assets/baby.png';
+ t = `<span class="mz-courier" role="img" aria-label="Courier carrying the baby"><img src="${courierImg}" alt=""><img class="mz-courier-baby" src="${babyImg}" alt=""></span>`;
  } else if (ch === 'E') {
  const endImg = L.endImg || okA.family || 'assets/family.png';
  t = `<img src="${endImg}" alt="${L.endLabel || 'Destination'}" title="${L.endLabel || 'Destination'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid #10b981;box-shadow:0 0 10px #10b981;display:block">`;
@@ -4680,7 +4703,7 @@ function mzDraw() {
  } else if (L.pk.includes(k) && !mz.p.has(k)) {
  const pImg = L.parcelImg;
  if (pImg) {
-  t = `<img src="${pImg}" alt="Parcel" style="width:24px;height:24px;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">`;
+ t = `<img src="${pImg}" alt="Bonus parcel" title="Bonus parcel" style="width:24px;height:24px;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">`;
  } else {
   t = '<span style="font-size:1.25rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">📦</span>';
  }
@@ -4703,7 +4726,7 @@ function mzStart(lvIdx = 0) {
  const bSub = $('#mz-banner-sub'); if (bSub) bSub.textContent = L.theme + ' — From ' + L.startLabel + ' to ' + L.endLabel;
  const legEl = $('#mz-legend');
  if (legEl) {
-  legEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.startImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #38bdf8"> <b>Start:</b> ${L.startLabel}</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.parcelImg}" style="width:16px;height:16px"> <b>Collect:</b> ${L.pk.length} Parcels</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.endImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #10b981"> <b>Finish:</b> ${L.endLabel}</span>`;
+  legEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.startImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #38bdf8"> <b>Start:</b> ${L.startLabel}</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${okA.baby || 'assets/baby.png'}" style="width:18px;height:18px;object-fit:cover;border-radius:50%"> <b>Carry baby; collect:</b> ${L.pk.length} bonus parcels</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.endImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #10b981"> <b>Finish:</b> ${L.endLabel}</span>`;
  }
  mzDraw();
  $('#mz-sr-status').textContent = `Courier at row ${mz.r + 1}, column ${mz.c + 1}. ${mz.p.size} of ${L.pk.length} parcels collected.`;
