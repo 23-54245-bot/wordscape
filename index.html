@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>STREAMLINED: The Baby's Journey Home</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -124,6 +124,13 @@ h2 { margin: 4px 0 8px; font-weight: 700; }
 
 button, select, input { font: inherit; color: inherit; border: 0; }
 button { cursor: pointer; }
+:focus-visible {
+ outline: 3px solid #38bdf8;
+ outline-offset: 3px;
+}
+.node:focus-visible {
+ filter: drop-shadow(0 0 5px #fff);
+}
 
 /* Primary CTA button - 3D orange pill (Storks Orange) */
 .btn {
@@ -706,6 +713,17 @@ header {
 .learning-review { margin-top: 8px; text-align: left; }
 .learning-review summary { cursor: pointer; font-weight: 800; }
 .learning-review li { margin: 8px 0; line-height: 1.45; }
+.visually-hidden {
+ position: absolute !important;
+ width: 1px !important;
+ height: 1px !important;
+ padding: 0 !important;
+ margin: -1px !important;
+ overflow: hidden !important;
+ clip: rect(0, 0, 0, 0) !important;
+ white-space: nowrap !important;
+ border: 0 !important;
+}
 
 select { width: 100%; padding: 11px; border-radius: 12px; background: var(--cell); border: 2px solid var(--line); margin: 5px 0; font-weight: 700; }
 .big { font-size: 2.2rem; font-weight: 800; color: var(--acc); margin: 6px 0; }
@@ -737,6 +755,15 @@ input:focus { outline: none; border-color: var(--acc); }
  perspective: 1000px;
 }
 .fm-card {
+ appearance: none;
+ -webkit-appearance: none;
+ display: block;
+ width: 100%;
+ padding: 0;
+ border: 0;
+ background: transparent;
+ color: inherit;
+ text-align: left;
  aspect-ratio: 1;
  position: relative;
  cursor: pointer;
@@ -747,6 +774,7 @@ input:focus { outline: none; border-color: var(--acc); }
 .fm-card.flipped, .fm-card.matched {
  transform: rotateY(180deg);
 }
+.fm-card:focus-visible { outline-offset: 5px; }
 .fm-card-face {
  position: absolute;
  inset: 0;
@@ -1326,6 +1354,15 @@ select option {
  grid-template-columns: 36px minmax(0, 1fr) 68px;
  padding: 9px 8px;
  }
+ #play > section {
+ padding: 14px;
+ }
+ #play > section .row {
+ gap: 8px;
+ }
+ #play > section .row > button {
+ min-height: 44px;
+ }
 }
 
 @media (max-width: 380px) {
@@ -1405,22 +1442,381 @@ select option {
  header { background: rgba(12, 24, 43, 0.96); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+ *, *::before, *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+ }
+}
+
+@media (min-width: 760px) {
+ main {
+ max-width: 760px;
+ padding-inline: 24px;
+ }
+ #login {
+ max-width: 500px;
+ margin-inline: auto;
+ }
+ #play > section {
+ max-width: 720px;
+ margin-inline: auto;
+ }
+ #mapv > header {
+ border-radius: 0 0 24px 24px;
+ }
+}
+
+#mapv > header {
+ position: sticky;
+ top: 8px;
+ z-index: 20;
+ width: min(100%, 560px);
+ margin: 0 auto 14px;
+ padding: 14px 16px 12px;
+ border: 1.5px solid rgba(148, 197, 253, 0.34);
+ border-bottom: 3px solid #ff9736;
+ border-radius: 22px;
+ background: linear-gradient(145deg, rgba(20, 37, 61, 0.97), rgba(8, 21, 39, 0.97));
+ box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+ backdrop-filter: blur(18px) saturate(145%);
+ -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+#mapv .map-header-row {
+ grid-template-columns: minmax(0, 1fr);
+ gap: 12px;
+}
+
+#mapv .map-profile { gap: 12px; }
+#mapv #hav {
+ width: 52px;
+ height: 52px;
+ border-width: 3px;
+ box-shadow: 0 0 0 3px rgba(255, 186, 73, 0.2), 0 5px 14px rgba(0, 0, 0, 0.34);
+}
+
+#mapv .map-actions {
+ justify-content: flex-start;
+ gap: 8px;
+}
+
+#mapv .map-actions .sm,
+#mapv .change-avatar-btn {
+ min-height: 38px;
+ padding: 7px 12px !important;
+ border: 1px solid rgba(226, 232, 240, 0.25);
+ border-radius: 999px;
+ background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+ box-shadow: 0 3px 0 rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+ color: #f8fafc;
+ font-weight: 800;
+}
+
+#mapv .map-actions #map-lb-btn {
+ background: linear-gradient(180deg, #ffb347, #f97316) !important;
+ border-color: #c2410c;
+ color: #fff !important;
+}
+
+#mapv .map-actions #sign-out-btn {
+ background: linear-gradient(180deg, #fb7185, #e11d48);
+ border-color: #be123c;
+ color: #fff;
+}
+
+#mapv .map-actions #hs {
+ min-height: 38px;
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ padding: 6px 12px;
+ border: 1px solid rgba(255, 214, 153, 0.56);
+ background: rgba(255, 255, 255, 0.1);
+ color: #fff4dc;
+}
+
+#mapv .map-actions #hs::before { content: "🎁"; }
+
+#mapv #map {
+ width: min(100%, 560px);
+ margin: 0 auto;
+ border: 2px solid rgba(191, 219, 254, 0.32);
+ border-radius: 24px;
+ background: #10243b;
+ box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+#mapv > .sub {
+ width: min(100%, 560px);
+ margin: 12px auto 0 !important;
+ padding: 10px 14px;
+ border: 1px solid rgba(191, 219, 254, 0.2);
+ border-radius: 14px;
+ background: rgba(15, 23, 42, 0.58);
+ line-height: 1.45;
+}
+
+@media (max-width: 380px) {
+ #mapv > header { padding: 12px; }
+ #mapv #hav { width: 46px; height: 46px; }
+ #mapv .map-actions {
+  display: flex;
+  justify-content: flex-start;
+ }
+ #mapv .map-actions .sm,
+ #mapv .change-avatar-btn { font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+ #mapv .map-header-row { gap: 8px; }
+ #mapv .map-profile { gap: 9px; }
+ #mapv .map-actions {
+  display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   grid-template-areas:
+    "avatar leaderboard"
+    "sound signout"
+    "score score";
+   align-items: center;
+   gap: 8px;
+  }
+  #mapv .map-actions .sm,
+  #mapv .change-avatar-btn {
+   width: 100%;
+   min-width: 0;
+   height: 42px;
+   min-height: 42px;
+   padding: 7px 10px !important;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 7px;
+   font-size: 0.88rem;
+  }
+  #mapv #change-avatar-btn { grid-area: avatar; }
+  #mapv #map-lb-btn { grid-area: leaderboard; }
+  #mapv #mute-btn { grid-area: sound; }
+  #mapv #sign-out-btn { grid-area: signout; }
+  #mapv .map-actions #hs {
+   grid-area: score;
+   justify-self: center;
+   min-width: 112px;
+   min-height: 34px;
+   height: 34px;
+   padding: 4px 14px;
+   font-size: 0.9rem;
+  }
+  #mapv .map-action-label { display: inline; }
+  #mapv > header { padding: 14px; }
+ }
+
+ @media (max-width: 360px) {
+   #mapv .map-action-label { font-size: 0.82rem; }
+   #mapv .map-actions { gap: 7px; }
+   #mapv #map-lb-btn { font-size: 0.82rem; }
+   #mapv #hav { width: 46px; height: 46px; }
+ }
+
+ /* Sapphire game navigation controls inspired by the supplied game UI. */
+ #mapv .map-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+ }
+
+ #mapv .map-profile { flex: 1 1 auto; }
+ #mapv .map-profile-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+ }
+ #mapv .map-profile-info .nm,
+ #mapv .map-profile-info .ttl { grid-column: 1; }
+ #mapv .map-profile-info .nm { font-size: 1rem; }
+ #mapv .map-profile-info .ttl { font-size: 0.7rem; }
+ #mapv .profile-score {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border: 2px solid #8bbcf2;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #1d5ca5, #103568 55%, #09264c);
+  box-shadow: 0 3px 0 #071b36, inset 0 1px 2px rgba(255,255,255,.55);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 900;
+  white-space: nowrap;
+ }
+
+ #mapv .profile-avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  padding: 0;
+  overflow: hidden;
+  border: 3px solid #8bbcf2;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #2676d2, #0b3470);
+  box-shadow: 0 0 0 2px #123b70, 0 3px 0 #071b36, inset 0 1px 3px #d5eaff;
+  cursor: pointer;
+ }
+ #mapv .profile-avatar #hav {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+ }
+
+ #mapv .map-actions { display: flex !important; flex: 0 0 auto; gap: 8px; }
+ #mapv .map-actions .map-icon-control {
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 !important;
+  display: inline-grid;
+  place-items: center;
+  border: 3px solid #8bbcf2;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 25%, #3993f5 0%, #1260be 42%, #073477 78%, #031e48 100%);
+  box-shadow: 0 3px 0 #061a36, inset 0 2px 2px rgba(255,255,255,.62), inset 0 -3px 4px rgba(0,0,0,.4);
+  color: white;
+  font-size: 1.05rem;
+ }
+ #mapv .map-actions .map-icon-control:hover { filter: brightness(1.15); }
+ #mapv .map-actions .map-icon-control:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #061a36, inset 0 2px 3px rgba(0,0,0,.4);
+ }
+ #mapv .map-actions #map-lb-btn { background: radial-gradient(circle at 34% 25%, #3993f5, #1260be 48%, #073477); border-color: #8bbcf2; }
+ #mapv .map-actions #sign-out-btn { background: radial-gradient(circle at 34% 25%, #f472b6, #db2777 50%, #831843); border-color: #f9a8d4; }
+ #mapv .map-action-label { display: none; }
+ #mapv .map-actions #mute-btn { font-size: 1.1rem; }
+ #mapv .pbar {
+  border: 2px solid #8bbcf2;
+  background: linear-gradient(180deg, #041b37, #123c70);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.25);
+ }
+ #mapv .pbar i {
+  background: linear-gradient(180deg, #76d8ff, #1385e6 52%, #0750a2);
+  background-size: 100% 100%;
+  animation: none;
+  transition: width .28s ease;
+ }
+
+ .game-nav-icon:focus-visible,
+ #mapv .map-icon-control:focus-visible,
+ #mapv .profile-avatar:focus-visible {
+  outline: 3px solid #fde047;
+  outline-offset: 3px;
+ }
+
+ #play-sticky-header {
+  display: grid !important;
+  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px !important;
+  border: 2px solid #8bbcf2 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, #173b69 0%, #0c2850 55%, #071d3c 100%) !important;
+  box-shadow: 0 4px 0 #04162d, inset 0 2px 3px rgba(255,255,255,.25), 0 8px 20px rgba(0,0,0,.32) !important;
+ }
+ #play-sticky-header .game-nav-icon {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 !important;
+  display: inline-grid;
+  place-items: center;
+  border: 3px solid #8bbcf2;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 25%, #3993f5 0%, #1260be 42%, #073477 78%, #031e48 100%);
+  box-shadow: 0 3px 0 #061a36, inset 0 2px 2px rgba(255,255,255,.62), inset 0 -3px 4px rgba(0,0,0,.4);
+  color: #fff;
+  font-size: 1.2rem;
+ }
+ #play-sticky-header .game-nav-icon:active { transform: translateY(2px); }
+ #play-sticky-header .game-nav-icon.is-active {
+  background: radial-gradient(circle at 34% 25%, #64b5ff 0%, #1674de 44%, #08458f 80%);
+  box-shadow: 0 3px 0 #061a36, 0 0 12px rgba(67, 160, 255, .6), inset 0 2px 2px rgba(255,255,255,.7);
+ }
+ #nav-stage-indicator {
+  min-width: 0;
+  color: #e8f4ff !important;
+  font-size: .78rem !important;
+  text-shadow: 0 1px 2px #061a36;
+ }
+
+ #play button[id$="-next-btn"],
+ #play .card .btn.green {
+  border: 3px solid #8bbcf2;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #178cf0 0%, #0861c4 48%, #06377c 100%);
+  box-shadow: 0 4px 0 #041d46, inset 0 2px 2px rgba(255,255,255,.55), inset 0 -3px 4px rgba(0,0,0,.35);
+  color: #fff;
+  clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
+  text-shadow: 0 1px 2px #06234b;
+ }
+ #play button[id$="-next-btn"]:hover:not(:disabled),
+ #play .card .btn.green:hover:not(:disabled) {
+  filter: brightness(1.12);
+ }
+ #play .card .btn.alt[onclick="leave()"] {
+  border: 2px solid #7da9d6;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1e4b7f, #102d54);
+  box-shadow: 0 4px 0 #071b35, inset 0 1px 2px rgba(255,255,255,.3);
+  color: #eff7ff;
+ }
+
+ @media (max-width: 480px) {
+  #mapv .map-header-row { flex-wrap: wrap; gap: 10px; }
+  #mapv .map-profile { flex: 1 1 100%; }
+  #mapv .map-actions { width: 100%; justify-content: flex-end; }
+  #mapv .profile-avatar { width: 46px; height: 46px; flex-basis: 46px; }
+  #play-sticky-header { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 7px; }
+  #play-sticky-header .game-nav-icon { width: 40px; height: 40px; min-height: 40px; }
+ }
+
+ @media (max-width: 360px) {
+  #mapv .map-header-row { flex-wrap: nowrap; gap: 6px; }
+  #mapv .map-profile { flex: 1 1 auto; gap: 7px; }
+  #mapv .profile-avatar { width: 40px; height: 40px; flex-basis: 40px; }
+  #mapv .map-profile-info .nm { font-size: .84rem; }
+  #mapv .map-profile-info .ttl { font-size: .58rem; }
+  #mapv .profile-score { padding: 3px 5px; font-size: .68rem; }
+  #mapv .map-actions { width: auto; gap: 5px; }
+  #mapv .map-actions .map-icon-control { width: 34px; height: 34px; min-height: 34px; font-size: .88rem; border-width: 2px; }
+  #mapv > header { padding: 10px; }
+ }
+}
+
 </style>
 </head>
 <body>
 <div class="bg-layer"></div>
-<canvas id="confetti-canvas"></canvas>
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
-<main>
+<main id="main-content">
 <!-- LOGIN SCREEN -->
-<section id="login" class="card" style="text-align:center">
+<section id="login" class="card" style="text-align:center" aria-labelledby="login-title">
  <img src="assets/logo.png" alt="STREAMLINED" style="width: 85%; max-width: 290px; display: block; margin: 6px auto 10px; mix-blend-mode: screen;">
  <p class="sub" style="font-size:0.92rem;font-weight:600;margin:0 0 18px">The Baby's Journey Home - Logistics Master Challenge</p>
 
- <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">COURIER FULL NAME</label>
- <input id="nm" placeholder="e.g. Jedeann Cabaluna" maxlength="40" required>
- <label style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
- <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric" required>
+ <h1 id="login-title">Courier sign in</h1>
+ <label for="nm" style="font-weight:700;font-size:0.85rem;display:block;text-align:left">COURIER FULL NAME</label>
+ <input id="nm" placeholder="e.g. Jedeann Cabaluna" maxlength="40" autocomplete="name" required>
+ <label for="pid" style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
+ <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric" autocomplete="off" required>
  <p id="account-err" role="alert" style="display:none;color:#fecaca;font-size:0.85rem;text-align:left;margin:-6px 0 10px"></p>
 
  <h2 class="avatar-picker-title">Choose an Avatar</h2>
@@ -1438,34 +1834,34 @@ select option {
  <header>
  <div class="map-header-row">
  <div class="map-profile">
- <div style="position:relative;flex-shrink:0">
+ <button class="profile-avatar" id="change-avatar-btn" type="button" aria-label="Change avatar" title="Change avatar">
  <img id="hav" src="" alt="avatar">
-</div>
+ </button>
  <div class="map-profile-info">
  <div class="nm" id="hn">Courier</div>
  <div class="ttl" id="ht">Junior Dispatch Courier</div>
+ <span class="profile-score"><span aria-hidden="true">⭐</span><span id="hs">0</span></span>
 </div>
 </div>
  <div class="map-actions">
- <button class="change-avatar-btn" id="change-avatar-btn" type="button"> Change avatar</button>
- <button class="sm" id="map-lb-btn" style="padding:4px 10px;font-size:0.85rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(245,158,11,0.35)"> Leaderboard</button>
- <button class="sm" id="mute-btn" style="padding:4px 8px;font-size:1.1rem"></button>
- <span class="score" id="hs"> 0</span>
+ <button class="sm map-icon-control" id="map-lb-btn" aria-label="Leaderboard" title="Leaderboard">🏆</button>
+ <button class="sm map-icon-control" id="mute-btn" type="button"></button>
+ <button class="sm map-icon-control" id="sign-out-btn" type="button" aria-label="Sign out" title="Sign out">✕</button>
 </div>
 </div>
  <div class="pbar"><i id="hb"></i></div>
 </header>
 
- <svg id="map" role="img" aria-label="Delivery map"></svg>
- <p class="sub" style="margin-top:10px">Tap the glowing stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
+ <svg id="map" role="group" aria-label="Interactive delivery map. Use Tab to move between stops and Enter or Space to open one."></svg>
+ <p class="sub" style="margin-top:10px">Choose a delivery stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
 </div>
 
 <!-- PLAY SCREEN (CONTAINER FOR ALL 5 ENGINES) -->
 <div id="play" hidden>
  <div class="row" id="play-sticky-header" style="justify-content:space-between;align-items:center;margin:0 0 10px;position:sticky;top:0;z-index:90;background:rgba(12,24,43,0.92);backdrop-filter:blur(12px);padding:8px 12px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.16)">
- <button class="sm" onclick="leave()" style="display:flex;align-items:center;gap:4px;font-weight:700">L Map</button>
+ <button class="sm game-nav-icon" onclick="leave()" aria-label="Return to delivery map" title="Return to map">🗺️</button>
  <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
- <button class="sm" id="challenge-toggle-btn" onclick="toggleChallengeMode()" style="font-size:0.78rem;padding:6px 10px" title="Toggle Challenge Mode (Timer display)">⏱️ Challenge: OFF</button>
+ <button class="sm game-nav-icon" id="challenge-toggle-btn" onclick="toggleChallengeMode()" aria-label="Toggle challenge mode" aria-pressed="false" title="Challenge mode off">⏱️</button>
 </div>
 
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
@@ -1515,7 +1911,8 @@ select option {
  </div>
  <div id="mz-fact-card" class="card" style="background:rgba(255,138,31,0.14);border-color:var(--acc);padding:10px 14px;margin-bottom:10px;display:none;font-size:0.88rem;line-height:1.4"></div>
  <div id="mz-legend" class="card" style="padding:6px 10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-around;font-size:0.78rem;background:rgba(15,23,42,0.65);border-color:rgba(255,255,255,0.12);flex-wrap:wrap;gap:6px"></div>
- <div id="mz"></div>
+ <div id="mz" tabindex="0" role="group" aria-label="Maze board. Focus here and use the arrow keys to move."></div>
+ <p id="mz-sr-status" class="visually-hidden" role="status" aria-live="polite"></p>
  <div class="pad">
  <span></span><button class="dpad-btn" data-d="-1,0" aria-label="Move Up"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></button><span></span>
  <button class="dpad-btn" data-d="0,-1" aria-label="Move Left"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M4 12l8-8v5h8v6h-8v5z"/></svg></button><button class="dpad-btn" data-d="1,0" aria-label="Move Down"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg></button><button class="dpad-btn" data-d="0,1" aria-label="Move Right"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display:block"><path d="M20 12l-8 8v-5H4v-6h8V4z"/></svg></button>
@@ -1537,7 +1934,7 @@ select option {
  <section id="g4" hidden>
  <div class="bar"><span id="dt-t">0:00</span><span id="dt-case-title">Case 1</span><span id="dt-step-badge" style="color:var(--acc);font-weight:800">Who?</span></div>
  <div class="card dt-case-file" id="dt-brief"><b>CASE FILE</b><br>Loading investigation details...</div>
- <div class="dt-progress" aria-label="Investigation progress" aria-live="polite">
+ <div class="dt-progress" role="group" aria-label="Investigation progress" aria-live="polite">
   <div class="dt-progress-step" id="dt-progress-0" aria-current="step" data-state="current">1 · Who?</div>
   <div class="dt-progress-step" id="dt-progress-1" data-state="pending">2 · Where?</div>
   <div class="dt-progress-step" id="dt-progress-2" data-state="pending">3 · Why?</div>
@@ -1600,7 +1997,8 @@ select option {
 </div>
 </div>
 
- <div id="fm-grid"></div>
+ <div id="fm-grid" role="group" aria-label="Memory cards"></div>
+ <p id="fm-status" class="visually-hidden" role="status" aria-live="polite"></p>
  <div id="fm-r"></div>
  <div class="row" style="margin-top:14px">
  <button class="sm" id="fm-a">Restart Round</button><button class="btn sm green" id="fm-next-btn" onclick="nextStop()" style="margin-left:8px" hidden>Next Stop</button>
@@ -1631,7 +2029,7 @@ select option {
 </main>
 
 <!-- UNIVERSAL MODAL -->
-<div id="modal"><div class="mbox" id="mbox"></div></div>
+<div id="modal" aria-hidden="true"><div class="mbox" id="mbox" tabindex="-1"></div></div>
 
 <!-- COURIER LEADERBOARD MODAL -->
 <div id="leaderboard-modal" hidden>
@@ -1734,6 +2132,7 @@ window.addEventListener('resize', resizeConfetti);
 resizeConfetti();
 
 function burstConfetti() {
+ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
  const colors = ['#ff7a18', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
  confettiPieces = [];
  for (let i = 0; i < 70; i++) {
@@ -1788,8 +2187,10 @@ let challengeMode = false;
 function updateChallengeUI() {
  const btn = $('#challenge-toggle-btn');
  if (btn) {
-  btn.textContent = challengeMode ? '⏱️ Challenge: ON' : '⏱️ Challenge: OFF';
-  btn.style.background = challengeMode ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'rgba(255,255,255,0.12)';
+  btn.textContent = '⏱️';
+  btn.setAttribute('aria-pressed', String(challengeMode));
+  btn.title = `Challenge mode ${challengeMode ? 'on' : 'off'}`;
+  btn.classList.toggle('is-active', challengeMode);
  }
  const timerSelectors = ['#wp-t', '#sf-t', '#mz-t', '#bd-t', '#dt-t', '#fm-t', '#bn-t'];
  timerSelectors.forEach(sel => {
@@ -1898,6 +2299,24 @@ let cur = 0;
 let R = []; // Results per stop index
 let O = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; // Host gate controls (1=Stage2, 2=Stage3, 3=Bonus, 4=Eval)
 let seminarCode = '';
+let evaluationUrl = '';
+let evaluationQr = '';
+
+function isEvaluationQrDataUrl(value) {
+ return typeof value === 'string' &&
+  value.length <= 360 * 1024 &&
+  /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(value);
+}
+
+function normalizeEvaluationUrl(value) {
+ if (typeof value !== 'string' || !value.trim()) return '';
+ try {
+  const url = new URL(value.trim());
+  return url.protocol === 'https:' ? url.href : '';
+ } catch(e) {
+  return '';
+ }
+}
 
 function normalizeId(name, id) {
  const norm = (name + '_' + id).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1940,6 +2359,9 @@ function loadState() {
  const ctrl = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
  if (ctrl.gates) O = sanitizeGates(ctrl.gates);
  if (typeof ctrl.seminarCode === 'string') seminarCode = ctrl.seminarCode;
+ evaluationUrl = normalizeEvaluationUrl(ctrl.evaluationUrl);
+ if (isEvaluationQrDataUrl(ctrl.evaluationQr)) evaluationQr = ctrl.evaluationQr;
+ else evaluationQr = '';
  } catch(e) {
   console.warn('Unable to read saved host controls:', e);
  }
@@ -2005,14 +2427,34 @@ async function restoreAccount(localState) {
  throw new Error('The saved account identity does not match this name and player ID.');
  }
 
- const localUpdatedAt = Number(localState && localState.updatedAt) || 0;
- const remoteUpdatedAt = Number(remote.updatedAt) || 0;
- if (remoteUpdatedAt >= localUpdatedAt) {
- if (Array.isArray(remote.results)) R = sanitizeResults(remote.results);
- if (Number.isFinite(remote.cur)) cur = Math.max(0, Math.min(N - 1, Math.floor(remote.cur)));
- // Only restore previous remote avatar if user hasn't explicitly selected a new avatar on the login screen
+ const localResults = sanitizeResults(localState && localState.results);
+ const remoteResults = sanitizeResults(remote.results);
+ R = Array.from({ length: N }, (_, index) => {
+  const localResult = localResults[index];
+  const remoteResult = remoteResults[index];
+  if (!localResult) return remoteResult;
+  if (!remoteResult) return localResult;
+  if (localResult.gate || remoteResult.gate) return { gate: 1 };
+  const localCompletedAt = Number(localResult.completedAt) || 0;
+  const remoteCompletedAt = Number(remoteResult.completedAt) || 0;
+  if (remoteResult.pts > localResult.pts ||
+      (remoteResult.pts === localResult.pts && remoteCompletedAt > localCompletedAt)) {
+   return remoteResult;
+  }
+  return localResult;
+ });
+
+ const localCur = Number(localState && localState.cur);
+ const remoteCur = Number(remote.cur);
+ cur = Math.max(
+  Number.isFinite(localCur) ? localCur : 0,
+  Number.isFinite(remoteCur) ? remoteCur : 0,
+  R.reduce((furthest, result, index) => result ? Math.max(furthest, index + 1) : furthest, 0)
+ );
+ cur = Math.max(0, Math.min(N - 1, Math.floor(cur)));
+
+ // Keep a player-selected avatar; otherwise restore the saved cloud avatar.
  if (remote.avatar && !chosenAvatar) restoreAvatar(remote.avatar);
- }
  return true;
 }
 
@@ -2149,9 +2591,25 @@ async function syncControlFromFirebase() {
             ci.disabled = !seminarCode;
           }
         }
+ if (typeof data.evaluationUrl === 'string' && normalizeEvaluationUrl(data.evaluationUrl) !== evaluationUrl) {
+  evaluationUrl = normalizeEvaluationUrl(data.evaluationUrl);
+  changed = true;
+ }
+ if (typeof data.evaluationQr === 'string' &&
+  (data.evaluationQr === '' || isEvaluationQrDataUrl(data.evaluationQr)) &&
+  data.evaluationQr !== evaluationQr) {
+  evaluationQr = data.evaluationQr;
+  changed = true;
+ }
  if (changed || !localStorage.getItem(CONTROL_KEY)) {
  try {
- localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates: O, seminarCode: seminarCode, updatedAt: data.updatedAt || Date.now() }));
+ localStorage.setItem(CONTROL_KEY, JSON.stringify({
+  gates: O,
+  seminarCode,
+  evaluationUrl,
+  evaluationQr,
+  updatedAt: data.updatedAt || Date.now()
+ }));
  } catch(e) {}
  adv();
  if ($('#mapv') && !$('#mapv').hidden) draw();
@@ -2164,7 +2622,6 @@ async function syncControlFromFirebase() {
 /* =============================================================
  MAP HUB ARCHITECTURE & STAGES DEFINITION
  ============================================================= */
-const EVAL_URL = 'https://forms.gle/sample-seminar-evaluation';
 const I = [
  // STAGE 1: WORD PUZZLE (Crossword Sorting)
  { t:'game', k:'wp', r:0, n:'Word Puzzle: STREAM (Easy)', e:'', cap:450 },
@@ -2206,6 +2663,15 @@ const I = [
  { t:'bonus', k:'bn', n:'Final Delivery Challenge', e:'', cap:500 },
  { t:'fin', n:'Certificate & Eval', e:'' }
 ];
+
+const MAP_LEVEL_NUMBER = [];
+let playableLevelNumber = 0;
+I.forEach((stage, index) => {
+ if (stage.t === 'game' || stage.t === 'bonus') {
+  playableLevelNumber++;
+  MAP_LEVEL_NUMBER[index] = playableLevelNumber;
+ }
+});
 
 const GN = { 
  1:'Stage 2 (Canyon Delivery Maze)', 
@@ -2283,7 +2749,7 @@ const STORY = {
 const story = i => {
  if (!CUE[i]) return '';
  const s = STORY[i];
- const scene = s
+ const scene = s && !isAdmin
  ? `<div style="display:flex;gap:12px;justify-content:center;align-items:center;margin:10px 0">${s.w.map(k=>pic(k, 60)).join('')}</div><p style="font-size:0.95rem;line-height:1.4">${s.t}</p>`
  : '';
  return `${scene}<p class="sub" style="color:var(--acc2);font-size:0.92rem"><b>${CUE[i]}</b></p>`;
@@ -2303,13 +2769,41 @@ const TT = ['Junior Dispatch Courier', 'Senior Sorter', 'Quality Inspector', 'Ro
 const title = () => TT[cur >= 16 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
 
 const N = I.length, H = N * 148 + 280;
+const MAP_ROUTE_X = [96, 284, 108, 272, 100, 280, 112, 276];
 const P = I.map((_, i) => ({ 
- x: Math.round(190 + 82 * Math.sin(i * 1.05 + 0.35)), 
+ x: MAP_ROUTE_X[i % MAP_ROUTE_X.length],
  y: H - 110 - i * 148 
 }));
 const V = id => ['#login', '#mapv', '#play'].forEach(s => $(s).hidden = s !== id);
-const modal = h => { $('#mbox').innerHTML = h; $('#modal').classList.add('on'); };
-const X = () => $('#modal').classList.remove('on');
+let modalReturnFocus = null;
+const modal = h => {
+ const overlay = $('#modal');
+ const dialog = $('#mbox');
+ if (!overlay.classList.contains('on')) modalReturnFocus = document.activeElement;
+ dialog.innerHTML = h;
+ const title = dialog.querySelector('h1, h2');
+ if (title) {
+  if (!title.id) title.id = 'modal-title';
+  dialog.setAttribute('aria-labelledby', title.id);
+  dialog.removeAttribute('aria-label');
+ } else {
+  dialog.setAttribute('aria-label', 'Dialog');
+ }
+ dialog.setAttribute('role', 'dialog');
+ dialog.setAttribute('aria-modal', 'true');
+ overlay.setAttribute('aria-hidden', 'false');
+ overlay.classList.add('on');
+ const firstControl = dialog.querySelector('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
+ (firstControl || dialog).focus();
+};
+const X = () => {
+ const overlay = $('#modal');
+ if (!overlay.classList.contains('on')) return;
+ overlay.classList.remove('on');
+ overlay.setAttribute('aria-hidden', 'true');
+ if (modalReturnFocus && modalReturnFocus.isConnected) modalReturnFocus.focus();
+ modalReturnFocus = null;
+};
 const bt = (t, f, alt) => `<button class="btn${alt?' alt':''}" onclick="${f}">${t}</button>`;
 const st = n => {
  let s = '';
@@ -2318,6 +2812,31 @@ const st = n => {
 };
 const info = (t, b) => modal(`<h2>${t}</h2><p>${b}</p>` + bt('OK', 'X()'));
 $('#modal').onclick = e => { if (e.target.id === 'modal') X(); };
+document.addEventListener('keydown', event => {
+ const overlay = $('#modal');
+ if (!overlay.classList.contains('on')) return;
+ if (event.key === 'Escape') {
+  event.preventDefault();
+  X();
+  return;
+ }
+ if (event.key !== 'Tab') return;
+ const controls = [...$('#mbox').querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+  .filter(element => element.offsetParent !== null);
+ if (!controls.length) {
+  event.preventDefault();
+  $('#mbox').focus();
+  return;
+ }
+ const first = controls[0], last = controls[controls.length - 1];
+ if (event.shiftKey && (document.activeElement === first || document.activeElement === $('#mbox'))) {
+  event.preventDefault();
+  last.focus();
+ } else if (!event.shiftKey && document.activeElement === last) {
+  event.preventDefault();
+  first.focus();
+ }
+});
 
 function adv() {
  while (cur < N && I[cur].t === 'gate' && O[I[cur].g]) {
@@ -2407,24 +2926,31 @@ function draw() {
  <stop offset="50%" stop-color="#334155"/>
  <stop offset="100%" stop-color="#1e293b"/>
 </linearGradient>
- <!-- Full-length Seamless World Gradient -->
+  <linearGradient id="cloud-fill" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#ffffff"/>
+  <stop offset="62%" stop-color="#f8fdff"/>
+  <stop offset="100%" stop-color="#d9efff"/>
+  </linearGradient>
+  <filter id="cloud-shadow" x="-15%" y="-25%" width="130%" height="160%">
+  <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#17466b" flood-opacity="0.22"/>
+  </filter>
+  <!-- A continuous sky-to-canyon palette across the full route -->
  <linearGradient id="world-canvas-grad" x1="0" y1="0" x2="0" y2="1">
- <!-- Zone 4: Sunny Day (Family Home) Top 0% - 22% -->
- <stop offset="0%" stop-color="#38bdf8"/>
- <stop offset="10%" stop-color="#7dd3fc"/>
- <stop offset="20%" stop-color="#bae6fd"/>
- <!-- Transition to Zone 3: Twilight Investigation Sky 22% - 48% -->
- <stop offset="26%" stop-color="#2563eb"/>
- <stop offset="38%" stop-color="#1e3a8a"/>
- <stop offset="48%" stop-color="#1e293b"/>
- <!-- Transition to Zone 2: Wolf Canyon Sunset Mesa 48% - 74% -->
- <stop offset="54%" stop-color="#7c2d12"/>
- <stop offset="64%" stop-color="#c2410c"/>
- <stop offset="74%" stop-color="#ea580c"/>
- <!-- Transition to Zone 1: Stork Mountain Depot Night Base 74% - 100% -->
- <stop offset="82%" stop-color="#334155"/>
- <stop offset="92%" stop-color="#1e293b"/>
- <stop offset="100%" stop-color="#0f172a"/>
+ <stop offset="0%" stop-color="#9eeaff"/>
+ <stop offset="14%" stop-color="#67d1f1"/>
+ <stop offset="24%" stop-color="#56bfe7"/>
+ <stop offset="32%" stop-color="#70d0ce"/>
+ <stop offset="38%" stop-color="#56b9b2"/>
+ <stop offset="44%" stop-color="#83bfd8"/>
+ <stop offset="54%" stop-color="#729fd1"/>
+ <stop offset="62%" stop-color="#89b1c8"/>
+ <stop offset="70%" stop-color="#7998af"/>
+ <stop offset="74%" stop-color="#edc078"/>
+ <stop offset="80%" stop-color="#e9a458"/>
+ <stop offset="84%" stop-color="#d7864e"/>
+ <stop offset="88%" stop-color="#a88370"/>
+ <stop offset="92%" stop-color="#647f93"/>
+ <stop offset="100%" stop-color="#344a61"/>
 </linearGradient>
 </defs>
  `;
@@ -2432,42 +2958,38 @@ function draw() {
  // 1. Continuous Seamless World Canvas
  h += `<rect x="0" y="0" width="${vbW}" height="${H}" fill="url(#world-canvas-grad)"/>`;
 
- // Stylized Organic World Elements (Cartoon Hills, Clouds, Mesa Slopes, Depot Lights)
+ // Stylized scenery sits behind the route and follows its matching stages.
  h += `
- <!-- Sunny clouds at the top around Family Home finish line -->
- <g fill="rgba(255,255,255,0.75)" filter="url(#shadow-3d)">
- <circle cx="45" cy="85" r="36"/>
- <circle cx="95" cy="72" r="46"/>
- <circle cx="150" cy="84" r="38"/>
- <circle cx="280" cy="78" r="40"/>
- <circle cx="335" cy="88" r="35"/>
-</g>
- <!-- Rolling sunny green hills around Family Home zone -->
- <path d="M -20,${P[13].y + 45} Q 90,${P[13].y - 35} 200,${P[13].y + 40} T ${vbW + 20},${P[13].y + 25} L ${vbW + 20},${P[13].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(34, 197, 94, 0.4)"/>
- <path d="M -20,${P[13].y + 65} Q 130,${P[13].y + 15} 250,${P[13].y + 70} T ${vbW + 20},${P[12].y + 55} L ${vbW + 20},${P[11].y + 55} L -20,${P[11].y + 55} Z" fill="rgba(21, 128, 61, 0.55)"/>
+ <!-- Puffy cartoon clouds with continuous silhouettes and soft highlights -->
+ <g filter="url(#cloud-shadow)">
+ <path d="M 22 112 C 9 112 3 104 4 94 C 5 83 14 76 27 76 C 28 60 41 49 58 49 C 74 49 85 59 89 73 C 95 60 107 55 121 57 C 138 59 147 72 145 87 C 159 79 175 85 178 98 C 181 108 173 115 159 115 L 22 115 C 22 115 22 114 22 112 Z" fill="url(#cloud-fill)" stroke="#ffffff" stroke-width="2"/>
+ <path d="M 30 105 C 19 105 13 99 15 91 M 39 69 C 43 58 52 54 61 55 M 101 68 C 107 63 116 62 123 65 M 153 94 C 160 90 167 93 169 99" fill="none" stroke="#ffffff" stroke-opacity="0.78" stroke-width="3" stroke-linecap="round"/>
+ </g>
+ <g filter="url(#cloud-shadow)">
+ <path d="M 220 117 C 207 117 201 109 203 98 C 205 87 214 81 226 81 C 228 65 241 54 258 54 C 274 54 285 64 289 78 C 296 65 308 60 322 62 C 339 64 348 77 346 92 C 360 84 376 90 379 103 C 381 112 373 120 359 120 L 220 120 C 220 120 220 119 220 117 Z" fill="url(#cloud-fill)" stroke="#ffffff" stroke-width="2"/>
+ <path d="M 229 110 C 218 110 212 104 214 96 M 239 74 C 243 63 252 59 261 60 M 307 73 C 313 68 322 67 329 70 M 354 99 C 361 95 368 98 370 104" fill="none" stroke="#ffffff" stroke-opacity="0.78" stroke-width="3" stroke-linecap="round"/>
+ </g>
+ <!-- Soft distant horizon for the home-arrival area -->
+ <path d="M -20,${P[24].y + 48} Q 75,${P[24].y + 30} 155,${P[24].y + 48} T ${vbW + 20},${P[24].y + 42}" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="3"/>
+ <path d="M -20,${P[24].y + 70} Q 105,${P[24].y + 55} 210,${P[24].y + 72} T ${vbW + 20},${P[24].y + 64}" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="2"/>
 
  <!-- Investigation Zone: Soft mystical fog banks and star sparkles -->
  <g fill="rgba(255,255,255,0.14)">
- <ellipse cx="80" cy="${P[9].y}" rx="140" ry="38"/>
- <ellipse cx="300" cy="${P[8].y}" rx="150" ry="42"/>
- <ellipse cx="190" cy="${P[10].y}" rx="180" ry="48"/>
+ <ellipse cx="80" cy="${P[13].y}" rx="140" ry="38"/>
+ <ellipse cx="300" cy="${P[12].y}" rx="150" ry="42"/>
+ <ellipse cx="190" cy="${P[14].y}" rx="180" ry="48"/>
 </g>
  <g fill="#fef08a" opacity="0.75">
- <circle cx="45" cy="${P[10].y - 30}" r="2.2"/>
- <circle cx="320" cy="${P[10].y + 20}" r="2.5"/>
- <circle cx="70" cy="${P[9].y - 40}" r="1.8"/>
- <circle cx="335" cy="${P[8].y - 20}" r="2.2"/>
+ <circle cx="45" cy="${P[14].y - 30}" r="2.2"/>
+ <circle cx="320" cy="${P[14].y + 20}" r="2.5"/>
+ <circle cx="70" cy="${P[13].y - 40}" r="1.8"/>
+ <circle cx="335" cy="${P[12].y - 20}" r="2.2"/>
 </g>
-
- <!-- Canyon Zone: Warm desert sandstone ridges and canyon cliffs -->
- <path d="M -20,${P[5].y + 45} Q 110,${P[5].y - 25} 230,${P[5].y + 45} T ${vbW + 20},${P[5].y + 25} L ${vbW + 20},${P[3].y + 55} L -20,${P[3].y + 55} Z" fill="rgba(124, 45, 18, 0.35)"/>
- <path d="M -20,${P[4].y + 65} Q 140,${P[4].y + 10} 270,${P[4].y + 70} T ${vbW + 20},${P[4].y + 45} L ${vbW + 20},${P[3].y + 55} L -20,${P[3].y + 55} Z" fill="rgba(154, 52, 18, 0.5)"/>
 
  <!-- Stork Mountain Base: Industrial factory cogs and warm ambient glows -->
  <g stroke="rgba(245, 158, 11, 0.22)" stroke-width="3" fill="none">
  <circle cx="35" cy="${P[1].y}" r="32" stroke-dasharray="8 6"/>
  <circle cx="345" cy="${P[2].y}" r="40" stroke-dasharray="10 8"/>
- <line x1="0" y1="${P[0].y + 35}" x2="${vbW}" y2="${P[0].y + 35}" stroke-width="4" stroke-dasharray="12 12"/>
 </g>
  `;
 
@@ -2475,7 +2997,7 @@ function draw() {
 
  // Top Welcome Banner Ribbon
  h += `
- <g filter="url(#shadow-3d)">
+ <g filter="url(#shadow-3d)" data-map-fit data-map-anchor="190" data-map-padding="34" data-map-max="${vbW - 28}">
  <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
  <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY'S JOURNEY HOME</text>
 </g>
@@ -2512,6 +3034,11 @@ function draw() {
  // 4. Level Nodes, Checkpoint Gates & Milestone Banners
  I.forEach((it, i) => {
  const p = P[i], done = !!R[i], isC = i === cur;
+ const nodeState = done ? 'completed'
+  : isC ? 'current stop'
+   : it.t === 'gate' ? (O[it.g] ? 'open checkpoint' : 'locked checkpoint')
+    : 'not yet available';
+ const nodeLabel = `${it.t === 'gate' ? GL[it.g] : it.n}, ${nodeState}`;
 
  // Keep milestone ribbons inside the map and clear of adjacent stop labels.
  if (PILL[i]) {
@@ -2520,21 +3047,20 @@ function draw() {
  // Position ribbon midway in the empty canyon between previous stage and current node
  const pillY = p.y + 72;
  h += `
- <g filter="url(#shadow-3d)">
+ <g filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="32" data-map-max="${vbW - 28}">
  <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
  <text x="${pillX}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
 </g>
  `;
  }
 
- h += `<g class="node" onclick="tap(${i})">`;
+ h += `<g class="node" data-stop-index="${i}" role="button" tabindex="0" aria-label="${nodeLabel}" onclick="tap(${i})">`;
 
  if (it.t === 'gate') {
  // Monumental Checkpoint Gate Archway
  const gateOpen = done || O[it.g];
  const gateGrad = gateOpen ? 'url(#gloss-green)' : 'url(#arch-wood)';
  const gateBorder = gateOpen ? '#10b981' : '#f59e0b';
-
  h += `
  <g filter="url(#pedestal-shadow)">
  <!-- Left and Right Stone Checkpoint Pillars -->
@@ -2549,12 +3075,8 @@ function draw() {
  <!-- Top glare arc on gate -->
  <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
 
- <!-- Lock Icon & Status -->
- <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28">${gateOpen ? '' : ''}</text>
- 
- <!-- Checkpoint Name Ribbon -->
- <rect x="${p.x - 55}" y="${p.y + 34}" width="110" height="22" rx="11" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
- <text x="${p.x}" y="${p.y + 49}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">${GL[it.g]}</text>
+ <!-- Gate number -->
+ <text x="${p.x}" y="${p.y + 8}" text-anchor="middle" font-size="19" font-weight="900" fill="#ffffff">${it.g}</text>
 </g>
  `;
  } else {
@@ -2581,8 +3103,8 @@ function draw() {
  <!-- Glossy Crescent Reflection Arc -->
  <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
  
- <!-- Stop Icon or Number -->
- <text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="28" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${(done || isC) ? it.e : ''}</text>
+ <!-- Current numbered level -->
+ <text x="${p.x}" y="${p.y + 8}" text-anchor="middle" font-size="${it.t === 'fin' ? 22 : 19}" font-weight="900" fill="#ffffff" paint-order="stroke" stroke="rgba(15,23,42,0.55)" stroke-width="1" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${it.t === 'fin' ? '✓' : MAP_LEVEL_NUMBER[i]}</text>
 </g>
  `;
 
@@ -2597,15 +3119,18 @@ function draw() {
  `;
  }
 
- // Name label plaque beneath node
- const nameW = it.n.length * 7.4 + 20;
- h += `
- <g filter="url(#shadow-3d)">
- <rect x="${p.x - nameW/2}" y="${p.y + 40}" width="${nameW}" height="22" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
- <text x="${p.x}" y="${p.y + 55}" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${it.n}</text>
-</g>
- `;
  }
+
+ const nodeName = it.t === 'gate' ? GL[it.g] : it.n;
+ const nodeLabelMax = vbW - 28;
+ const nodeLabelWidth = Math.min(nodeLabelMax, nodeName.length * 7 + 20);
+ const nodeLabelX = Math.max(nodeLabelWidth / 2 + 14, Math.min(vbW - nodeLabelWidth / 2 - 14, p.x));
+ h += `
+ <g class="map-node-label" filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="20" data-map-max="${nodeLabelMax}">
+  <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="11" fill="#102943" stroke="#8bbcf2" stroke-width="1.5"/>
+  <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">${nodeName}</text>
+ </g>
+ `;
 
  h += `</g>`;
  });
@@ -2649,6 +3174,36 @@ function draw() {
 
  $('#map').setAttribute('viewBox', `0 0 ${vbW} ${H}`);
  $('#map').innerHTML = h;
+ $('#map').querySelectorAll('[data-map-fit]').forEach(container => {
+  const text = container.querySelector('text');
+  const rect = container.querySelector('rect');
+  if (!text || !rect) return;
+
+  const maxWidth = Number(container.dataset.mapMax) || vbW - 28;
+  const padding = Number(container.dataset.mapPadding) || 20;
+  const anchor = Number(container.dataset.mapAnchor) || vbW / 2;
+  const availableTextWidth = maxWidth - padding;
+  let textWidth = Math.max(text.getBBox().width, text.getComputedTextLength());
+  const fontSize = Number(text.getAttribute('font-size')) || 10;
+
+  if (textWidth > availableTextWidth) {
+   text.setAttribute('font-size', String(fontSize * availableTextWidth / textWidth));
+   textWidth = Math.max(text.getBBox().width, text.getComputedTextLength());
+  }
+
+  const width = Math.min(maxWidth, textWidth + padding);
+  const center = Math.max(width / 2 + 14, Math.min(vbW - width / 2 - 14, anchor));
+  rect.setAttribute('x', String(center - width / 2));
+  rect.setAttribute('width', String(width));
+  text.setAttribute('x', String(center));
+ });
+ $('#map').querySelectorAll('.node').forEach(node => {
+  node.addEventListener('keydown', event => {
+   if (event.key !== 'Enter' && event.key !== ' ') return;
+   event.preventDefault();
+   tap(Number(node.dataset.stopIndex));
+  });
+ });
 
  const cleared = R.filter(r => r && !r.gate).length;
  const total = R.reduce((a, r) => a + (r && r.pts || 0), 0);
@@ -3687,6 +4242,7 @@ function mzStart(lvIdx = 0) {
   legEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.startImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #38bdf8"> <b>Start:</b> ${L.startLabel}</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.parcelImg}" style="width:16px;height:16px"> <b>Collect:</b> ${L.pk.length} Parcels</span><span style="color:var(--mut)">➔</span><span style="display:inline-flex;align-items:center;gap:4px"><img src="${L.endImg}" style="width:16px;height:16px;border-radius:50%;border:1px solid #10b981"> <b>Finish:</b> ${L.endLabel}</span>`;
  }
  mzDraw();
+ $('#mz-sr-status').textContent = `Courier at row ${mz.r + 1}, column ${mz.c + 1}. ${mz.p.size} of ${L.pk.length} parcels collected.`;
 }
 
 function mzMove(dr, dc) {
@@ -3716,6 +4272,7 @@ function mzMove(dr, dc) {
  audio.letterPick(0);
  }
  mzDraw();
+ $('#mz-sr-status').textContent = `Courier at row ${r + 1}, column ${c + 1}. ${mz.p.size} of ${L.pk.length} parcels collected.`;
 
  if (L.m[r][c] === 'E') {
  if (mz.done || activeStopCompleted) return;
@@ -3735,7 +4292,8 @@ function mzMove(dr, dc) {
 
 $$('.pad button').forEach(b => b.onclick = () => mzMove(...b.dataset.d.split(',').map(Number)));
 document.addEventListener('keydown', e => {
- if ($('#g2').hidden) return;
+ const mazeBoard = $('#mz');
+ if ($('#g2').hidden || (e.target !== mazeBoard && !mazeBoard.contains(e.target))) return;
  const m = { ArrowUp:[-1,0], ArrowDown:[1,0], ArrowLeft:[0,-1], ArrowRight:[0,1], w:[-1,0], s:[1,0], a:[0,-1], d:[0,1] }[e.key];
  if (m) { e.preventDefault(); mzMove(...m); }
 });
@@ -4422,6 +4980,15 @@ function evalCard() {
   "'": '&#39;'
  })[character]);
  const courierName = escapeHtml(user || 'Courier');
+ const safeEvaluationUrl = escapeHtml(evaluationUrl);
+ const evaluationMarkup = isEvaluationQrDataUrl(evaluationQr)
+  ? `<img src="${escapeHtml(evaluationQr)}" alt="Evaluation QR code" style="width:160px;height:160px;object-fit:contain;background:#fff;padding:6px;border-radius:10px">`
+  : evaluationUrl
+   ? ''
+   : '<p class="sub">The host has not published an evaluation link or QR code yet.</p>';
+ const evaluationLinkMarkup = evaluationUrl
+  ? `<div class="link">${safeEvaluationUrl}</div><a class="btn" href="${safeEvaluationUrl}" target="_blank" rel="noopener">Open Google Form Evaluation</a>`
+  : '';
 
  modal(`
  <div id="certificate-card" class="certificate" role="article" aria-labelledby="certificate-title">
@@ -4437,17 +5004,19 @@ function evalCard() {
  <div id="certificate-actions">
  <button class="btn green" type="button" onclick="window.print()">Print or Save Certificate</button>
  <p>Share your feedback about the seminar:</p>
- <div id="qr"></div>
- <div class="link">${EVAL_URL}</div>
- <a class="btn" href="${EVAL_URL}" target="_blank" rel="noopener">Open Google Form Evaluation </a>
+ <div id="qr">${evaluationMarkup}</div>
+ ${evaluationLinkMarkup}
  ${bt('Next ', 'leave();X()')}
  </div>
  `);
 
- try {
- new QRCode($('#qr'), { text: EVAL_URL, width: 150, height: 150 });
- } catch(e) {
- $('#qr').textContent = 'QR generator ready.';
+ if (!isEvaluationQrDataUrl(evaluationQr) && evaluationUrl) {
+  try {
+   new QRCode($('#qr'), { text: evaluationUrl, width: 150, height: 150 });
+  } catch(e) {
+   console.error('Evaluation QR generation failed:', e);
+   $('#qr').textContent = 'QR unavailable. Use the evaluation form link below.';
+  }
  }
 }
 
@@ -4497,6 +5066,37 @@ function openAvatarModal() {
 }
 
 document.getElementById('change-avatar-btn').addEventListener('click', openAvatarModal);
+
+function signOut() {
+ user = '';
+ pid = '';
+ courierKey = '';
+ cur = 0;
+ R = [];
+ chosenAvatar = null;
+ $('#nm').value = '';
+ $('#pid').value = '';
+ $('#hav').removeAttribute('src');
+ $('#hav').style.display = 'none';
+ document.querySelectorAll('.av-btn').forEach(button => {
+  button.classList.remove('selected');
+  button.setAttribute('aria-pressed', 'false');
+ });
+ const accountErr = $('#account-err');
+ if (accountErr) accountErr.style.display = 'none';
+ V('#login');
+ $('#nm').focus();
+ window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('#sign-out-btn').onclick = () => modal(`
+ <h2>Sign out?</h2>
+ <p>Your saved delivery progress will stay on this device. You can sign back in with your courier details.</p>
+ <div class="row" style="justify-content:center;gap:10px">
+  ${bt('🚪 Sign out', 'X();signOut()')}
+  ${bt('Stay signed in', 'X()', 1)}
+ </div>
+`);
 
 function selectAndSaveAvatar(idx) {
  const avatars = window._avatars || [];
@@ -4634,11 +5234,18 @@ function checkUrlParams() {
 }
 
 // Sound toggle
+function updateMuteButton() {
+ $('#mute-btn').innerHTML = `<span aria-hidden="true">${soundEnabled ? '🔊' : '🔇'}</span><span class="map-action-label">Sound</span>`;
+ $('#mute-btn').setAttribute('aria-label', soundEnabled ? 'Mute sound' : 'Turn sound on');
+ $('#mute-btn').setAttribute('aria-pressed', String(soundEnabled));
+}
+
 $('#mute-btn').onclick = () => {
  soundEnabled = !soundEnabled;
- $('#mute-btn').textContent = soundEnabled ? '' : '';
+ updateMuteButton();
  if (soundEnabled) audio.letterPick(0);
 };
+updateMuteButton();
 
 
 /* =============================================================
@@ -4720,13 +5327,14 @@ function fmStart(lvIdx = 0) {
 
  const grid = $('#fm-grid');
  grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+ $('#fm-status').textContent = `Round started. ${fullDeck.length} face-down cards.`;
  grid.innerHTML = fullDeck.map((card, i) => `
- <div class="fm-card" id="fm-c-${i}" onclick="fmCardClick(${i})">
+ <button type="button" class="fm-card" id="fm-c-${i}" aria-label="Card ${i + 1}, face down" aria-pressed="false" onclick="fmCardClick(${i})">
  <div class="fm-card-face fm-card-back">?</div>
  <div class="fm-card-face fm-card-front">
- <img src="${card.img}" alt="${card.name}">
+ <img src="${card.img}" alt="">
 </div>
-</div>
+</button>
  `).join('');
 
  fmTimer.start();
@@ -4743,6 +5351,8 @@ function fmCardClick(idx) {
  // Flip card
  audio.letterPick(fmState.flipped.length);
  el.classList.add('flipped');
+ el.setAttribute('aria-pressed', 'true');
+ el.setAttribute('aria-label', `Card ${idx + 1}, ${card.name}, face up`);
  fmState.flipped.push({ idx, card, el });
 
  if (fmState.flipped.length === 2) {
@@ -4751,6 +5361,7 @@ function fmCardClick(idx) {
  fmState.busy = true;
 
  const [c1, c2] = fmState.flipped;
+ $('#fm-status').textContent = `${fmState.tries} ${fmState.tries === 1 ? 'try' : 'tries'}. ${fmState.matched / 2} of ${fmState.totalCards / 2} pairs matched.`;
  if (c1.card.id === c2.card.id) {
  // MATCH!
  const alreadySeen = fmState.cardSeen.has(c1.card.id);
@@ -4759,13 +5370,18 @@ function fmCardClick(idx) {
  audio.wordSuccess();
  c1.el.classList.add('matched');
  c2.el.classList.add('matched');
+ c1.el.setAttribute('aria-label', `Card ${c1.idx + 1}, ${c1.card.name}, matched`);
+ c2.el.setAttribute('aria-label', `Card ${c2.idx + 1}, ${c2.card.name}, matched`);
  fmState.matched += 2;
  fmState.flipped = [];
  fmState.busy = false;
 
  // Check Win (All pairs in the deck matched!)
  if (fmState.matched >= fmState.totalCards) {
+ $('#fm-status').textContent = `All ${fmState.totalCards / 2} pairs matched in ${fmState.tries} tries.`;
  fmEnd();
+ } else {
+ $('#fm-status').textContent = `Match found. ${fmState.matched / 2} of ${fmState.totalCards / 2} pairs matched.`;
  }
  }, 350);
  } else {
@@ -4781,8 +5397,13 @@ function fmCardClick(idx) {
  fmState.cardSeen.add(c2.card.id);
  c1.el.classList.remove('flipped');
  c2.el.classList.remove('flipped');
+ c1.el.setAttribute('aria-pressed', 'false');
+ c2.el.setAttribute('aria-pressed', 'false');
+ c1.el.setAttribute('aria-label', `Card ${c1.idx + 1}, face down`);
+ c2.el.setAttribute('aria-label', `Card ${c2.idx + 1}, face down`);
  fmState.flipped = [];
  fmState.busy = false;
+ $('#fm-status').textContent = `No match. Cards turned face down. ${fmState.matched / 2} of ${fmState.totalCards / 2} pairs matched.`;
  }, 850);
  }
  }

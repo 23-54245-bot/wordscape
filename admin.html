@@ -24,6 +24,10 @@
 }
 
 * { box-sizing: border-box; }
+:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 3px;
+}
 body {
   margin: 0;
   font-family: 'Fredoka', 'Outfit', system-ui, sans-serif;
@@ -61,11 +65,17 @@ header {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 24px 16px;
   width: 100%;
   flex: 1;
+}
+
+.app-shell > header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .grid-cards {
@@ -73,6 +83,14 @@ header {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.summary-grid .card {
+  min-height: 142px;
 }
 
 .card {
@@ -97,10 +115,13 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 10px 0;
   border-bottom: 1px solid var(--card-border);
 }
 .switch-row:last-child { border-bottom: none; }
+.switch-row > div:first-child { flex: 1; min-width: 0; }
+.switch-row > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
 .switch-label { font-weight: 700; }
 .switch-sub { font-size: 0.8rem; color: var(--text-muted); }
 
@@ -159,8 +180,18 @@ button, input { font: inherit; }
   background: rgba(15, 23, 42, 0.46);
   margin-top: 12px;
 }
+.roster-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.roster-toolbar input {
+  width: min(260px, 32vw);
+  min-width: 150px;
+}
 table {
   width: 100%;
+  min-width: 1120px;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.92rem;
@@ -186,6 +217,35 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
   padding: 14px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
+.evaluation-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: 20px;
+  align-items: center;
+}
+.evaluation-fields { display: grid; gap: 10px; }
+.evaluation-fields label { font-weight: 700; }
+.evaluation-fields input[type="url"] { width: 100%; }
+.evaluation-upload-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.evaluation-upload-row input[type="file"] { flex: 1 1 220px; min-width: 0; color: var(--text-muted); }
+.evaluation-preview {
+  min-height: 180px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.46);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+}
+.evaluation-preview img { width: 150px; height: 150px; object-fit: contain; background: #fff; padding: 6px; border-radius: 8px; }
+.evaluation-status { min-height: 1.25em; margin: 0; color: var(--text-muted); }
+.evaluation-status[data-state="error"] { color: #fecaca; }
+.evaluation-status[data-state="success"] { color: #6ee7b7; }
 .glass-input {
   background: rgba(15, 23, 42, 0.5);
   border: 1px solid var(--glass-border);
@@ -225,6 +285,50 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 .auth-screen .btn { justify-content: center; width: 100%; margin-top: 16px; }
 .auth-error { color: #fecaca; min-height: 1.25em; margin: 10px 0 0; }
 .app-shell[hidden], .auth-screen[hidden] { display: none !important; }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 760px) {
+  .container { padding: 18px 12px; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .summary-grid .card { min-height: 0; }
+  .switch-row { align-items: flex-start; }
+  .switch-row > div:last-child { flex: 0 0 auto; }
+}
+@media (max-width: 560px) {
+  .app-shell > header { padding: 12px 14px; }
+  .brand { gap: 8px; }
+  .brand img { height: 30px !important; }
+  .brand span { font-size: 0.9rem !important; padding-left: 8px !important; }
+  .app-shell > header > .btn { padding: 8px 11px; }
+  .container { padding: 14px 10px; }
+  .card { padding: 14px; }
+  .switch-row { flex-direction: column; gap: 10px; }
+  .switch-row > div:last-child { width: 100%; justify-content: flex-start; }
+  .switch-row .btn { min-height: 40px; }
+  .roster-heading { align-items: stretch !important; }
+  .roster-toolbar { width: 100%; flex-wrap: wrap; }
+  .roster-toolbar input { flex: 1 1 160px; width: auto; min-width: 0; }
+  .roster-toolbar .btn-danger { flex: 1 0 100%; justify-content: center; }
+  .evaluation-controls { grid-template-columns: 1fr; }
+  .evaluation-preview { min-height: 150px; }
+}
 
 </style>
 </head>
@@ -255,7 +359,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
 <div class="container">
   <!-- STATS AT A GLANCE -->
-  <div class="grid-cards">
+  <div class="grid-cards summary-grid">
     <div class="card">
       <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">TOTAL REGISTERED COURIERS</div>
       <div style="font-size:2.4rem;font-weight:800;color:var(--accent);margin-top:4px" id="stat-total">0</div>
@@ -273,12 +377,39 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     <div class="card">
       <div style="font-size:0.85rem;color:var(--text-muted);font-weight:700">LIVE SEMINAR CODE</div>
       <div style="display:flex;gap:8px;margin-top:8px">
+        <label class="visually-hidden" for="seminar-code-input">Live seminar code</label>
         <input id="seminar-code-input" class="glass-input" placeholder="No code published" style="font-weight:700;flex:1;text-transform:uppercase">
-        <button class="btn btn-sm" id="save-code-btn">Update</button>
+        <button class="btn btn-sm" id="save-code-btn" type="button">Update</button>
       </div>
       <div class="switch-sub" style="margin-top:4px">Required for couriers to unlock the Bonus Stop.</div>
     </div>
   </div>
+
+  <section class="card" aria-labelledby="evaluation-settings-title">
+    <h2 id="evaluation-settings-title">📝 Final-stage Evaluation Form</h2>
+    <p class="switch-sub" style="margin:-4px 0 14px">Add a Google Form link to generate its QR code automatically, or upload your own QR image. Players see this on the final certificate screen.</p>
+    <div class="evaluation-controls">
+      <div class="evaluation-fields">
+        <div>
+          <label for="evaluation-url-input">Evaluation form link</label>
+          <input id="evaluation-url-input" class="glass-input" type="url" inputmode="url" placeholder="https://forms.gle/…" autocomplete="url">
+        </div>
+        <div>
+          <label for="evaluation-qr-input">Or upload a QR code image</label>
+          <div class="evaluation-upload-row">
+            <input id="evaluation-qr-input" type="file" accept="image/png,image/jpeg,image/webp">
+            <button class="btn btn-sm btn-outline" id="clear-evaluation-qr-btn" type="button">Remove QR image</button>
+          </div>
+          <div class="switch-sub">PNG, JPG, or WebP; maximum 256 KB. If both are set, the uploaded QR is shown and the form link remains clickable.</div>
+        </div>
+        <button class="btn" id="save-evaluation-btn" type="button" style="justify-content:center;max-width:220px">Save Evaluation Settings</button>
+        <p class="evaluation-status" id="evaluation-status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="evaluation-preview" id="evaluation-preview" aria-label="Evaluation QR preview">
+        <span class="switch-sub">Add a form link or QR image to preview.</span>
+      </div>
+    </div>
+  </section>
 
   <!-- STAGE GATES & RELEASE SWITCHES -->
   <div class="grid-cards">
@@ -289,66 +420,66 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 1: Release Stage 2 (Canyon Delivery Maze)</div>
-          <div class="switch-sub">Opens stops 4, 5, 6 (Flight Navigation Maze)</div>
+          <div class="switch-sub">Opens levels 4–6 (Flight Navigation Maze)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(2)">🔗 Copy Link (?stage=2)</button>
-          <button class="toggle-btn" id="gate-1-btn" onclick="toggleGate(1)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(2)">🔗 Copy Stage 2 Link</button>
+          <button class="toggle-btn" id="gate-1-btn" type="button" aria-label="Release Gate 1: Stage 2 Canyon Delivery Maze" aria-pressed="false" onclick="toggleGate(1)">LOCKED</button>
         </div>
       </div>
 
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 2: Release Stage 3 (Roadblock Scenarios)</div>
-          <div class="switch-sub">Opens stops 8, 9, 10 (Fix the Broken Delivery)</div>
+          <div class="switch-sub">Opens levels 7–9 (Fix the Broken Delivery)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(3)">🔗 Copy Link (?stage=3)</button>
-          <button class="toggle-btn" id="gate-2-btn" onclick="toggleGate(2)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(3)">🔗 Copy Stage 3 Link</button>
+          <button class="toggle-btn" id="gate-2-btn" type="button" aria-label="Release Gate 2: Stage 3 Roadblock Scenarios" aria-pressed="false" onclick="toggleGate(2)">LOCKED</button>
         </div>
       </div>
 
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 3: Release Stage 4 (Detective Investigation)</div>
-          <div class="switch-sub">Opens stops 12, 13, 14 (Courier Case Deduction)</div>
+          <div class="switch-sub">Opens levels 10–12 (Courier Case Deduction)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(4)">🔗 Copy Link (?stage=4)</button>
-          <button class="toggle-btn" id="gate-3-btn" onclick="toggleGate(3)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(4)">🔗 Copy Stage 4 Link</button>
+          <button class="toggle-btn" id="gate-3-btn" type="button" aria-label="Release Gate 3: Stage 4 Detective Investigation" aria-pressed="false" onclick="toggleGate(3)">LOCKED</button>
         </div>
       </div>
 
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 4: Release Stage 5 (Courier Memory Match)</div>
-          <div class="switch-sub">Opens stops 16, 17, 18 (Flip n Match 8, 12, 16 Cards)</div>
+          <div class="switch-sub">Opens levels 13–15 (Flip n Match 8, 12, 16 Cards)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(5)">🔗 Copy Link (?stage=5)</button>
-          <button class="toggle-btn" id="gate-4-btn" onclick="toggleGate(4)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(5)">🔗 Copy Stage 5 Link</button>
+          <button class="toggle-btn" id="gate-4-btn" type="button" aria-label="Release Gate 4: Stage 5 Courier Memory Match" aria-pressed="false" onclick="toggleGate(4)">LOCKED</button>
         </div>
       </div>
 
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 5: Release Stage 6 (Quality Inspection Defects)</div>
-          <div class="switch-sub">Opens stops 20, 21, 22 (Spot & Fix 3, 4, 5 Parcel Errors)</div>
+          <div class="switch-sub">Opens levels 16–18 (Spot & Fix 3, 4, 5 Parcel Errors)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(6)">🔗 Copy Link (?stage=6)</button>
-          <button class="toggle-btn" id="gate-5-btn" onclick="toggleGate(5)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(6)">🔗 Copy Stage 6 Link</button>
+          <button class="toggle-btn" id="gate-5-btn" type="button" aria-label="Release Gate 5: Stage 6 Quality Inspection" aria-pressed="false" onclick="toggleGate(5)">LOCKED</button>
         </div>
       </div>
 
       <div class="switch-row">
         <div>
           <div class="switch-label">Gate 6: Release Bonus Final Delivery Challenge</div>
-          <div class="switch-sub">Opens stop 24 (Live Seminar Bonus Delivery to Nate's Family)</div>
+          <div class="switch-sub">Opens level 19 (Live Seminar Bonus Delivery to Nate's Family)</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="btn btn-sm btn-outline" onclick="copyLink(7)">🔗 Copy Link (?stage=7)</button>
-          <button class="toggle-btn" id="gate-6-btn" onclick="toggleGate(6)">LOCKED</button>
+          <button class="btn btn-sm btn-outline" onclick="copyLink(7)">🔗 Copy Final Stage Link</button>
+          <button class="toggle-btn" id="gate-6-btn" type="button" aria-label="Release Gate 6: Final Delivery Challenge" aria-pressed="false" onclick="toggleGate(6)">LOCKED</button>
         </div>
       </div></div>
   </div>
@@ -365,109 +496,109 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
       <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px">
         <!-- Stage 1 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 1 · STREAM</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Level 1 · STREAM</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Easy)</div>
           <a href="index.html?admin=1&play=0" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 2 · LOADER</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Level 2 · LOADER</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Medium)</div>
           <a href="index.html?admin=1&play=1" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Stop 3 · DELIVER</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🧩 Level 3 · DELIVER</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Word Puzzle (Hard)</div>
           <a href="index.html?admin=1&play=2" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Stage 2 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 5 · Maze Route 1</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Level 4 · Maze Route 1</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Canyon Maze 9x9 (Easy)</div>
           <a href="index.html?admin=1&play=4" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 6 · Maze Route 2</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Level 5 · Maze Route 2</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Broken Bridge 11x11 (Medium)</div>
           <a href="index.html?admin=1&play=5" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Stop 7 · Maze Route 3</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">👶 Level 6 · Maze Route 3</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Storm Pass 13x13 (Hard)</div>
           <a href="index.html?admin=1&play=6" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Stage 3 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Stop 9 · Broken Delivery 1</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Level 7 · Broken Delivery 1</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Order Faults (Easy)</div>
           <a href="index.html?admin=1&play=8" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Stop 10 · Broken Delivery 2</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Level 8 · Broken Delivery 2</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Wolf Roadblock (Medium)</div>
           <a href="index.html?admin=1&play=9" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Stop 11 · Broken Delivery 3</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🚚 Level 9 · Broken Delivery 3</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Storm Detour (Hard)</div>
           <a href="index.html?admin=1&play=10" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Stage 4 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Stop 13 · Detective Case 1</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Level 10 · Detective Case 1</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Loading Delay (Easy)</div>
           <a href="index.html?admin=1&play=12" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Stop 14 · Detective Case 2</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Level 11 · Detective Case 2</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Misplaced Bundle (Medium)</div>
           <a href="index.html?admin=1&play=13" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Stop 15 · Detective Case 3</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🕵️ Level 12 · Detective Case 3</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Sensor Tampering (Hard)</div>
           <a href="index.html?admin=1&play=14" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Stage 5 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 17 · Flip Match 8</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Level 13 · Flip Match 8</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">4 Character Pairs (Easy)</div>
           <a href="index.html?admin=1&play=16" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 18 · Flip Match 12</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Level 14 · Flip Match 12</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">6 Character Pairs (Medium)</div>
           <a href="index.html?admin=1&play=17" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Stop 19 · Flip Match 16</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🃏 Level 15 · Flip Match 16</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">8 Character Pairs (Hard)</div>
           <a href="index.html?admin=1&play=18" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Stage 6 -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 21 · Spot 3 Errors</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Level 16 · Spot 3 Errors</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Depot Floor (Easy)</div>
           <a href="index.html?admin=1&play=20" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 22 · Spot 4 Errors</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Level 17 · Spot 4 Errors</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Conveyor Junction (Medium)</div>
           <a href="index.html?admin=1&play=21" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Stop 23 · Spot 5 Errors</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🔎 Level 18 · Spot 5 Errors</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Flight Departure Deck (Hard)</div>
           <a href="index.html?admin=1&play=22" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
 
         <!-- Final Stage -->
         <div class="preview-card">
-          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🏠 Stop 25 · Final Delivery</div>
+          <div style="font-weight:800;font-size:1.02rem;color:#f59e0b">🏠 Level 19 · Final Delivery</div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin:6px 0 12px">Live Seminar Attendance Quiz</div>
           <a href="index.html?admin=1&play=24" target="_blank" class="btn btn-sm" style="display:inline-block;text-align:center;width:100%;text-decoration:none">Preview Game ↗</a>
         </div>
@@ -476,16 +607,17 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
     <!-- COURIERS LEADERBOARD & PLAYER ROSTER TABLE -->
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div class="roster-heading" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
       <h2>🚚 Live Couriers Roster & Results</h2>
-      <div style="display:flex;gap:10px;align-items:center">
+      <div class="roster-toolbar">
+        <label class="visually-hidden" for="search-input">Search couriers by name or player ID</label>
         <input id="search-input" class="glass-input" placeholder="Search courier or ID..." style="font-size:0.88rem">
         <button class="btn btn-sm btn-danger" id="wipe-all-btn">Reset All Couriers</button>
       </div>
     </div>
 
     <div class="table-wrap">
-      <table>
+      <table aria-label="Courier scores, progress, finish times, and actions">
         <thead>
           <tr>
             <th># Rank</th>
@@ -527,14 +659,72 @@ let courierPollInterval = null;
 const STORAGE_PREFIX = 'streamlined_courier_';
 let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
 let seminarCode = '';
+let evaluationUrl = '';
+let evaluationQr = '';
+let evaluationSettingsDirty = false;
+
+function normalizeEvaluationUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === 'https:' ? url.href : '';
+  } catch(e) {
+    return '';
+  }
+}
+
+function isEvaluationQrDataUrl(value) {
+  return typeof value === 'string' &&
+    value.length <= 360 * 1024 &&
+    /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(value);
+}
+
+function renderEvaluationPreview() {
+  const preview = $('#evaluation-preview');
+  preview.replaceChildren();
+  if (evaluationQr) {
+    const image = document.createElement('img');
+    image.src = evaluationQr;
+    image.alt = 'Uploaded evaluation QR code preview';
+    preview.append(image, Object.assign(document.createElement('span'), {
+      className: 'switch-sub',
+      textContent: evaluationUrl ? 'Uploaded QR image · form link also configured' : 'Uploaded QR image'
+    }));
+    return;
+  }
+  if (!evaluationUrl) {
+    preview.innerHTML = '<span class="switch-sub">Add a form link or QR image to preview.</span>';
+    return;
+  }
+  try {
+    new QRCode(preview, { text: evaluationUrl, width: 150, height: 150 });
+    const label = document.createElement('span');
+    label.className = 'switch-sub';
+    label.textContent = 'QR generated from the form link';
+    preview.append(label);
+  } catch(error) {
+    preview.textContent = 'Could not generate the QR preview. Check the form link.';
+    console.error('Evaluation QR preview error:', error);
+  }
+}
+
+function setEvaluationStatus(message, state) {
+  const status = $('#evaluation-status');
+  status.textContent = message;
+  status.dataset.state = state || '';
+}
 
 async function loadControl() {
   try {
     const raw = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
     if (raw.gates) gates = raw.gates;
     if (typeof raw.seminarCode === 'string') seminarCode = raw.seminarCode;
+    evaluationUrl = normalizeEvaluationUrl(raw.evaluationUrl);
+    evaluationQr = isEvaluationQrDataUrl(raw.evaluationQr) ? raw.evaluationQr : '';
     $('#seminar-code-input').value = seminarCode;
+    $('#evaluation-url-input').value = evaluationUrl;
   } catch(e) {}
+  renderEvaluationPreview();
   updateGateButtons();
   await loadControlFromRemote();
 }
@@ -558,9 +748,23 @@ async function loadControlFromRemote() {
           }
           changed = true;
         }
+        if (!evaluationSettingsDirty && typeof remote.evaluationUrl === 'string' && normalizeEvaluationUrl(remote.evaluationUrl) !== evaluationUrl) {
+          evaluationUrl = normalizeEvaluationUrl(remote.evaluationUrl);
+          if (document.activeElement !== $('#evaluation-url-input')) {
+            $('#evaluation-url-input').value = evaluationUrl;
+          }
+          changed = true;
+        }
+        if (!evaluationSettingsDirty && typeof remote.evaluationQr === 'string' &&
+            (remote.evaluationQr === '' || isEvaluationQrDataUrl(remote.evaluationQr)) &&
+            remote.evaluationQr !== evaluationQr) {
+          evaluationQr = remote.evaluationQr;
+          changed = true;
+        }
         if (changed || !localStorage.getItem(CONTROL_KEY)) {
-          localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates, seminarCode, updatedAt: remote.updatedAt || Date.now() }));
+          localStorage.setItem(CONTROL_KEY, JSON.stringify({ gates, seminarCode, evaluationUrl, evaluationQr, updatedAt: remote.updatedAt || Date.now() }));
           updateGateButtons();
+          renderEvaluationPreview();
           refreshCouriers();
         }
       }
@@ -571,25 +775,30 @@ async function loadControlFromRemote() {
 }
 
 async function saveControl() {
-  const payload = { gates: gates, seminarCode: seminarCode, updatedAt: Date.now() };
+  const payload = { gates: gates, seminarCode: seminarCode, evaluationUrl, evaluationQr, updatedAt: Date.now() };
   localStorage.setItem(CONTROL_KEY, JSON.stringify(payload));
   if (FIREBASE_DB_URL) {
     try {
-      await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, {
+      const response = await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      if (!response.ok) throw new Error(`Host controls sync failed (${response.status})`);
+      return true;
     } catch(e) {
       console.warn('Firebase control sync error:', e);
+      return false;
     }
   }
+  return true;
 }
 
 function updateGateButtons() {
   [1, 2, 3, 4, 5, 6].forEach(g => {
     const btn = document.getElementById(`gate-${g}-btn`);
     if (btn) {
+      btn.setAttribute('aria-pressed', String(Boolean(gates[g])));
       if (gates[g]) {
         btn.className = 'toggle-btn active';
         btn.textContent = 'OPEN';
@@ -624,12 +833,110 @@ $('#save-code-btn').onclick = async () => {
   btn.textContent = 'Saving...';
   seminarCode = $('#seminar-code-input').value.trim().toUpperCase();
   $('#seminar-code-input').value = seminarCode;
-  await saveControl();
-  btn.disabled = false;
-  btn.textContent = origText;
-  alert(seminarCode
-    ? `Seminar code updated to: ${seminarCode}\n(Saved locally & synced to cloud)`
-    : 'Seminar code cleared. Couriers will wait until the host publishes a code.');
+  try {
+    const synced = await saveControl();
+    const result = seminarCode
+      ? `Seminar code updated to: ${seminarCode}`
+      : 'Seminar code cleared. Couriers will wait until the host publishes a code.';
+    alert(`${result}\n${synced ? '(Saved locally & synced to cloud)' : '(Saved locally, but cloud sync failed. Check your connection and try again.)'}`);
+  } catch(error) {
+    alert(`Could not save the seminar code: ${error.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+};
+
+$('#evaluation-url-input').addEventListener('input', event => {
+  evaluationSettingsDirty = true;
+  const value = event.currentTarget.value.trim();
+  try {
+    const url = new URL(value);
+    if (url.protocol === 'https:') {
+      evaluationUrl = url.href;
+      renderEvaluationPreview();
+      return;
+    }
+  } catch(e) {}
+  evaluationUrl = '';
+  renderEvaluationPreview();
+});
+
+$('#evaluation-qr-input').addEventListener('change', event => {
+  const file = event.currentTarget.files && event.currentTarget.files[0];
+  if (!file) return;
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    event.currentTarget.value = '';
+    setEvaluationStatus('Choose a PNG, JPG, or WebP QR image.', 'error');
+    return;
+  }
+  if (file.size > 256 * 1024) {
+    event.currentTarget.value = '';
+    setEvaluationStatus('The QR image must be 256 KB or smaller.', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result !== 'string') {
+      setEvaluationStatus('Could not read the selected QR image.', 'error');
+      return;
+    }
+    evaluationQr = reader.result;
+    evaluationSettingsDirty = true;
+    renderEvaluationPreview();
+    setEvaluationStatus('QR image ready. Save Evaluation Settings to publish it.', '');
+  };
+  reader.onerror = () => setEvaluationStatus('Could not read the selected QR image.', 'error');
+  reader.readAsDataURL(file);
+});
+
+$('#clear-evaluation-qr-btn').onclick = () => {
+  evaluationQr = '';
+  evaluationSettingsDirty = true;
+  $('#evaluation-qr-input').value = '';
+  renderEvaluationPreview();
+  setEvaluationStatus('Uploaded QR image removed. Save to publish the change.', '');
+};
+
+$('#save-evaluation-btn').onclick = async () => {
+  const rawUrl = $('#evaluation-url-input').value.trim();
+  let normalizedUrl = '';
+  if (rawUrl) {
+    try {
+      const url = new URL(rawUrl);
+      if (url.protocol !== 'https:') throw new Error('Evaluation form links must use HTTPS.');
+      normalizedUrl = url.href;
+    } catch(error) {
+      setEvaluationStatus(error.message || 'Enter a valid HTTPS form link.', 'error');
+      return;
+    }
+  }
+  if (!normalizedUrl && !evaluationQr) {
+    setEvaluationStatus('Add an HTTPS form link or upload a QR image before saving.', 'error');
+    return;
+  }
+
+  const button = $('#save-evaluation-btn');
+  button.disabled = true;
+  button.textContent = 'Saving…';
+  evaluationUrl = normalizedUrl;
+  $('#evaluation-url-input').value = evaluationUrl;
+  try {
+    const synced = await saveControl();
+    evaluationSettingsDirty = false;
+    setEvaluationStatus(
+      synced
+        ? 'Evaluation settings saved and published to players.'
+        : 'Saved on this device, but cloud sync failed. Check the connection and save again.',
+      synced ? 'success' : 'error'
+    );
+    renderEvaluationPreview();
+  } catch(error) {
+    setEvaluationStatus(`Could not save evaluation settings: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Save Evaluation Settings';
+  }
 };
 
 /* =============================================================

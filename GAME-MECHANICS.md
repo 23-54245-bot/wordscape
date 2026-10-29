@@ -141,6 +141,7 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 - The quiz has two multiple-choice questions: one on last-mile delivery efficiency, and one on how Junior and Tulip resolved roadblocks.
 - Wrong choices are disabled but do not consume a limited number of attempts. A short lesson explains each correct answer before the player continues; lessons remain available to review on the result. Questions must be answered in order, and host code updates cannot restart an unlocked attempt.
 - Completing both questions awards a fixed 500 points. The displayed timer does not affect scoring.
+- The final certificate shows the host-published evaluation form link and QR code. Hosts can enter an HTTPS form URL in the Control Tower to generate a QR code automatically, or upload a PNG, JPG, or WebP QR image up to 256 KB; when both are set, the uploaded QR is shown alongside the clickable link.
 
 ## Review notes
 
