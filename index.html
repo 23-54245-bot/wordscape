@@ -1543,10 +1543,67 @@ select option {
 #mapv #map {
  width: min(100%, 560px);
  margin: 0 auto;
- border: 2px solid rgba(191, 219, 254, 0.32);
- border-radius: 24px;
- background: #10243b;
- box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+ /* Delivery route map: asphalt road surface */
+ border-radius: 20px;
+ background:
+   /* dashed center lane */
+   repeating-linear-gradient(
+     90deg,
+     transparent 0, transparent 28px,
+     rgba(250,204,21,0.18) 28px, rgba(250,204,21,0.18) 56px
+   ),
+   /* road surface gradient */
+   linear-gradient(170deg, #1a3a5c 0%, #122240 35%, #1c3a28 65%, #122240 100%);
+ border: 3px solid #f59e0b;
+ box-shadow:
+   0 0 0 6px rgba(245,158,11,0.18),
+   0 22px 50px rgba(0,0,0,0.55),
+   inset 0 1px 0 rgba(255,255,255,0.12);
+ position: relative;
+ overflow: hidden;
+}
+
+/* Map frame & delivery atmosphere */
+#map-frame {
+ width: min(100%, 560px);
+ margin: 0 auto;
+ position: relative;
+}
+#map-frame::before {
+ content: '🚚 DELIVERY ROUTE MAP';
+ display: block;
+ text-align: center;
+ font-size: 0.72rem;
+ font-weight: 900;
+ letter-spacing: 0.18em;
+ color: #f59e0b;
+ background: linear-gradient(90deg, #0a1a2e, #1a3a5c, #0a1a2e);
+ border: 2px solid #f59e0b;
+ border-bottom: none;
+ border-radius: 14px 14px 0 0;
+ padding: 7px 16px;
+ text-transform: uppercase;
+}
+#map-frame::after {
+ content: '📦 TAP A STOP TO PLAY';
+ display: block;
+ text-align: center;
+ font-size: 0.68rem;
+ font-weight: 800;
+ letter-spacing: 0.14em;
+ color: rgba(245,158,11,0.75);
+ background: linear-gradient(90deg, #0a1a2e, #1a3a5c, #0a1a2e);
+ border: 2px solid #f59e0b;
+ border-top: none;
+ border-radius: 0 0 14px 14px;
+ padding: 6px 16px;
+}
+#map-frame #map {
+ border-radius: 0 !important;
+ border-left: 2px solid #f59e0b !important;
+ border-right: 2px solid #f59e0b !important;
+ border-top: none !important;
+ border-bottom: none !important;
 }
 
 #mapv > .sub {
@@ -1852,7 +1909,7 @@ select option {
  <div class="pbar"><i id="hb"></i></div>
 </header>
 
- <svg id="map" role="group" aria-label="Interactive delivery map. Use Tab to move between stops and Enter or Space to open one."></svg>
+ <div id="map-frame"><svg id="map" role="group" aria-label="Interactive delivery map. Use Tab to move between stops and Enter or Space to open one."></svg></div>
  <p class="sub" style="margin-top:10px">Choose a delivery stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
 </div>
 
@@ -4936,6 +4993,210 @@ function renderBnQuiz(idx) {
 /* =============================================================
  EVALUATION & CERTIFIED COURIER DIGITAL PASS
  ============================================================= */
+function createCertificateStoryBlob(details) {
+ const canvas = document.createElement('canvas');
+ canvas.width = 1080;
+ canvas.height = 1920;
+ const context = canvas.getContext('2d');
+ if (!context) throw new Error('Canvas rendering is not available in this browser.');
+
+ const roundedRect = (x, y, width, height, radius) => {
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius);
+ };
+ const centeredText = (text, y, font, color, maxWidth = 820) => {
+  context.font = font;
+  context.fillStyle = color;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = '';
+  words.forEach(word => {
+   const nextLine = line ? `${line} ${word}` : word;
+   if (context.measureText(nextLine).width > maxWidth && line) {
+    lines.push(line);
+    line = word;
+   } else {
+    line = nextLine;
+   }
+  });
+  if (line) lines.push(line);
+  lines.forEach((entry, index) => context.fillText(entry, 540, y + index * 64, maxWidth));
+  return y + Math.max(lines.length, 1) * 64;
+ };
+
+ const sky = context.createLinearGradient(0, 0, 1080, 1920);
+ sky.addColorStop(0, '#55c8ed');
+ sky.addColorStop(0.52, '#4388c8');
+ sky.addColorStop(1, '#17345a');
+ context.fillStyle = sky;
+ context.fillRect(0, 0, canvas.width, canvas.height);
+
+ const glow = context.createRadialGradient(840, 250, 20, 840, 250, 390);
+ glow.addColorStop(0, 'rgba(255,244,184,0.8)');
+ glow.addColorStop(1, 'rgba(255,244,184,0)');
+ context.fillStyle = glow;
+ context.fillRect(430, 0, 650, 650);
+
+ context.strokeStyle = 'rgba(255,255,255,0.16)';
+ context.lineWidth = 4;
+ for (let index = 0; index < 18; index++) {
+  const x = 70 + ((index * 173) % 940);
+  const y = 100 + ((index * 251) % 1700);
+  context.beginPath();
+  context.arc(x, y, index % 3 === 0 ? 8 : 4, 0, Math.PI * 2);
+  context.stroke();
+ }
+
+ context.shadowColor = 'rgba(8,28,55,0.32)';
+ context.shadowBlur = 36;
+ context.shadowOffsetY = 18;
+ roundedRect(64, 190, 952, 1520, 52);
+ context.fillStyle = '#fffaf0';
+ context.fill();
+ context.shadowColor = 'transparent';
+ context.shadowBlur = 0;
+ context.shadowOffsetY = 0;
+
+ roundedRect(90, 216, 900, 1468, 36);
+ context.strokeStyle = '#d99b37';
+ context.lineWidth = 8;
+ context.stroke();
+ roundedRect(108, 234, 864, 1432, 28);
+ context.strokeStyle = 'rgba(217,155,55,0.42)';
+ context.lineWidth = 3;
+ context.stroke();
+
+ context.textAlign = 'center';
+ context.textBaseline = 'middle';
+ context.fillStyle = '#9a6416';
+ context.font = '800 28px Arial, sans-serif';
+ context.fillText('STREAMLINED  ·  LOGISTICS MASTER CHALLENGE', 540, 360, 800);
+
+ context.fillStyle = '#e8b44e';
+ context.beginPath();
+ context.arc(540, 520, 82, 0, Math.PI * 2);
+ context.fill();
+ context.fillStyle = '#fffaf0';
+ context.beginPath();
+ context.arc(540, 520, 67, 0, Math.PI * 2);
+ context.fill();
+ context.fillStyle = '#e39a24';
+ context.font = '900 74px Arial, sans-serif';
+ context.fillText('★', 540, 523);
+
+ centeredText('CERTIFICATE', 680, '800 34px Arial, sans-serif', '#9a6416');
+ centeredText('OF COMPLETION', 746, '900 66px Arial, sans-serif', '#17345a');
+ centeredText('This certificate is presented to', 850, '400 32px Arial, sans-serif', '#526477');
+
+ const name = String(details.name || 'Courier');
+ let nameFontSize = 66;
+ context.textAlign = 'center';
+ context.textBaseline = 'middle';
+ while (nameFontSize > 40) {
+  context.font = `900 ${nameFontSize}px Arial, sans-serif`;
+  if (context.measureText(name).width <= 820) break;
+  nameFontSize -= 2;
+ }
+ centeredText(name, 960, `900 ${nameFontSize}px Arial, sans-serif`, '#17345a', 820);
+
+ centeredText('for completing every delivery challenge', 1070, '400 32px Arial, sans-serif', '#526477');
+ centeredText('and the final handoff quiz', 1128, '400 32px Arial, sans-serif', '#526477');
+
+ roundedRect(280, 1210, 520, 118, 34);
+ context.fillStyle = '#fff0c4';
+ context.fill();
+ context.strokeStyle = '#e7bd64';
+ context.lineWidth = 3;
+ context.stroke();
+ centeredText(`GRADE ${details.grade}`, 1269, '900 52px Arial, sans-serif', '#8a5a12');
+
+ centeredText(`FINAL SCORE  ${details.total.toLocaleString()} / ${details.maxTotal.toLocaleString()}`, 1405, '800 30px Arial, sans-serif', '#17345a');
+ centeredText(`${details.stars} / ${details.maxStars} STARS`, 1470, '800 30px Arial, sans-serif', '#9a6416');
+ centeredText(`COMPLETED ${details.completedOn.toUpperCase()}`, 1540, '700 24px Arial, sans-serif', '#526477');
+
+ context.strokeStyle = '#e8c879';
+ context.lineWidth = 4;
+ context.beginPath();
+ context.moveTo(290, 1600);
+ context.bezierCurveTo(420, 1520, 650, 1690, 790, 1580);
+ context.stroke();
+ context.fillStyle = '#e39a24';
+ [340, 540, 740].forEach((x, index) => {
+  context.beginPath();
+  context.arc(x, index === 1 ? 1615 : 1590, 13, 0, Math.PI * 2);
+  context.fill();
+ });
+
+ return new Promise((resolve, reject) => {
+  canvas.toBlob(blob => {
+   if (blob) resolve(blob);
+   else reject(new Error('The certificate image could not be created.'));
+  }, 'image/png');
+ });
+}
+
+function certificateStoryFilename() {
+ const safeName = String(user || 'courier')
+  .normalize('NFKD')
+  .replace(/[^\w-]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+  .slice(0, 48) || 'courier';
+ return `streamlined-certificate-${safeName}.png`;
+}
+
+async function downloadCertificateStory(details) {
+ const blob = await createCertificateStoryBlob(details);
+ const url = URL.createObjectURL(blob);
+ const link = document.createElement('a');
+ link.href = url;
+ link.download = certificateStoryFilename();
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+ setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function downloadCertificateStoryFromButton(details) {
+ const status = $('#certificate-share-status');
+ status.textContent = 'Preparing your certificate image…';
+ try {
+  await downloadCertificateStory(details);
+  status.textContent = 'Story image saved. Upload it to your Facebook or Instagram Story.';
+ } catch (error) {
+  console.error('Certificate story image download failed:', error);
+  status.textContent = 'Could not download the image. Please use Print or Save Certificate instead.';
+ }
+}
+
+async function shareCertificateStory(details) {
+ const status = $('#certificate-share-status');
+ status.textContent = 'Preparing your certificate image…';
+ try {
+  const blob = await createCertificateStoryBlob(details);
+  const file = new File([blob], certificateStoryFilename(), { type: 'image/png' });
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+   await navigator.share({
+    files: [file],
+    title: 'My STREAMLINED Certificate',
+    text: 'I completed The Baby’s Journey Home Logistics Master Challenge!'
+   });
+   status.textContent = 'Share sheet opened. Choose Facebook or Instagram if available.';
+   return;
+  }
+  await downloadCertificateStory(details);
+  status.textContent = 'Story image saved. Upload it to your Facebook or Instagram Story.';
+ } catch (error) {
+  if (error && error.name === 'AbortError') {
+   status.textContent = 'Sharing cancelled.';
+   return;
+  }
+  console.error('Certificate story sharing failed:', error);
+  status.textContent = 'Could not prepare the image. Please use Print or Save Certificate instead.';
+ }
+}
+
 function evalCard() {
  const requiredStops = I.map((stop, index) => ({ stop, index }))
   .filter(({ stop }) => stop.t === 'game' || stop.t === 'bonus');
@@ -5003,6 +5264,9 @@ function evalCard() {
  </div>
  <div id="certificate-actions">
  <button class="btn green" type="button" onclick="window.print()">Print or Save Certificate</button>
+ <button class="btn" type="button" onclick="shareCertificateStory({name: user, grade: '${grade}', total: ${total}, maxTotal: ${maxTotal}, stars: ${stars}, maxStars: ${requiredStops.length * 3}, completedOn: '${completedOn}'})">Share to Facebook / Instagram Stories</button>
+ <button class="sm" type="button" onclick="downloadCertificateStoryFromButton({name: user, grade: '${grade}', total: ${total}, maxTotal: ${maxTotal}, stars: ${stars}, maxStars: ${requiredStops.length * 3}, completedOn: '${completedOn}'})">Download Story Image</button>
+ <p id="certificate-share-status" class="sub" role="status" aria-live="polite">The story image includes your name, grade, score, stars, and completion date.</p>
  <p>Share your feedback about the seminar:</p>
  <div id="qr">${evaluationMarkup}</div>
  ${evaluationLinkMarkup}
