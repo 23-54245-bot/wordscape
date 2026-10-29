@@ -2917,6 +2917,10 @@ const MAP_GATE_ART = {
  5: 'assets/map-dock-5.png',
  6: 'assets/map-dock-6.png?v=2'
 };
+const MAP_GATE_LOCKED_ART = {
+ 3: 'assets/map-dock-3-locked.png',
+ 4: 'assets/map-dock-4-locked.png'
+};
 
 const GN = { 
  1:'Stage 2 (Canyon Delivery Maze)', 
@@ -3540,11 +3544,12 @@ function draw() {
 
  if (it.t === 'gate') {
  // Each checkpoint uses its matching raised dock illustration.
+ const gateArt = gateOpen ? MAP_GATE_ART[it.g] : (MAP_GATE_LOCKED_ART[it.g] || MAP_GATE_ART[it.g]);
  h += `
  <g filter="url(#pedestal-shadow)">
   <ellipse cx="${p.x}" cy="${p.y + 34}" rx="31" ry="7" fill="rgba(15,23,42,0.42)"/>
-  <image href="${MAP_GATE_ART[it.g]}" x="${p.x - 43}" y="${p.y - 74}" width="86" height="104" preserveAspectRatio="xMidYMid meet"/>
-  ${gateOpen ? '' : `
+  <image href="${gateArt}" x="${p.x - 43}" y="${p.y - 74}" width="86" height="104" preserveAspectRatio="xMidYMid meet"/>
+  ${gateOpen || MAP_GATE_LOCKED_ART[it.g] ? '' : `
   <g aria-label="Dock locked">
    <path d="M ${p.x - 5} ${p.y - 28} L ${p.x + 23} ${p.y - 22} V ${p.y + 7} H ${p.x - 5} Z" fill="#526171" stroke="#e2e8f0" stroke-width="1.2" stroke-linejoin="round"/>
    <path d="M ${p.x - 3} ${p.y - 23} L ${p.x + 21} ${p.y - 18} M ${p.x - 3} ${p.y - 16} L ${p.x + 21} ${p.y - 11} M ${p.x - 3} ${p.y - 9} L ${p.x + 21} ${p.y - 4} M ${p.x - 3} ${p.y - 2} L ${p.x + 21} ${p.y + 3}" fill="none" stroke="#cbd5e1" stroke-width="1.2" opacity=".9"/>
