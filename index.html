@@ -3515,9 +3515,10 @@ function draw() {
  // 4. Level Nodes, Checkpoint Gates & Milestone Banners
  I.forEach((it, i) => {
  const p = P[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), isC = i === cur;
+ const gateOpen = it.t === 'gate' && (O[it.g] === 1 || O[it.g] === true);
  const nodeState = done ? 'completed'
   : isC ? 'current stop'
-   : it.t === 'gate' ? (O[it.g] ? 'open checkpoint' : 'locked checkpoint')
+   : it.t === 'gate' ? (gateOpen ? 'open checkpoint' : 'locked checkpoint')
     : 'not yet available';
  const nodeLabel = `${it.t === 'gate' ? GL[it.g] : it.n}, ${nodeState}`;
 
@@ -3543,6 +3544,13 @@ function draw() {
  <g filter="url(#pedestal-shadow)">
   <ellipse cx="${p.x}" cy="${p.y + 34}" rx="31" ry="7" fill="rgba(15,23,42,0.42)"/>
   <image href="${MAP_GATE_ART[it.g]}" x="${p.x - 43}" y="${p.y - 74}" width="86" height="104" preserveAspectRatio="xMidYMid meet"/>
+  ${gateOpen ? '' : `
+  <g aria-label="Dock locked">
+   <path d="M ${p.x - 16} ${p.y - 38} L ${p.x + 15} ${p.y - 30} V ${p.y + 1} H ${p.x - 16} Z" fill="#526171" stroke="#e2e8f0" stroke-width="1.5" stroke-linejoin="round"/>
+   <path d="M ${p.x - 13} ${p.y - 32} H ${p.x + 13} M ${p.x - 13} ${p.y - 25} H ${p.x + 13} M ${p.x - 13} ${p.y - 18} H ${p.x + 13} M ${p.x - 13} ${p.y - 11} H ${p.x + 13} M ${p.x - 13} ${p.y - 4} H ${p.x + 13}" fill="none" stroke="#cbd5e1" stroke-width="1.4" opacity=".9"/>
+   <circle cx="${p.x}" cy="${p.y - 45}" r="7" fill="#dc2626" stroke="#fee2e2" stroke-width="1.5"/>
+   <path d="M ${p.x - 3} ${p.y - 45} a 3 3 0 0 1 6 0 v 2 h -6 Z M ${p.x - 4} ${p.y - 43} H ${p.x + 4} V ${p.y - 37} H ${p.x - 4} Z" fill="#fff1f2"/>
+  </g>`}
 </g>
  `;
  } else {
