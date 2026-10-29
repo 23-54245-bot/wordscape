@@ -128,6 +128,9 @@ button { cursor: pointer; }
  outline: 3px solid #38bdf8;
  outline-offset: 3px;
 }
+.node:focus {
+ outline: none;
+}
 .node:focus-visible {
  filter: drop-shadow(0 0 5px #fff);
 }
@@ -808,11 +811,10 @@ input:focus { outline: none; border-color: var(--acc); }
  overflow: hidden;
  padding: 6px;
 }
-.fm-card-front img {
- width: 100%;
- height: 100%;
- object-fit: contain;
- border-radius: 10px;
+.fm-card-emoji {
+ font-size: clamp(2.5rem, 7vw, 4rem);
+ line-height: 1;
+ filter: drop-shadow(0 3px 2px rgba(15, 23, 42, 0.18));
 }
 .fm-card.matched .fm-card-front {
  border-color: #10b981;
@@ -1454,6 +1456,17 @@ select option {
  }
 }
 
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+ #cursor-trail-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+ }
+}
+
 @media (min-width: 760px) {
  main {
  max-width: 760px;
@@ -1546,17 +1559,8 @@ select option {
 #mapv #map {
  width: min(100%, 560px);
  margin: 0 auto;
- /* Delivery route map: asphalt road surface */
  border-radius: 20px;
- background:
-   /* dashed center lane */
-   repeating-linear-gradient(
-     90deg,
-     transparent 0, transparent 28px,
-     rgba(250,204,21,0.18) 28px, rgba(250,204,21,0.18) 56px
-   ),
-   /* road surface gradient */
-   linear-gradient(170deg, #1a3a5c 0%, #122240 35%, #1c3a28 65%, #122240 100%);
+ background: #64717d;
  border: 3px solid #f59e0b;
  box-shadow:
    0 0 0 6px rgba(245,158,11,0.18),
@@ -1785,14 +1789,15 @@ select option {
  }
 
  #play button[id$="-next-btn"],
- #play .card .btn.green {
-  border: 3px solid #8bbcf2;
+ #play .card .btn.green,
+ #play .card .btn.alt[onclick="leave()"] {
+  border: 2px solid #7da9d6;
   border-radius: 8px;
-  background: linear-gradient(180deg, #178cf0 0%, #0861c4 48%, #06377c 100%);
-  box-shadow: 0 4px 0 #041d46, inset 0 2px 2px rgba(255,255,255,.55), inset 0 -3px 4px rgba(0,0,0,.35);
-  color: #fff;
-  clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
-  text-shadow: 0 1px 2px #06234b;
+  background: linear-gradient(180deg, #1e4b7f, #102d54);
+  box-shadow: 0 4px 0 #071b35, inset 0 1px 2px rgba(255,255,255,.3);
+  color: #eff7ff;
+  clip-path: none;
+  text-shadow: none;
  }
  #play button[id$="-next-btn"][hidden] {
   display: none !important;
@@ -1801,14 +1806,6 @@ select option {
  #play .card .btn.green:hover:not(:disabled) {
   filter: brightness(1.12);
  }
- #play .card .btn.alt[onclick="leave()"] {
-  border: 2px solid #7da9d6;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #1e4b7f, #102d54);
-  box-shadow: 0 4px 0 #071b35, inset 0 1px 2px rgba(255,255,255,.3);
-  color: #eff7ff;
- }
-
  @media (max-width: 480px) {
   #mapv .map-header-row { flex-wrap: wrap; gap: 10px; }
   #mapv .map-profile { flex: 1 1 100%; }
@@ -1894,7 +1891,6 @@ select option {
  <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
  <button class="sm game-nav-icon" id="challenge-toggle-btn" onclick="toggleChallengeMode()" aria-label="Toggle challenge mode" aria-pressed="false" title="Challenge mode off">⏱️</button>
 </div>
-
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
  <section id="g0" hidden>
  <div class="bar">
@@ -2093,6 +2089,142 @@ function haptic(pattern = 25) {
  try {
  if (navigator && navigator.vibrate) navigator.vibrate(pattern);
  } catch(e) {}
+}
+
+if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+ const trailCanvas = document.createElement('canvas');
+ trailCanvas.id = 'cursor-trail-canvas';
+ trailCanvas.setAttribute('aria-hidden', 'true');
+ document.body.appendChild(trailCanvas);
+ const trailContext = trailCanvas.getContext('2d');
+ const trailPoints = [];
+ const trailSparkles = [];
+ const trailColors = ['#ff8a1f', '#ffd34e', '#168cff', '#35d8ff'];
+ let lastPointer = null;
+ let trailFrame = 0;
+ let sparkleDistance = 0;
+
+ const resizeTrailCanvas = () => {
+  const scale = Math.min(window.devicePixelRatio || 1, 2);
+  trailCanvas.width = Math.round(window.innerWidth * scale);
+  trailCanvas.height = Math.round(window.innerHeight * scale);
+  trailContext.setTransform(scale, 0, 0, scale, 0, 0);
+ };
+
+ const drawCursorTrail = now => {
+ trailFrame = 0;
+ trailContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+ while (trailPoints.length && now - trailPoints[0].time > 650) trailPoints.shift();
+
+ if (trailPoints.length > 1) {
+  const last = trailPoints[trailPoints.length - 1];
+  const pointAt = (index, offset) => {
+   const point = trailPoints[index];
+   const previous = trailPoints[Math.max(0, index - 1)];
+   const next = trailPoints[Math.min(trailPoints.length - 1, index + 1)];
+   const dx = next.x - previous.x;
+   const dy = next.y - previous.y;
+   const length = Math.hypot(dx, dy) || 1;
+   return { x: point.x - (dy / length) * offset, y: point.y + (dx / length) * offset };
+  };
+  const opacity = 0.12 * (1 - (now - last.time) / 650);
+
+  trailColors.forEach((color, colorIndex) => {
+   const offset = (colorIndex - (trailColors.length - 1) / 2) * 2.4;
+   const first = pointAt(0, offset);
+   trailContext.beginPath();
+   trailContext.moveTo(first.x, first.y);
+   for (let i = 1; i < trailPoints.length - 1; i++) {
+    const point = pointAt(i, offset);
+    const next = pointAt(i + 1, offset);
+    trailContext.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
+   }
+   const end = pointAt(trailPoints.length - 1, offset);
+   trailContext.lineTo(end.x, end.y);
+   trailContext.globalAlpha = opacity;
+   trailContext.strokeStyle = color;
+   trailContext.lineWidth = 1.8;
+   trailContext.lineCap = 'round';
+   trailContext.lineJoin = 'round';
+   trailContext.shadowColor = color;
+   trailContext.shadowBlur = 2;
+   trailContext.stroke();
+  });
+ }
+
+ for (let i = trailSparkles.length - 1; i >= 0; i--) {
+  const sparkle = trailSparkles[i];
+  const progress = (now - sparkle.time) / 480;
+  if (progress >= 1) {
+   trailSparkles.splice(i, 1);
+   continue;
+  }
+  const size = sparkle.size * (0.65 + Math.sin(progress * Math.PI) * 0.6);
+  trailContext.save();
+  trailContext.translate(sparkle.x + sparkle.vx * progress * 18, sparkle.y + sparkle.vy * progress * 18);
+  trailContext.rotate(sparkle.rotation + progress * 0.7);
+  trailContext.globalAlpha = Math.sin(progress * Math.PI) * 0.62;
+  trailContext.fillStyle = sparkle.color;
+  trailContext.shadowColor = sparkle.color;
+  trailContext.shadowBlur = 5;
+  trailContext.beginPath();
+  trailContext.moveTo(0, -size);
+  trailContext.quadraticCurveTo(size * 0.12, -size * 0.12, size, 0);
+  trailContext.quadraticCurveTo(size * 0.12, size * 0.12, 0, size);
+  trailContext.quadraticCurveTo(-size * 0.12, size * 0.12, -size, 0);
+  trailContext.quadraticCurveTo(-size * 0.12, -size * 0.12, 0, -size);
+  trailContext.fill();
+  trailContext.restore();
+ }
+
+ trailContext.globalAlpha = 1;
+  trailContext.shadowBlur = 0;
+  if (trailPoints.length > 1 || trailSparkles.length) trailFrame = requestAnimationFrame(drawCursorTrail);
+ };
+
+ const scheduleTrailFrame = () => {
+  if (!trailFrame) trailFrame = requestAnimationFrame(drawCursorTrail);
+ };
+
+ resizeTrailCanvas();
+ window.addEventListener('resize', resizeTrailCanvas, { passive: true });
+ window.addEventListener('blur', () => { lastPointer = null; }, { passive: true });
+ document.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'mouse') return;
+  const point = { x: event.clientX, y: event.clientY };
+  if (lastPointer) {
+   const distance = Math.hypot(point.x - lastPointer.x, point.y - lastPointer.y);
+   sparkleDistance += distance;
+   if (sparkleDistance >= 20) {
+    const colorIndex = Math.floor(Math.random() * trailColors.length);
+    trailSparkles.push({
+     x: point.x + (Math.random() - 0.5) * 8,
+     y: point.y + (Math.random() - 0.5) * 8,
+     vx: (Math.random() - 0.5) * 1.4,
+     vy: (Math.random() - 0.5) * 1.4,
+     rotation: Math.random() * Math.PI,
+     size: 2 + Math.random() * 2,
+     color: trailColors[colorIndex],
+     time: performance.now()
+    });
+    sparkleDistance %= 20;
+    if (trailSparkles.length > 60) trailSparkles.splice(0, trailSparkles.length - 60);
+   }
+   const steps = Math.max(1, Math.ceil(distance / 5));
+   const time = performance.now();
+   for (let step = 1; step <= steps; step++) {
+    const progress = step / steps;
+    trailPoints.push({
+     x: lastPointer.x + (point.x - lastPointer.x) * progress,
+     y: lastPointer.y + (point.y - lastPointer.y) * progress,
+     time
+    });
+   }
+   if (trailPoints.length > 260) trailPoints.splice(0, trailPoints.length - 260);
+   scheduleTrailFrame();
+  }
+  lastPointer = point;
+ }, { passive: true });
 }
 
 class SoundEngine {
@@ -2357,22 +2489,46 @@ const HOST_ADMIN_COURIER_KEY = normalizeId('Host Admin', 'ADMIN-01');
 
 function sanitizeResults(results) {
  if (!Array.isArray(results)) return [];
- return Array.from({ length: N }, (_, index) => {
+ const count = typeof N === 'number' ? N : 26;
+ const sanitized = Array.from({ length: count }, (_, index) => {
   const result = results[index];
   if (!result || typeof result !== 'object') return null;
-  if (result.gate === 1 || result.gate === true) return { gate: 1 };
+  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
+
+  if (isGateStop) {
+   if (result.gate === 1 || result.gate === true || result.gate) return { gate: 1 };
+   return null;
+  }
+
+  // Playable stop (game / bonus)
   const points = Number(result.pts);
-  if (!Number.isFinite(points) || points < 0) return null;
-  const max = getStopCap(index);
-  const pts = Math.min(max, points);
-  return {
-   ...result,
-   pts,
-   score: Number.isFinite(result.score) ? Math.max(0, Math.min(max, result.score)) : pts,
-   max,
-   stars: calculateStars(pts, max)
-  };
+  if (Number.isFinite(points) && points >= 0) {
+   const max = typeof getStopCap === 'function' ? getStopCap(index) : 500;
+   const pts = Math.min(max, points);
+   const cleaned = {
+    ...result,
+    pts,
+    score: Number.isFinite(result.score) ? Math.max(0, Math.min(max, result.score)) : pts,
+    max,
+    stars: calculateStars(pts, max)
+   };
+   delete cleaned.gate; // Ensure gate flag never poisons a playable stop
+   return cleaned;
+  }
+
+  // If this playable stop only has { gate: 1 } and no valid points, ignore the gate flag
+  return null;
  });
+
+ // Legacy migration: in older versions, Gate 2 was at index 8 and Scenario 1 was at index 7.
+ // If slot 7 had gameplay points (old Scenario 1) and slot 8 was empty or a gate marker, migrate points to slot 8!
+ if (sanitized[7] && typeof sanitized[7].pts === 'number' && (!sanitized[8] || typeof sanitized[8].pts !== 'number')) {
+  sanitized[8] = { ...sanitized[7] };
+  delete sanitized[8].gate;
+  sanitized[7] = { gate: 1 };
+ }
+
+ return sanitized;
 }
 
 function sanitizeGates(gates) {
@@ -2461,11 +2617,20 @@ async function restoreAccount(localState) {
  const localResults = sanitizeResults(localState && localState.results);
  const remoteResults = sanitizeResults(remote.results);
  R = Array.from({ length: N }, (_, index) => {
+  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
   const localResult = localResults[index];
   const remoteResult = remoteResults[index];
+
+  if (isGateStop) {
+   if ((localResult && localResult.gate) || (remoteResult && remoteResult.gate)) {
+    return { gate: 1 };
+   }
+   return null;
+  }
+
   if (!localResult) return remoteResult;
   if (!remoteResult) return localResult;
-  if (localResult.gate || remoteResult.gate) return { gate: 1 };
+
   const localCompletedAt = Number(localResult.completedAt) || 0;
   const remoteCompletedAt = Number(remoteResult.completedAt) || 0;
   if (remoteResult.pts > localResult.pts ||
@@ -2570,8 +2735,10 @@ function saveState() {
  }
  }
  const completedStops = (R || []).filter(r => r && r.completedAt);
- const isFinished = Boolean(R[16] || completedStops.length >= 13);
- const finishTime = isFinished ? (R[16]?.completedAt || Math.max(...completedStops.map(r => r.completedAt))) : null;
+ const isFinished = isCourierFinished(R);
+ const finishTime = isFinished
+  ? (R[24]?.completedAt || Math.max(...completedStops.map(r => r.completedAt)))
+  : null;
 
  const payload = {
  name: user,
@@ -2703,6 +2870,27 @@ I.forEach((stage, index) => {
   MAP_LEVEL_NUMBER[index] = playableLevelNumber;
  }
 });
+const MAP_LEVEL_PALETTES = [
+ { light: '#ffd1dc', mid: '#fb7185', dark: '#9f1239', accent: '#ffe4e6' },
+ { light: '#fed7aa', mid: '#fb923c', dark: '#9a3412', accent: '#ffedd5' },
+ { light: '#fef08a', mid: '#eab308', dark: '#854d0e', accent: '#fef3c7' },
+ { light: '#bae6fd', mid: '#38bdf8', dark: '#075985', accent: '#e0f2fe' },
+ { light: '#99f6e4', mid: '#2dd4bf', dark: '#115e59', accent: '#ccfbf1' },
+ { light: '#a7f3d0', mid: '#34d399', dark: '#065f46', accent: '#d1fae5' },
+ { light: '#ddd6fe', mid: '#a78bfa', dark: '#5b21b6', accent: '#ede9fe' },
+ { light: '#c7d2fe', mid: '#818cf8', dark: '#3730a3', accent: '#e0e7ff' },
+ { light: '#bfdbfe', mid: '#60a5fa', dark: '#1d4ed8', accent: '#dbeafe' },
+ { light: '#fbcfe8', mid: '#f472b6', dark: '#9d174d', accent: '#fce7f3' },
+ { light: '#e9d5ff', mid: '#c084fc', dark: '#7e22ce', accent: '#f3e8ff' },
+ { light: '#c7d2fe', mid: '#818cf8', dark: '#3730a3', accent: '#e0e7ff' },
+ { light: '#d9f99d', mid: '#84cc16', dark: '#3f6212', accent: '#ecfccb' },
+ { light: '#99f6e4', mid: '#2dd4bf', dark: '#115e59', accent: '#ccfbf1' },
+ { light: '#bae6fd', mid: '#38bdf8', dark: '#075985', accent: '#e0f2fe' },
+ { light: '#fef08a', mid: '#fbbf24', dark: '#92400e', accent: '#fef3c7' },
+ { light: '#fed7aa', mid: '#fb923c', dark: '#9a3412', accent: '#ffedd5' },
+ { light: '#fecaca', mid: '#f87171', dark: '#991b1b', accent: '#fee2e2' },
+ { light: '#fef3c7', mid: '#facc15', dark: '#a16207', accent: '#fef9c3' }
+];
 
 const GN = { 
  1:'Stage 2 (Canyon Delivery Maze)', 
@@ -2750,18 +2938,18 @@ const GL = {
 };
 
 const SC = [
- ['', 0, 'machine'], ['', 1, 'junior'], ['', 2, 'tulip'],
- ['', 4, 'toady'], ['', 5, 'wolves'], ['', 6, 'junior'], ['', 7, 'tulip'],
- ['', 9, 'junior'], ['', 10, 'tulip'], ['', 11, 'wolves'],
- ['', 13, 'family'], ['', 14, 'baby']
+ ['🏭', 0, 'machine'], ['🐦', 1, 'junior'], ['🐦', 2, 'tulip'],
+ ['🐦', 4, 'toady'], ['🐺', 5, 'wolves'], ['🐦', 6, 'junior'], ['🐦', 7, 'tulip'],
+ ['🐦', 9, 'junior'], ['🐦', 10, 'tulip'], ['🐺', 11, 'wolves'],
+ ['🏡', 13, 'family'], ['👶', 14, 'baby']
 ];
 
 const ASSETS = {
- baby: 'assets/baby.png', junior: 'assets/junior.png', tulip: 'assets/tulip.png',
- wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png', toady: 'assets/toady.png',
+ baby: 'assets/baby.png', junior: 'assets/junior.png',
+ wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png',
  zone1: 'assets/zone1.jpg', zone2: 'assets/zone2.jpg', zone3: 'assets/zone3.jpg', zone4: 'assets/zone4.jpg'
 };
-const okA = {}, FB = { baby:'', junior:'', tulip:'', wolves:'', machine:'', family:'', toady:'' };
+const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'🐦', wolves:'🐺', machine:'🏭', family:'🏡', toady:'🐦' };
 function loadAssets() {
  Object.entries(ASSETS).forEach(([k, u]) => {
  const im = new Image();
@@ -2800,6 +2988,22 @@ const TT = ['Junior Dispatch Courier', 'Senior Sorter', 'Quality Inspector', 'Ro
 const title = () => TT[cur >= 16 ? 4 : cur >= 12 ? 3 : cur >= 8 ? 2 : cur >= 4 ? 1 : 0];
 
 const N = I.length, H = N * 148 + 280;
+function isCourierFinished(results, gateControls = O) {
+ if (!Array.isArray(results)) return false;
+ return I.every((stop, index) => {
+  if (stop.t === 'gate') {
+   const result = results[index];
+   const gateOpen = gateControls && gateControls[stop.g];
+   return (!!result && (result.gate === 1 || result.gate === true)) ||
+    gateOpen === 1 || gateOpen === true;
+  }
+  if (stop.t !== 'game' && stop.t !== 'bonus') return true;
+  const result = results[index];
+  if (!result || typeof result !== 'object') return false;
+  const points = Number(result.pts);
+  return Number.isFinite(points) && points >= 0;
+ });
+}
 const MAP_ROUTE_X = [96, 284, 108, 272, 100, 280, 112, 276];
 const P = I.map((_, i) => ({ 
  x: MAP_ROUTE_X[i % MAP_ROUTE_X.length],
@@ -2903,20 +3107,30 @@ function draw() {
  <feGaussianBlur stdDeviation="6" result="blur"/>
  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
 </filter>
- <linearGradient id="road-curb" x1="0" y1="0" x2="1" y2="0">
- <stop offset="0%" stop-color="#78350f"/>
- <stop offset="50%" stop-color="#b45309"/>
- <stop offset="100%" stop-color="#78350f"/>
+ <linearGradient id="road-edge" x1="0" y1="0" x2="1" y2="0">
+ <stop offset="0%" stop-color="#303841"/>
+ <stop offset="18%" stop-color="#56616c"/>
+ <stop offset="48%" stop-color="#74808b"/>
+ <stop offset="82%" stop-color="#505a65"/>
+ <stop offset="100%" stop-color="#303841"/>
 </linearGradient>
- <linearGradient id="road-sand" x1="0" y1="0" x2="1" y2="0">
- <stop offset="0%" stop-color="#fef3c7"/>
- <stop offset="50%" stop-color="#fffbeb"/>
- <stop offset="100%" stop-color="#fde68a"/>
+ <linearGradient id="road-asphalt" x1="0" y1="0" x2="1" y2="0">
+ <stop offset="0%" stop-color="#454f59"/>
+ <stop offset="16%" stop-color="#606b76"/>
+ <stop offset="50%" stop-color="#707b85"/>
+ <stop offset="84%" stop-color="#59646f"/>
+ <stop offset="100%" stop-color="#414b55"/>
 </linearGradient>
- <linearGradient id="road-cleared" x1="0" y1="0" x2="1" y2="0">
- <stop offset="0%" stop-color="#059669"/>
- <stop offset="50%" stop-color="#10b981"/>
- <stop offset="100%" stop-color="#059669"/>
+ <linearGradient id="road-asphalt-cleared" x1="0" y1="0" x2="1" y2="0">
+ <stop offset="0%" stop-color="#59646e"/>
+ <stop offset="50%" stop-color="#78838d"/>
+ <stop offset="100%" stop-color="#59646e"/>
+</linearGradient>
+ <pattern id="road-grain" width="18" height="18" patternUnits="userSpaceOnUse">
+  <circle cx="3" cy="5" r="0.8" fill="#e2e8f0" opacity="0.22"/>
+  <circle cx="13" cy="12" r="0.7" fill="#17212b" opacity="0.24"/>
+  <path d="M 8 2 l 2 1 M 2 15 l 2 -1" stroke="#e2e8f0" stroke-width="0.6" opacity="0.12"/>
+ </pattern>
 </linearGradient>
  <radialGradient id="gloss-green" cx="35%" cy="30%" r="65%">
  <stop offset="0%" stop-color="#a7f3d0"/>
@@ -2942,6 +3156,36 @@ function draw() {
  <stop offset="75%" stop-color="#f59e0b"/>
  <stop offset="100%" stop-color="#b45309"/>
 </radialGradient>
+ <linearGradient id="truck-blue-side" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#49b4ff"/>
+  <stop offset="48%" stop-color="#168cff"/>
+  <stop offset="100%" stop-color="#0750a2"/>
+ </linearGradient>
+ <linearGradient id="truck-blue-top" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#b9ecff"/>
+  <stop offset="100%" stop-color="#4baeff"/>
+ </linearGradient>
+ <linearGradient id="truck-orange-side" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#ffc16b"/>
+  <stop offset="48%" stop-color="#ff8a1f"/>
+  <stop offset="100%" stop-color="#c74a0b"/>
+ </linearGradient>
+ <linearGradient id="truck-window" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0%" stop-color="#e4fbff"/>
+  <stop offset="55%" stop-color="#8cddff"/>
+  <stop offset="100%" stop-color="#3983bd"/>
+ </linearGradient>
+ <radialGradient id="truck-wheel-hub" cx="35%" cy="30%" r="70%">
+  <stop offset="0%" stop-color="#f8fafc"/>
+  <stop offset="45%" stop-color="#94a3b8"/>
+  <stop offset="100%" stop-color="#334155"/>
+ </radialGradient>
+ ${MAP_LEVEL_PALETTES.map((palette, index) => `
+ <radialGradient id="level-node-${index}" cx="34%" cy="27%" r="76%">
+  <stop offset="0%" stop-color="${palette.light}"/>
+  <stop offset="42%" stop-color="${palette.mid}"/>
+  <stop offset="100%" stop-color="${palette.dark}"/>
+ </radialGradient>`).join('')}
  <linearGradient id="gold-star-grad" x1="0" y1="0" x2="0" y2="1">
  <stop offset="0%" stop-color="#fef08a"/>
  <stop offset="100%" stop-color="#f59e0b"/>
@@ -2993,12 +3237,37 @@ function draw() {
  h += `
  <!-- Puffy cartoon clouds with continuous silhouettes and soft highlights -->
  <g filter="url(#cloud-shadow)">
+ <path d="M 22 119 C 9 119 3 111 4 101 C 5 90 14 83 27 83 C 28 67 41 56 58 56 C 74 56 85 66 89 80 C 95 67 107 62 121 64 C 138 66 147 79 145 94 C 159 86 175 92 178 105 C 181 115 173 122 159 122 L 22 122 C 22 122 22 121 22 119 Z" fill="#67aeca" stroke="#5b9ebd" stroke-width="2"/>
  <path d="M 22 112 C 9 112 3 104 4 94 C 5 83 14 76 27 76 C 28 60 41 49 58 49 C 74 49 85 59 89 73 C 95 60 107 55 121 57 C 138 59 147 72 145 87 C 159 79 175 85 178 98 C 181 108 173 115 159 115 L 22 115 C 22 115 22 114 22 112 Z" fill="url(#cloud-fill)" stroke="#ffffff" stroke-width="2"/>
  <path d="M 30 105 C 19 105 13 99 15 91 M 39 69 C 43 58 52 54 61 55 M 101 68 C 107 63 116 62 123 65 M 153 94 C 160 90 167 93 169 99" fill="none" stroke="#ffffff" stroke-opacity="0.78" stroke-width="3" stroke-linecap="round"/>
  </g>
  <g filter="url(#cloud-shadow)">
+ <path d="M 220 124 C 207 124 201 116 203 105 C 205 94 214 88 226 88 C 228 72 241 61 258 61 C 274 61 285 71 289 85 C 296 72 308 67 322 69 C 339 71 348 84 346 99 C 360 91 376 97 379 110 C 381 119 373 127 359 127 L 220 127 C 220 127 220 126 220 124 Z" fill="#67aeca" stroke="#5b9ebd" stroke-width="2"/>
  <path d="M 220 117 C 207 117 201 109 203 98 C 205 87 214 81 226 81 C 228 65 241 54 258 54 C 274 54 285 64 289 78 C 296 65 308 60 322 62 C 339 64 348 77 346 92 C 360 84 376 90 379 103 C 381 112 373 120 359 120 L 220 120 C 220 120 220 119 220 117 Z" fill="url(#cloud-fill)" stroke="#ffffff" stroke-width="2"/>
  <path d="M 229 110 C 218 110 212 104 214 96 M 239 74 C 243 63 252 59 261 60 M 307 73 C 313 68 322 67 329 70 M 354 99 C 361 95 368 98 370 104" fill="none" stroke="#ffffff" stroke-opacity="0.78" stroke-width="3" stroke-linecap="round"/>
+ </g>
+ <!-- Sunny weather and breeze trails add atmosphere between delivery stops. -->
+ <g aria-hidden="true" filter="url(#cloud-shadow)" opacity="0.9">
+  ${[2, 11, 20].map((stopIndex, sunIndex) => {
+   const x = sunIndex === 1 ? 44 : 330;
+   const y = P[stopIndex].y - 88;
+   return `<g transform="translate(${x} ${y}) scale(${sunIndex === 1 ? 0.82 : 1})">
+   <g stroke="#f8b84e" stroke-width="3" stroke-linecap="round">
+    <path d="M 0 -25 V -19 M 0 19 V 25 M -25 0 H -19 M 19 0 H 25 M -18 -18 L -14 -14 M 14 14 L 18 18 M 18 -18 L 14 -14 M -14 14 L -18 18"/>
+   </g>
+   <circle r="16" fill="#ffd66b" stroke="#fff1b8" stroke-width="3"/>
+   <circle cx="-5" cy="-6" r="5" fill="#fff3bd" opacity="0.65"/>
+  </g>`;
+  }).join('')}
+ </g>
+ <g aria-hidden="true" fill="none" stroke="#f7ffff" stroke-width="3.5" stroke-linecap="round" opacity="0.82">
+  ${Array.from({ length: 12 }, (_, index) => {
+   const stopIndex = Math.min(index * 2, N - 1);
+   const y = P[stopIndex].y + (index % 2 === 0 ? 34 : -32);
+   return index % 2 === 0
+    ? `<path d="M 12 ${y} C 34 ${y - 13}, 59 ${y + 12}, 82 ${y - 1} S 105 ${y - 12}, 121 ${y - 2}"/>`
+    : `<path d="M 259 ${y} C 280 ${y - 13}, 304 ${y + 12}, 327 ${y - 1} S 350 ${y - 12}, 368 ${y - 2}"/>`;
+  }).join('')}
  </g>
  <!-- Soft distant horizon for the home-arrival area -->
  <path d="M -20,${P[24].y + 48} Q 75,${P[24].y + 30} 155,${P[24].y + 48} T ${vbW + 20},${P[24].y + 42}" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="3"/>
@@ -3017,6 +3286,70 @@ function draw() {
  <circle cx="335" cy="${P[12].y - 20}" r="2.2"/>
 </g>
 
+  <!-- Varied logistics landmarks decorate the map without crowding the route. -->
+  <g aria-hidden="true" opacity="0.64">
+  ${Array.from({ length: 12 }, (_, index) => {
+   const stopIndex = Math.min(index * 2, N - 1);
+   const p = P[stopIndex];
+   const x = index % 2 === 0 ? 8 : 314;
+   const y = p.y - 72;
+   const landmarks = [
+    `<path d="M 2 28 H 50 M 7 31 H 46" stroke="#53616b" stroke-width="2"/>
+     <path d="M 8 15 L 17 10 L 26 15 V 27 H 8 Z" fill="#e9b86b" stroke="#805d36"/>
+     <path d="M 17 10 V 21 M 8 15 L 17 21 L 26 15" fill="none" stroke="#946c3c"/>
+     <path d="M 27 17 L 36 12 L 45 17 V 27 H 27 Z" fill="#d99857" stroke="#805d36"/>
+     <path d="M 36 12 V 22 M 27 17 L 36 22 L 45 17" fill="none" stroke="#946c3c"/>`,
+    `<rect x="1" y="6" width="50" height="22" rx="2" fill="#4a8f9e" stroke="#285b69" stroke-width="2"/>
+     <path d="M 7 8 V 26 M 15 8 V 26 M 23 8 V 26 M 31 8 V 26 M 39 8 V 26 M 47 8 V 26" stroke="#bce3dc" stroke-width="1.3"/>
+     <path d="M 4 28 H 48" stroke="#344955" stroke-width="3"/>
+     <circle cx="10" cy="30" r="2" fill="#283640"/><circle cx="43" cy="30" r="2" fill="#283640"/>`,
+    `<path d="M 3 25 H 43 V 28 H 3 Z" fill="#596b78" stroke="#344955"/>
+     <path d="M 7 12 H 27 V 24 H 7 Z" fill="#e7ae59" stroke="#805d36"/>
+     <path d="M 7 12 L 17 7 L 27 12 M 17 7 V 18 M 7 12 L 17 18 L 27 12" fill="none" stroke="#946c3c"/>
+     <path d="M 31 9 V 23 H 45 M 29 9 H 34 M 41 23 L 45 27 L 49 23" fill="none" stroke="#384c5a" stroke-width="2"/>
+     <circle cx="34" cy="27" r="3" fill="#344955"/><circle cx="44" cy="27" r="3" fill="#344955"/>`,
+    `<path d="M 3 13 L 26 3 L 49 13" fill="#718a91" stroke="#385763" stroke-width="2"/>
+     <rect x="7" y="13" width="38" height="16" fill="#d9e3d4" stroke="#536c62"/>
+     <rect x="20" y="17" width="13" height="12" fill="#415b68" stroke="#344955"/>
+     <path d="M 11 17 H 16 V 21 H 11 Z M 36 17 H 41 V 21 H 36 Z" fill="#f3cf75" stroke="#805d36"/>
+     <path d="M 1 30 H 51" stroke="#53616b" stroke-width="2"/>`,
+    `<path d="M 2 24 H 49" stroke="#53616b" stroke-width="2"/>
+     <path d="M 8 24 L 12 11 H 18 L 22 24 Z M 31 24 L 35 11 H 41 L 45 24 Z" fill="#ed8755" stroke="#8e4a36" stroke-width="1.5"/>
+     <path d="M 10 18 H 20 M 33 18 H 43" stroke="#fff0bd" stroke-width="2"/>
+     <path d="M 1 27 H 50" stroke="#c35a43" stroke-width="3" stroke-dasharray="6 4"/>`,
+    `<path d="M 10 8 H 28 L 36 16 V 27 H 10 Z" fill="#e9b86b" stroke="#805d36" stroke-width="1.5"/>
+     <path d="M 28 8 V 16 H 36 M 10 15 H 27 M 10 20 H 27" fill="none" stroke="#946c3c"/>
+     <path d="M 8 28 H 41 M 15 28 V 31 M 36 28 V 31" stroke="#53616b" stroke-width="2"/>
+     <circle cx="15" cy="31" r="2" fill="#344955"/><circle cx="36" cy="31" r="2" fill="#344955"/>`,
+    `<path d="M 2 17 L 23 14 L 31 5 L 35 5 L 32 14 L 48 13 L 52 16 L 32 19 L 35 28 L 31 28 L 23 20 L 2 19 Z" fill="#e8e1c8" stroke="#53616b" stroke-width="1.4"/>
+     <path d="M 24 16 H 32 M 8 17 H 15" stroke="#92b9bb" stroke-width="1.5"/>`,
+    `<path d="M 2 27 H 51 M 6 27 L 11 12 H 45 L 50 27" fill="none" stroke="#53616b" stroke-width="2"/>
+     <path d="M 11 18 H 20 V 26 H 11 Z M 23 15 H 32 V 26 H 23 Z M 35 19 H 44 V 26 H 35 Z" fill="#d99857" stroke="#805d36"/>
+     <circle cx="15" cy="14" r="1.5" fill="#f4d276"/><circle cx="41" cy="14" r="1.5" fill="#f4d276"/>`,
+    `<path d="M 4 28 V 15 H 48 V 28 Z" fill="#607b87" stroke="#344955" stroke-width="2"/>
+     <path d="M 9 18 H 44 V 25 H 9 Z" fill="#263e4d"/>
+     <rect x="15" y="18" width="10" height="7" fill="#e7ae59"/><rect x="27" y="18" width="10" height="7" fill="#5a9eaa"/>
+     <path d="M 4 13 H 48" stroke="#d9e3d4" stroke-width="2"/>
+     <circle cx="11" cy="29" r="2" fill="#344955"/><circle cx="41" cy="29" r="2" fill="#344955"/>`,
+    `<path d="M 5 7 H 46 V 12 H 5 Z" fill="#e7ae59" stroke="#805d36"/>
+     <path d="M 10 12 V 28 M 40 12 V 28 M 7 28 H 43" fill="none" stroke="#53616b" stroke-width="2"/>
+     <path d="M 13 14 H 22 V 21 H 13 Z M 25 14 H 34 V 21 H 25 Z" fill="#5a9eaa" stroke="#285b69"/>
+     <path d="M 23 22 V 28" stroke="#c45f45" stroke-width="2"/>`,
+    `<path d="M 4 24 H 49 L 43 29 H 10 Z" fill="#597987" stroke="#344955" stroke-width="1.5"/>
+     <path d="M 11 13 H 21 V 23 H 11 Z M 22 10 H 32 V 23 H 22 Z M 33 13 H 43 V 23 H 33 Z" fill="#d99857" stroke="#805d36"/>
+     <path d="M 16 24 V 29 M 36 24 V 29" stroke="#344955" stroke-width="2"/>
+     <path d="M 6 31 H 48" stroke="#82959c" stroke-width="1.5"/>`,
+    `<path d="M 5 6 V 29 M 5 8 H 47 V 20 H 5 Z" fill="#e7ae59" stroke="#805d36" stroke-width="1.5"/>
+     <path d="M 11 14 H 36 M 30 10 L 36 14 L 30 18 M 41 14 H 16 M 22 10 L 16 14 L 22 18" fill="none" stroke="#4b626b" stroke-width="2"/>
+     <path d="M 1 30 H 11" stroke="#53616b" stroke-width="2"/>`
+   ];
+   return `
+   <g transform="translate(${x} ${y})">
+    ${landmarks[index]}
+   </g>`;
+  }).join('')}
+  </g>
+
   <!-- Warehouse Zone: Industrial depot ambient glow rings -->
  <g stroke="rgba(245, 158, 11, 0.22)" stroke-width="3" fill="none">
  <circle cx="35" cy="${P[1].y}" r="32" stroke-dasharray="8 6"/>
@@ -3027,7 +3360,7 @@ function draw() {
 
 
 
-  // 3. Delivery Route Road (Asphalt with lane markings)
+  // 3. Layered delivery road with a raised curb and inset lane markers.
  // Build the continuous Bezier curve path string
  let roadD = `M ${P[0].x} ${P[0].y}`;
  for (let i = 1; i < N; i++) {
@@ -3036,13 +3369,14 @@ function draw() {
  }
 
  // Layer 1: Ground drop shadow beneath road
- h += `<path d="${roadD}" fill="none" stroke="rgba(15,23,42,0.38)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>`;
- // Layer 2: Road curb / embankment
- h += `<path d="${roadD}" fill="none" stroke="url(#road-curb)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>`;
- // Layer 3: Elevated sand/stone road surface
- h += `<path d="${roadD}" fill="none" stroke="url(#road-sand)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`;
- // Layer 4: Stepping-stone paver pattern
-  h += `<path d="${roadD}" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="12 20" stroke-linecap="round" opacity="0.8"/>`;
+ h += `<path d="${roadD}" transform="translate(0 9)" fill="none" stroke="rgba(15,23,42,0.34)" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>`;
+ // A darker offset edge and graduated gray shoulder give the road an asphalt profile.
+ h += `<path d="${roadD}" transform="translate(0 5)" fill="none" stroke="#303841" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>`;
+ h += `<path d="${roadD}" fill="none" stroke="url(#road-edge)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>`;
+ h += `<path d="${roadD}" fill="none" stroke="url(#road-asphalt)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`;
+ h += `<path d="${roadD}" fill="none" stroke="url(#road-grain)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" opacity="0.62"/>`;
+ h += `<path d="${roadD}" fill="none" stroke="#34404a" stroke-width="6" stroke-dasharray="14 18" stroke-linecap="round"/>`;
+ h += `<path d="${roadD}" fill="none" stroke="#facc15" stroke-width="3" stroke-dasharray="14 18" stroke-linecap="round"/>`;
 
  // Cleared Segment Glow Trail
  if (cur > 0) {
@@ -3051,13 +3385,66 @@ function draw() {
  const a = P[i-1], b = P[i], ym = (a.y + b.y) / 2;
  clearedD += ` C ${a.x} ${ym}, ${b.x} ${ym}, ${b.x} ${b.y}`;
  }
- h += `<path d="${clearedD}" fill="none" stroke="url(#road-cleared)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" opacity="0.96"/>`;
- h += `<path d="${clearedD}" fill="none" stroke="#ecfdf5" stroke-width="10" stroke-dasharray="12 16" stroke-linecap="round"/>`;
+ h += `<path d="${clearedD}" fill="none" stroke="url(#road-asphalt-cleared)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" opacity="0.96"/>`;
+ h += `<path d="${clearedD}" fill="none" stroke="#34404a" stroke-width="6" stroke-dasharray="14 18" stroke-linecap="round"/>`;
+ h += `<path d="${clearedD}" fill="none" stroke="#facc15" stroke-width="3" stroke-dasharray="14 18" stroke-linecap="round"/>`;
  }
+
+ const truckTargetIndex = Math.min(activeStopIndex ?? cur, N - 1);
+ const truckFromIndex = Math.max(0, truckTargetIndex - 1);
+ const truckToIndex = truckTargetIndex;
+ const truckFrom = P[truckFromIndex], truckTo = P[truckToIndex];
+ const truckMidY = (truckFrom.y + truckTo.y) / 2;
+ const truckP0 = { x: truckFrom.x, y: truckFrom.y };
+ const truckP1 = { x: truckFrom.x, y: truckMidY };
+ const truckP2 = { x: truckTo.x, y: truckMidY };
+ const truckP3 = { x: truckTo.x, y: truckTo.y };
+ const interpolatePoint = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+ const truckProgress = 0.62;
+ const truckQ0 = interpolatePoint(truckP0, truckP1, truckProgress);
+ const truckQ1 = interpolatePoint(truckP1, truckP2, truckProgress);
+ const truckQ2 = interpolatePoint(truckP2, truckP3, truckProgress);
+ const truckR0 = interpolatePoint(truckQ0, truckQ1, truckProgress);
+ const truckR1 = interpolatePoint(truckQ1, truckQ2, truckProgress);
+ const truckStop = interpolatePoint(truckR0, truckR1, truckProgress);
+ const truckPath = `M ${truckP0.x} ${truckP0.y} C ${truckQ0.x} ${truckQ0.y}, ${truckR0.x} ${truckR0.y}, ${truckStop.x} ${truckStop.y}`;
+ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const truckMotion = reducedMotion || truckTargetIndex === 0 ? '' : `<animateMotion dur="3.2s" repeatCount="1" fill="freeze" path="${truckPath}"/>`;
+ const truckPosition = reducedMotion || truckTargetIndex === 0 ? ` transform="translate(${truckStop.x} ${truckStop.y})"` : '';
+ h += `
+ <g class="map-delivery-truck" aria-hidden="true"${truckPosition} filter="url(#pedestal-shadow)">
+  ${truckMotion}
+  <g transform="translate(-32 -30)">
+   <ellipse cx="34" cy="36" rx="32" ry="4" fill="rgba(15,23,42,.4)"/>
+   <path d="M4 10 12 4h33l-7 6z" fill="url(#truck-blue-top)" stroke="#dbeafe" stroke-width="1.4" stroke-linejoin="round"/>
+   <path d="M4 10h34v20H4z" fill="url(#truck-blue-side)" stroke="#0750a2" stroke-width="1.4"/>
+   <path d="M8 12h25v2H8z" fill="#dff6ff" opacity=".8"/>
+   <path d="M6 17h30v10H6z" fill="#0b3470" opacity=".72"/>
+   <path d="M6 17h30v2H6z" fill="#77caff" opacity=".5"/>
+   <path d="M11 20h15v2H11zm0 4h10v1.5H11z" fill="#ffd34e"/>
+   <path d="M38 12 45 7l12 4 7 11v8H38z" fill="url(#truck-orange-side)" stroke="#a83c08" stroke-width="1.4" stroke-linejoin="round"/>
+   <path d="M38 12 45 7l12 4-6 3z" fill="#ffd39a" stroke="#fff1d6" stroke-width="1.2" stroke-linejoin="round"/>
+   <path d="M52 14 57 12l7 10-6 1z" fill="url(#truck-window)" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/>
+   <path d="M54 15 57 14l4 6h-4z" fill="#fff" opacity=".5"/>
+   <path d="M3 28h59v3H3z" fill="#ffd34e" stroke="#a83c08" stroke-width=".8"/>
+   <path d="M61 25h4v4h-4z" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+   <path d="M64 24h2v3h-2z" fill="#fff3a3"/>
+   <ellipse cx="17" cy="31" rx="5.6" ry="4.3" fill="#0f172a" stroke="#e2e8f0" stroke-width="1.2"/>
+   <ellipse cx="17" cy="31" rx="3.5" ry="2.8" fill="url(#truck-wheel-hub)" stroke="#334155" stroke-width=".8"/>
+   <ellipse cx="17" cy="31" rx="1.4" ry="1.1" fill="#e2e8f0"/>
+   <path d="M12 30h1.5m7 2h1.5" stroke="#64748b" stroke-width=".9" stroke-linecap="round"/>
+   <ellipse cx="50" cy="31" rx="5.6" ry="4.3" fill="#0f172a" stroke="#e2e8f0" stroke-width="1.2"/>
+   <ellipse cx="50" cy="31" rx="3.5" ry="2.8" fill="url(#truck-wheel-hub)" stroke="#334155" stroke-width=".8"/>
+   <ellipse cx="50" cy="31" rx="1.4" ry="1.1" fill="#e2e8f0"/>
+   <path d="M45 30h1.5m7 2h1.5" stroke="#64748b" stroke-width=".9" stroke-linecap="round"/>
+   <path d="M7 29h7" stroke="#fff" stroke-width="1" opacity=".7"/>
+  </g>
+ </g>
+ `;
 
  // 4. Level Nodes, Checkpoint Gates & Milestone Banners
  I.forEach((it, i) => {
- const p = P[i], done = !!R[i], isC = i === cur;
+ const p = P[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), isC = i === cur;
  const nodeState = done ? 'completed'
   : isC ? 'current stop'
    : it.t === 'gate' ? (O[it.g] ? 'open checkpoint' : 'locked checkpoint')
@@ -3081,56 +3468,94 @@ function draw() {
  h += `<g class="node" data-stop-index="${i}" role="button" tabindex="0" aria-label="${nodeLabel}" onclick="tap(${i})">`;
 
  if (it.t === 'gate') {
-  // Warehouse Barrier / Checkpoint Scanner Gate
+ // Warehouse loading-bay checkpoint
  const gateOpen = done || O[it.g];
- const gateGrad = gateOpen ? 'url(#gloss-green)' : 'url(#arch-wood)';
- const gateBorder = gateOpen ? '#10b981' : '#f59e0b';
+ const previousLevel = MAP_LEVEL_NUMBER[i - 1] || 1;
+ const gatePalette = MAP_LEVEL_PALETTES[previousLevel - 1] || MAP_LEVEL_PALETTES[0];
+ const gateStatus = gateOpen ? '#34d399' : '#fb7185';
+ const shutterLines = Array.from({ length: gateOpen ? 2 : 5 }, (_, index) => {
+ const y = gateOpen ? p.y - 15 + index * 5 : p.y - 8 + index * 6;
+ return `<path d="M ${p.x - 24} ${y} H ${p.x + 24}" stroke="rgba(255,255,255,0.42)" stroke-width="1.5"/>`;
+ }).join('');
  h += `
  <g filter="url(#pedestal-shadow)">
-  <!-- Checkpoint Scanner Posts -->
-  <rect x="${p.x - 72}" y="${p.y - 36}" width="14" height="72" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
-  <rect x="${p.x - 74}" y="${p.y - 44}" width="18" height="10" rx="3" fill="${gateOpen ? "#10b981" : "#ef4444"}"/>
- 
-  <rect x="${p.x + 58}" y="${p.y - 36}" width="14" height="72" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
-  <rect x="${p.x + 58}" y="${p.y - 44}" width="18" height="10" rx="3" fill="${gateOpen ? "#10b981" : "#ef4444"}"/>
-
-  <!-- Barrier Crossbar -->
-  <rect x="${p.x - 58}" y="${p.y - 28}" width="116" height="56" rx="8" fill="${gateGrad}" stroke="${gateBorder}" stroke-width="2.5"/>
-  <!-- Barrier stripes -->
-  <rect x="${p.x - 46}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x - 28}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x - 10}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x + 8}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x + 26}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/>
-
- <!-- Gate number -->
- <text x="${p.x}" y="${p.y + 8}" text-anchor="middle" font-size="19" font-weight="900" fill="#ffffff">${it.g}</text>
+  <ellipse cx="${p.x}" cy="${p.y + 27}" rx="49" ry="8" fill="rgba(15,23,42,0.42)"/>
+  <path d="M ${p.x + 39} ${p.y - 22} L ${p.x + 49} ${p.y - 28} V ${p.y + 16} L ${p.x + 39} ${p.y + 23} Z" fill="#263d50" stroke="#1b2e3e" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M ${p.x - 48} ${p.y - 21} L ${p.x - 39} ${p.y - 25} H ${p.x + 39} L ${p.x + 48} ${p.y - 21} V ${p.y + 23} H ${p.x - 48} Z" fill="#718894" stroke="#344d5c" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M ${p.x - 48} ${p.y - 21} L ${p.x - 39} ${p.y - 25} H ${p.x + 39} L ${p.x + 48} ${p.y - 21} L ${p.x + 41} ${p.y - 15} H ${p.x - 42} Z" fill="#9db0b2" stroke="#526d78" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M ${p.x - 44} ${p.y - 21} L ${p.x} ${p.y - 41} L ${p.x + 47} ${p.y - 22} L ${p.x + 39} ${p.y - 17} L ${p.x} ${p.y - 33} L ${p.x - 39} ${p.y - 16} Z" fill="#426478" stroke="#263f50" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M ${p.x - 38} ${p.y - 22} L ${p.x} ${p.y - 38} L ${p.x + 40} ${p.y - 22}" fill="none" stroke="#c9d7d4" stroke-width="1.5" opacity=".8"/>
+  <path d="M ${p.x - 43} ${p.y - 12} H ${p.x - 34} V ${p.y + 17} H ${p.x - 43} Z M ${p.x + 34} ${p.y - 12} H ${p.x + 43} V ${p.y + 17} H ${p.x + 34} Z" fill="#516b79" stroke="#b8cbca" stroke-width="1.5"/>
+  <rect x="${p.x - 29}" y="${p.y - 14}" width="58" height="36" rx="2" fill="#203849" stroke="#d4dfd9" stroke-width="2"/>
+  <path d="M ${p.x - 25} ${p.y + 19} V ${p.y - 10} H ${p.x + 25} V ${p.y + 19} Z" fill="#122636" stroke="#101f2a" stroke-width="1"/>
+  ${gateOpen ? `<path d="M ${p.x - 24} ${p.y + 15} L ${p.x - 9} ${p.y - 5} H ${p.x + 9} L ${p.x + 24} ${p.y + 15} Z" fill="${gatePalette.accent}" opacity="0.35"/>
+  <path d="M ${p.x - 25} ${p.y + 17} H ${p.x + 25}" stroke="#d8c59d" stroke-width="2"/>` : ''}
+  <rect x="${p.x - 25}" y="${gateOpen ? p.y - 15 : p.y - 8}" width="50" height="${gateOpen ? 11 : 27}" rx="1.5" fill="url(#truck-blue-side)" stroke="${gatePalette.accent}" stroke-width="1.5"/>
+  ${shutterLines}
+  <path d="M ${p.x - 30} ${p.y + 21} H ${p.x + 30} L ${p.x + 36} ${p.y + 27} H ${p.x - 36} Z" fill="#9aa9a8" stroke="#4b626d" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M ${p.x - 27} ${p.y + 23} L ${p.x - 18} ${p.y + 16} M ${p.x + 27} ${p.y + 23} L ${p.x + 18} ${p.y + 16}" stroke="#f4c85a" stroke-width="2.5"/>
+  <rect x="${p.x - 15}" y="${p.y - 31}" width="30" height="8" rx="2" fill="#17344a" stroke="${gatePalette.accent}" stroke-width="1.5"/>
+  <text x="${p.x}" y="${p.y - 25}" text-anchor="middle" font-size="5.5" font-weight="900" fill="#ffffff" letter-spacing=".5">DOCK ${it.g}</text>
+  <rect x="${p.x - 46}" y="${p.y - 10}" width="4" height="7" rx="1" fill="${gateStatus}"/>
+  <rect x="${p.x + 42}" y="${p.y - 10}" width="4" height="7" rx="1" fill="${gateStatus}"/>
+  <rect x="${p.x - 10}" y="${p.y + 3}" width="20" height="15" rx="4" fill="#09264c" stroke="${gateStatus}" stroke-width="2"/>
+  <text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">${gateOpen ? '✓' : it.g}</text>
 </g>
  `;
  } else {
-  // Delivery Stop Node (parcel-pin style)
- const badgeFill = done ? 'url(#gloss-green)' : isC ? (it.t === 'bonus' ? 'url(#gloss-gold)' : 'url(#gloss-orange)') : 'url(#gloss-gray)';
- const bevelColor = done ? '#064e3b' : isC ? '#7c2d12' : '#1e293b';
+ // Each delivery stop keeps its own level color; stars and the active ring communicate progress.
+ const levelPalette = MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i] || 1) - 1] || MAP_LEVEL_PALETTES[0];
+ const badgeFill = `url(#level-node-${(MAP_LEVEL_NUMBER[i] || 1) - 1})`;
+ const bevelColor = levelPalette.dark;
+ const isCustomerHome = it.t === 'bonus' && MAP_LEVEL_NUMBER[i] === 19;
 
  if (isC) {
  // Glowing animated ripple ring around current level
- h += `<circle class="pulse" cx="${p.x}" cy="${p.y}" r="45" fill="none" stroke="#ff8a1f" stroke-width="6"/>`;
+ h += `<circle class="pulse" cx="${p.x}" cy="${p.y}" r="45" fill="none" stroke="${levelPalette.accent}" stroke-width="6"/>`;
  }
 
+ if (isCustomerHome) {
  h += `
  <g filter="url(#pedestal-shadow)">
- <!-- Ground shadow -->
- <ellipse cx="${p.x}" cy="${p.y + 14}" rx="33" ry="12" fill="rgba(15, 23, 42, 0.45)"/>
- 
- <!-- 3D Pedestal Bottom Lip/Bevel -->
- <circle cx="${p.x}" cy="${p.y + 6}" r="31" fill="${bevelColor}"/>
- 
- <!-- Main Glossy Circular Button -->
- <circle cx="${p.x}" cy="${p.y}" r="29" fill="${badgeFill}" stroke="#ffffff" stroke-width="3.5"/>
- 
- <!-- Glossy Crescent Reflection Arc -->
- <path d="M ${p.x - 18} ${p.y - 8} Q ${p.x} ${p.y - 24} ${p.x + 18} ${p.y - 8} Q ${p.x} ${p.y - 17} ${p.x - 18} ${p.y - 8} Z" fill="rgba(255,255,255,0.6)"/>
- 
- <!-- Current numbered level -->
- <text x="${p.x}" y="${p.y + 8}" text-anchor="middle" font-size="${it.t === 'fin' ? 22 : 19}" font-weight="900" fill="#ffffff" paint-order="stroke" stroke="rgba(15,23,42,0.55)" stroke-width="1" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.4))">${it.t === 'fin' ? '✓' : MAP_LEVEL_NUMBER[i]}</text>
+ <ellipse cx="${p.x}" cy="${p.y + 31}" rx="43" ry="9" fill="rgba(15,23,42,0.42)"/>
+ <path d="M ${p.x - 33} ${p.y + 25} H ${p.x + 34} L ${p.x + 40} ${p.y + 30} H ${p.x - 38} Z" fill="#d2c49f" stroke="#77694d" stroke-width="1.5" stroke-linejoin="round"/>
+ <path d="M ${p.x + 25} ${p.y - 5} L ${p.x + 35} ${p.y - 11} V ${p.y + 24} L ${p.x + 25} ${p.y + 29} Z" fill="${levelPalette.dark}" stroke="${bevelColor}" stroke-width="1.5" stroke-linejoin="round"/>
+ <path d="M ${p.x - 27} ${p.y - 5} L ${p.x + 25} ${p.y - 5} V ${p.y + 28} L ${p.x - 27} ${p.y + 24} Z" fill="url(#level-node-${(MAP_LEVEL_NUMBER[i] || 1) - 1})" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+ <path d="M ${p.x + 25} ${p.y - 5} L ${p.x + 35} ${p.y - 11} V ${p.y + 24} L ${p.x + 25} ${p.y + 28} Z" fill="${levelPalette.dark}" opacity=".72"/>
+ <path d="M ${p.x - 36} ${p.y - 5} L ${p.x} ${p.y - 38} L ${p.x + 36} ${p.y - 5} L ${p.x + 27} ${p.y - 7} L ${p.x} ${p.y - 31} L ${p.x - 27} ${p.y - 7} Z" fill="${bevelColor}" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+ <path d="M ${p.x - 30} ${p.y - 7} L ${p.x} ${p.y - 34} L ${p.x + 30} ${p.y - 7} Z" fill="${levelPalette.mid}"/>
+ <path d="M ${p.x} ${p.y - 34} L ${p.x + 36} ${p.y - 5} L ${p.x + 27} ${p.y - 7} L ${p.x} ${p.y - 31} Z" fill="${levelPalette.dark}"/>
+ <path d="M ${p.x - 21} ${p.y - 8} L ${p.x - 21} ${p.y - 17} L ${p.x - 12} ${p.y - 17} L ${p.x - 12} ${p.y - 8} Z M ${p.x + 12} ${p.y - 8} L ${p.x + 12} ${p.y - 17} L ${p.x + 21} ${p.y - 17} L ${p.x + 21} ${p.y - 8} Z" fill="#fff1ba" stroke="${bevelColor}" stroke-width="1"/>
+ <rect x="${p.x - 11}" y="${p.y - 24}" width="22" height="13" rx="5" fill="${bevelColor}" stroke="#fff1ba" stroke-width="1.5"/>
+ <text x="${p.x}" y="${p.y - 15}" text-anchor="middle" font-size="8.5" font-weight="900" fill="#ffffff">19</text>
+ <rect x="${p.x - 23}" y="${p.y - 4}" width="11" height="11" rx="1.5" fill="#fff4cc" stroke="${bevelColor}" stroke-width="1.5"/>
+ <path d="M ${p.x - 17.5} ${p.y - 4} V ${p.y + 7} M ${p.x - 23} ${p.y + 1.5} H ${p.x - 12}" stroke="${bevelColor}" stroke-width="1"/>
+ <rect x="${p.x + 10}" y="${p.y - 4}" width="11" height="11" rx="1.5" fill="#fff4cc" stroke="${bevelColor}" stroke-width="1.5"/>
+ <path d="M ${p.x + 15.5} ${p.y - 4} V ${p.y + 7} M ${p.x + 10} ${p.y + 1.5} H ${p.x + 21}" stroke="${bevelColor}" stroke-width="1"/>
+ <path d="M ${p.x - 6} ${p.y + 28} V ${p.y + 8} Q ${p.x} ${p.y + 1} ${p.x + 6} ${p.y + 8} V ${p.y + 28} Z" fill="${bevelColor}" stroke="#fff1ba" stroke-width="1.5"/>
+ <circle cx="${p.x + 3}" cy="${p.y + 18}" r="1" fill="${levelPalette.accent}"/>
+ <path d="M ${p.x - 10} ${p.y + 28} H ${p.x + 10} L ${p.x + 14} ${p.y + 32} H ${p.x - 14} Z" fill="#f3d996" stroke="#806d4b" stroke-width="1"/>
+ <path d="M ${p.x - 27} ${p.y - 6} H ${p.x + 25}" stroke="#fff4cc" stroke-width="1.5" opacity=".8"/>
 </g>
  `;
+ } else {
+ const pinPath = `M ${p.x} ${p.y + 34} C ${p.x - 7} ${p.y + 24}, ${p.x - 30} ${p.y + 2}, ${p.x - 30} ${p.y - 13} A 30 30 0 1 1 ${p.x + 30} ${p.y - 13} C ${p.x + 30} ${p.y + 2}, ${p.x + 7} ${p.y + 24}, ${p.x} ${p.y + 34} Z`;
+ h += `
+ <g filter="url(#pedestal-shadow)">
+ <ellipse cx="${p.x}" cy="${p.y + 34}" rx="25" ry="7" fill="rgba(15,23,42,0.38)"/>
+ <path d="${pinPath}" transform="translate(0 4)" fill="${bevelColor}"/>
+ <path d="${pinPath}" fill="${badgeFill}" stroke="#ffffff" stroke-width="3"/>
+ <path d="M ${p.x} ${p.y - 42} A 30 30 0 0 1 ${p.x + 30} ${p.y - 13} C ${p.x + 30} ${p.y + 2}, ${p.x + 7} ${p.y + 24}, ${p.x} ${p.y + 34} Z" fill="${bevelColor}" opacity=".28"/>
+ <path d="M ${p.x - 20} ${p.y - 29} Q ${p.x - 2} ${p.y - 44} ${p.x + 14} ${p.y - 37}" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+ <circle cx="${p.x}" cy="${p.y - 13}" r="20" fill="rgba(255,255,255,0.9)" stroke="${levelPalette.accent}" stroke-width="2"/>
+ ${it.t === 'fin'
+  ? `<path d="M ${p.x - 9} ${p.y - 12} L ${p.x - 2} ${p.y - 5} L ${p.x + 10} ${p.y - 19}" fill="none" stroke="${bevelColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`
+  : `<path d="M ${p.x - 10} ${p.y - 16} L ${p.x} ${p.y - 21} L ${p.x + 10} ${p.y - 16} V ${p.y - 4} L ${p.x} ${p.y + 1} L ${p.x - 10} ${p.y - 4} Z" fill="${levelPalette.light}" stroke="${bevelColor}" stroke-width="1.5" stroke-linejoin="round"/>
+ <path d="M ${p.x - 10} ${p.y - 16} L ${p.x} ${p.y - 10} L ${p.x + 10} ${p.y - 16} M ${p.x} ${p.y - 10} V ${p.y + 1} M ${p.x - 5} ${p.y - 19} L ${p.x + 5} ${p.y - 13}" fill="none" stroke="${bevelColor}" stroke-width="1.4" stroke-linejoin="round"/>`}
+ <text x="${p.x}" y="${p.y + 22}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff" paint-order="stroke" stroke="${bevelColor}" stroke-width="2.2" stroke-linejoin="round" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.35))">${it.t === 'fin' ? '✓' : MAP_LEVEL_NUMBER[i]}</text>
+</g>
+ `;
+ }
 
  // 3-Star Crown above cleared level buttons (Crisp Vector Polygons - immune to font/encoding issues!)
  if (done && R[i].stars) {
@@ -3149,10 +3574,13 @@ function draw() {
  const nodeLabelMax = vbW - 28;
  const nodeLabelWidth = Math.min(nodeLabelMax, nodeName.length * 7 + 20);
  const nodeLabelX = Math.max(nodeLabelWidth / 2 + 14, Math.min(vbW - nodeLabelWidth / 2 - 14, p.x));
+ const labelPalette = it.t === 'gate'
+  ? MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i - 1] || 1) - 1] || MAP_LEVEL_PALETTES[0]
+  : MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i] || 1) - 1] || MAP_LEVEL_PALETTES[0];
  h += `
  <g class="map-node-label" filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="20" data-map-max="${nodeLabelMax}">
-   <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="3" fill="#2d1a00" stroke="#f59e0b" stroke-width="1.5"/>
-   <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="#fde68a">${nodeName}</text>
+   <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="7" fill="#102d54" stroke="${labelPalette.accent}" stroke-width="1.8"/>
+   <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="${labelPalette.accent}">${nodeName}</text>
  </g>
  `;
 
@@ -3198,6 +3626,8 @@ function draw() {
 
  $('#map').setAttribute('viewBox', `0 0 ${vbW} ${H}`);
  $('#map').innerHTML = h;
+ const deliveryTruck = $('#map').querySelector('.map-delivery-truck');
+ if (deliveryTruck) $('#map').appendChild(deliveryTruck);
  $('#map').querySelectorAll('[data-map-fit]').forEach(container => {
   const text = container.querySelector('text');
   const rect = container.querySelector('rect');
@@ -3246,10 +3676,20 @@ function focusCur() {
 }
 
 let isAdmin = false;
+let requestedStage = null;
+const STAGE_STARTS = { 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 7: 24 };
+
+function applyRequestedStage() {
+ const stageStart = STAGE_STARTS[requestedStage];
+ if (!stageStart || !O[requestedStage - 1]) return false;
+ cur = Math.max(cur, stageStart);
+ R[stageStart - 1] = { gate: 1 };
+ return true;
+}
 
 function tap(i) {
  audio.init();
- const it = I[i], done = !!R[i], cue = story(i);
+ const it = I[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), cue = story(i);
  if (isAdmin) {
  if (it.t === 'gate') {
  return info(` Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
@@ -3296,7 +3736,7 @@ function launch(i) {
  V('#play');
  window.scrollTo(0, 0);
 
- const isDone = !!R[i];
+ const isDone = !!R[i] && typeof R[i].pts === 'number';
  const nextIdx = i + 1;
  let nextLabel = 'Next Stop ';
  if (nextIdx < N) {
@@ -3385,7 +3825,7 @@ function leave() {
 
 function nextStop() {
  X();
- if (activeStopIndex !== null && !R[activeStopIndex] && I[activeStopIndex] && I[activeStopIndex].t !== 'gate' && I[activeStopIndex].t !== 'fin') {
+ if (activeStopIndex !== null && (!R[activeStopIndex] || typeof R[activeStopIndex].pts !== 'number') && I[activeStopIndex] && I[activeStopIndex].t !== 'gate' && I[activeStopIndex].t !== 'fin') {
  alert('Please complete this delivery challenge first to unlock the next stop! ');
  return;
  }
@@ -3440,8 +3880,8 @@ function onStopCompleted(score, max) {
  let improved = false;
  let prevPts = 0;
 
- if (!R[i]) {
-  // First time completing this stop
+ if (!R[i] || R[i].gate || typeof R[i].pts !== 'number') {
+  // First time properly completing this playable stop
   R[i] = { stars: stars, pts: pts, score: pts, max: maxPts, completedAt: Date.now() };
   fresh = true;
   if (i === cur) {
@@ -3451,8 +3891,8 @@ function onStopCompleted(score, max) {
   saveState();
  } else {
   // Replay: keep the BEST score — update only if the new score is higher
-  prevPts = R[i].pts;
-  if (pts > R[i].pts) {
+  prevPts = Number(R[i].pts) || 0;
+  if (pts > prevPts) {
    improved = true;
    R[i] = { stars: stars, pts: pts, score: pts, max: maxPts, completedAt: Date.now() };
    saveState();
@@ -5167,9 +5607,12 @@ async function shareCertificateStory(details) {
 function evalCard() {
  const requiredStops = I.map((stop, index) => ({ stop, index }))
   .filter(({ stop }) => stop.t === 'game' || stop.t === 'bonus');
- const missingStops = requiredStops.filter(({ index }) => !R[index] || R[index].gate);
-  const bonusIdx = I.findIndex(s => s.t === 'bonus');
- const bonusDone = bonusIdx !== -1 && R[bonusIdx] && !R[bonusIdx].gate;
+ const missingStops = requiredStops.filter(({ index }) => {
+  const r = R[index];
+  return !r || typeof r.pts !== 'number' || (r.gate && !r.pts);
+ });
+ const bonusIdx = I.findIndex(s => s.t === 'bonus');
+ const bonusDone = bonusIdx !== -1 && R[bonusIdx] && typeof R[bonusIdx].pts === 'number' && !R[bonusIdx].gate;
  const incompleteGates = bonusDone ? [] : I.map((stop, index) => ({ stop, index }))
   .filter(({ stop, index }) => stop.t === 'gate' && !O[stop.g] && !(R[index] && R[index].gate));
  if (missingStops.length || incompleteGates.length) {
@@ -5404,6 +5847,7 @@ $('#go').onclick = async () => {
  let isReturningCourier = Boolean(localState && localState.name && localState.pid);
  try {
  isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
+ await syncControlFromFirebase();
  } catch (error) {
  console.warn('Account restore error:', error);
  if (accountErr) {
@@ -5421,6 +5865,7 @@ $('#go').onclick = async () => {
  return;
  }
 
+ applyRequestedStage();
  applyAvatar();
  saveState();
  adv();
@@ -5451,12 +5896,10 @@ function checkUrlParams() {
  draw();
  }
  const stageParam = urlParams.get('stage');
- if (stageParam) {
- const s = parseInt(stageParam, 10);
- if (s === 2 && O[1]) cur = Math.max(cur, 4);
- if (s === 3 && O[2]) cur = Math.max(cur, 8);
- if (s === 4 && O[3]) cur = Math.max(cur, 12);
- }
+ const parsedStage = Number.parseInt(stageParam, 10);
+ requestedStage = Number.isInteger(parsedStage) && parsedStage >= 2 && parsedStage <= 7
+  ? parsedStage
+  : null;
  const playParam = urlParams.get('play');
  if (playParam !== null) {
  const stopNum = parseInt(playParam, 10);
@@ -5485,14 +5928,14 @@ updateMuteButton();
  GAME 6: FLIP N MATCH (12 CARDS - 6 PAIRS)
  ============================================================= */
 const FM_CARDS = [
- { id: 'pip-fox', name: 'Pip the Fox', img: 'assets/avatars/pip-fox.svg' },
- { id: 'orbit-cat', name: 'Orbit the Cat', img: 'assets/avatars/orbit-cat.svg' },
- { id: 'wren-owl', name: 'Wren the Owl', img: 'assets/avatars/wren-owl.svg' },
- { id: 'clover-bunny', name: 'Clover the Bunny', img: 'assets/avatars/clover-bunny.svg' },
- { id: 'tumble-turtle', name: 'Tumble the Turtle', img: 'assets/avatars/tumble-turtle.svg' },
- { id: 'maple-bear', name: 'Maple the Bear', img: 'assets/avatars/maple-bear.svg' },
- { id: 'skipper-otter', name: 'Skipper the Otter', img: 'assets/avatars/skipper-otter.svg' },
- { id: 'patch-raccoon', name: 'Patch the Raccoon', img: 'assets/avatars/patch-raccoon.svg' }
+ { id: 'delivery-truck', name: 'Delivery truck', emoji: '🚚' },
+ { id: 'parcel', name: 'Parcel', emoji: '📦' },
+ { id: 'courier-scooter', name: 'Courier scooter', emoji: '🛵' },
+ { id: 'delivery-home', name: 'Delivery address', emoji: '🏠' },
+ { id: 'mailbox', name: 'Mailbox', emoji: '📬' },
+ { id: 'shipping-label', name: 'Shipping label', emoji: '🏷️' },
+ { id: 'route-map', name: 'Delivery route map', emoji: '🗺️' },
+ { id: 'hand-truck', name: 'Hand truck', emoji: '🛒' }
 ];
 
 let fmState = {
@@ -5565,7 +6008,7 @@ function fmStart(lvIdx = 0) {
  <button type="button" class="fm-card" id="fm-c-${i}" aria-label="Card ${i + 1}, face down" aria-pressed="false" onclick="fmCardClick(${i})">
  <div class="fm-card-face fm-card-back">?</div>
  <div class="fm-card-face fm-card-front">
- <img src="${card.img}" alt="">
+ <span class="fm-card-emoji" aria-hidden="true">${card.emoji}</span>
 </div>
 </button>
  `).join('');
@@ -5675,13 +6118,12 @@ function getCourierTimeData(c) {
  startTime = Math.min(...completedList.map(r => r.completedAt));
  }
 
- let finishTime = c.finishTime ? Number(c.finishTime) : null;
- if (!finishTime && res[16] && res[16].completedAt) {
- finishTime = Number(res[16].completedAt);
- }
-
- const isFinished = Boolean(res[16] || completedList.length >= 13);
- const latestTime = finishTime || (completedList.length > 0 ? Math.max(...completedList.map(r => r.completedAt)) : (c.updatedAt || 0));
+ const isFinished = isCourierFinished(res, O);
+ const routeFinishTime = isFinished
+ ? (Number(res[24] && res[24].completedAt) ||
+    (completedList.length ? Math.max(...completedList.map(result => Number(result.completedAt) || 0)) : null))
+ : null;
+ const latestTime = routeFinishTime || (completedList.length > 0 ? Math.max(...completedList.map(r => r.completedAt)) : (c.updatedAt || 0));
 
  let elapsedMs = 0;
  if (startTime && latestTime && latestTime >= startTime) {
@@ -5705,7 +6147,7 @@ function getCourierTimeData(c) {
 
  return {
  startTime,
- finishTime,
+ finishTime: routeFinishTime,
  latestTime,
  isFinished,
  elapsedMs,
@@ -5776,7 +6218,7 @@ async function getLeaderboardEntries() {
  stops: myStops,
  results: R,
  startTime: Number(localStorage.getItem('streamlined_start_' + courierKey)) || null,
- finishTime: R[16]?.completedAt || null,
+ finishTime: isCourierFinished(R) ? (R[24]?.completedAt || null) : null,
  isCurrent: true
  };
  myObj.timeData = getCourierTimeData(myObj);
