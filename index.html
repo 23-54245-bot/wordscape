@@ -632,6 +632,19 @@ header {
 .certificate-grade { font-size: 1.15rem; font-weight: 900; color: #8a5a12; }
 .certificate-score { margin-top: 8px; font-weight: 700; }
 .certificate-date { margin-top: 20px; font-size: 0.85rem; color: #475569; }
+#certificate-actions {
+ display: flex;
+ flex-direction: column;
+ gap: 12px;
+}
+#certificate-actions .btn,
+#certificate-actions .sm {
+ width: 100%;
+ margin: 0;
+}
+#certificate-actions p {
+ margin: 0;
+}
 @media print {
  @page { size: landscape; margin: 12mm; }
  body { background: #fff !important; color: #111 !important; }
