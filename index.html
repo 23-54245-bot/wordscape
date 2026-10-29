@@ -3592,7 +3592,9 @@ function draw() {
  // Raised stars echo the reference markers while still showing earned progress.
  const earnedStars = done ? (R[i].stars || 0) : 0;
  if (MAP_LEVEL_NUMBER[i]) {
- const starOffset = isCustomerHome ? 78 : 58;
+ // Place the final delivery stars on the upper roof instead of floating above
+ // the house illustration.
+ const starOffset = isCustomerHome ? 42 : 58;
  const starPositions = i === 0
   ? [
    { x: p.x - 22, y: p.y - 53, radius: 9 },
