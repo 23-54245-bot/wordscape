@@ -133,7 +133,7 @@ button { cursor: pointer; }
 }
 
 /* Primary CTA button - 3D orange pill (Storks Orange) */
-.btn {
+.btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; 
  display: flex;
  align-items: center;
  justify-content: center;
@@ -547,7 +547,10 @@ header {
  box-shadow: 0 14px 35px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15);
  overflow: hidden;
 }
-.node { cursor: pointer; transition: filter 0.15s ease; }
+.node { cursor: pointer; touch-action: manipulation; }
+.node text, .node rect, .node circle, .node polygon { pointer-events: none; }
+.node { pointer-events: auto; }
+.map-node-label { pointer-events: none; }
 .node:hover { filter: drop-shadow(0 0 14px rgba(255, 170, 50, 0.95)) brightness(1.12); }
 .pulse {
  animation: pl 1.6s ease-out infinite;
@@ -607,7 +610,7 @@ header {
  border: 3px solid #93c5fd;
  position: relative;
 }
-.mbox .btn + .btn { margin-top: 18px; }
+.mbox .btn + .btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent;  margin-top: 18px; }
 .stars { font-size: 2.2rem; letter-spacing: 4px; color: #f5b301; margin: 4px 0; }
 .dim { color: #cbd5e1; }
 #qr { display: flex; justify-content: center; margin: 12px 0; background: #fff; padding: 12px; border-radius: 14px; }
@@ -1563,47 +1566,15 @@ select option {
  overflow: hidden;
 }
 
-/* Map frame & delivery atmosphere */
+/* Map frame */
 #map-frame {
  width: min(100%, 560px);
  margin: 0 auto;
  position: relative;
 }
-#map-frame::before {
- content: '🚚 DELIVERY ROUTE MAP';
- display: block;
- text-align: center;
- font-size: 0.72rem;
- font-weight: 900;
- letter-spacing: 0.18em;
- color: #f59e0b;
- background: linear-gradient(90deg, #0a1a2e, #1a3a5c, #0a1a2e);
- border: 2px solid #f59e0b;
- border-bottom: none;
- border-radius: 14px 14px 0 0;
- padding: 7px 16px;
- text-transform: uppercase;
-}
-#map-frame::after {
- content: '📦 TAP A STOP TO PLAY';
- display: block;
- text-align: center;
- font-size: 0.68rem;
- font-weight: 800;
- letter-spacing: 0.14em;
- color: rgba(245,158,11,0.75);
- background: linear-gradient(90deg, #0a1a2e, #1a3a5c, #0a1a2e);
- border: 2px solid #f59e0b;
- border-top: none;
- border-radius: 0 0 14px 14px;
- padding: 6px 16px;
-}
 #map-frame #map {
- border-radius: 0 !important;
- border-left: 2px solid #f59e0b !important;
- border-right: 2px solid #f59e0b !important;
- border-top: none !important;
- border-bottom: none !important;
+ border-radius: 20px !important;
+ border: 2px solid #f59e0b !important;
 }
 
 #mapv > .sub {
@@ -1822,6 +1793,9 @@ select option {
   color: #fff;
   clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
   text-shadow: 0 1px 2px #06234b;
+ }
+ #play button[id$="-next-btn"][hidden] {
+  display: none !important;
  }
  #play button[id$="-next-btn"]:hover:not(:disabled),
  #play .card .btn.green:hover:not(:disabled) {
@@ -3052,13 +3026,6 @@ function draw() {
 
 
 
- // Top Welcome Banner Ribbon
- h += `
- <g filter="url(#shadow-3d)" data-map-fit data-map-anchor="190" data-map-padding="34" data-map-max="${vbW - 28}">
-  <rect x="55" y="16" width="270" height="40" rx="6" fill="#1a1a2e" stroke="#f59e0b" stroke-width="2.5"/>
-  <text x="190" y="42" text-anchor="middle" font-size="13" font-weight="900" fill="#ffffff" letter-spacing="1">&#9670; DELIVERY ROUTE MAP &#9670;</text>
-</g>
- `;
 
   // 3. Delivery Route Road (Asphalt with lane markings)
  // Build the continuous Bezier curve path string
@@ -5201,7 +5168,9 @@ function evalCard() {
  const requiredStops = I.map((stop, index) => ({ stop, index }))
   .filter(({ stop }) => stop.t === 'game' || stop.t === 'bonus');
  const missingStops = requiredStops.filter(({ index }) => !R[index] || R[index].gate);
- const incompleteGates = I.map((stop, index) => ({ stop, index }))
+  const bonusIdx = I.findIndex(s => s.t === 'bonus');
+ const bonusDone = bonusIdx !== -1 && R[bonusIdx] && !R[bonusIdx].gate;
+ const incompleteGates = bonusDone ? [] : I.map((stop, index) => ({ stop, index }))
   .filter(({ stop, index }) => stop.t === 'gate' && !O[stop.g] && !(R[index] && R[index].gate));
  if (missingStops.length || incompleteGates.length) {
   const missingItems = [
