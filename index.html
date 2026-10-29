@@ -3442,6 +3442,7 @@ function draw() {
  };
  const routeSegment = splitCubic(truckP0, truckP1, truckP2, truckP3, truckProgress).left;
  let truckPath = `M ${routeSegment[0].x} ${routeSegment[0].y} C ${routeSegment[1].x} ${routeSegment[1].y}, ${routeSegment[2].x} ${routeSegment[2].y}, ${routeSegment[3].x} ${routeSegment[3].y}`;
+ let truckDriveAngle = Math.atan2(truckP3.y - truckP0.y, truckP3.x - truckP0.x) * 180 / Math.PI;
  if (truckTargetIndex === 1) {
   const previousRoute = splitCubic(truckP0, truckP1, truckP2, truckP3, 0.62).right;
   const routeFraction = (truckProgress - 0.62) / (1 - 0.62);
@@ -3451,14 +3452,20 @@ function draw() {
   const tangent = { x: approach[1].x - approach[0].x, y: approach[1].y - approach[0].y };
   const endControl = { x: approach[0].x - tangent.x * 0.18, y: approach[0].y - tangent.y * 0.18 };
   truckPath = `M ${parked.x} ${parked.y} C ${startControl.x} ${startControl.y}, ${endControl.x} ${endControl.y}, ${approach[0].x} ${approach[0].y} C ${approach[1].x} ${approach[1].y}, ${approach[2].x} ${approach[2].y}, ${approach[3].x} ${approach[3].y}`;
+  truckDriveAngle = Math.atan2(approach[3].y - parked.y, approach[3].x - parked.x) * 180 / Math.PI;
  }
  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- const truckMotion = reducedMotion || truckTargetIndex === 0 ? '' : `<animateMotion dur="5s" calcMode="paced" rotate="auto" repeatCount="1" fill="freeze" path="${truckPath}"/>`;
+ // The road uses broad Bezier bends whose midpoint tangent can point sideways.
+ // Keep the truck aligned to the segment direction instead of rotating it to
+ // that temporary tangent while it drives through a bend.
+ const truckMotion = reducedMotion || truckTargetIndex === 0 ? '' : `<animateMotion dur="5s" calcMode="paced" rotate="0" repeatCount="1" fill="freeze" path="${truckPath}"/>`;
  const parkedTruckPosition = truckTargetIndex === 0
   ? { x: truckStop.x + 57, y: truckStop.y - 62 }
   : truckStop;
- const truckFacing = truckTargetIndex === 0 ? ' rotate(-35 2 -8)' : '';
- const truckPosition = reducedMotion || truckTargetIndex === 0 ? ` transform="translate(${parkedTruckPosition.x} ${parkedTruckPosition.y})${truckFacing}"` : '';
+ const truckFacing = truckTargetIndex === 0 ? -35 : truckDriveAngle;
+ const truckPosition = reducedMotion || truckTargetIndex === 0
+  ? ` transform="translate(${parkedTruckPosition.x} ${parkedTruckPosition.y}) rotate(${truckFacing})"`
+  : ` transform="rotate(${truckFacing})"`;
  if (truckVisible) h += `
  <g class="map-delivery-truck" aria-hidden="true"${truckPosition} filter="url(#pedestal-shadow)">
   ${truckMotion}
