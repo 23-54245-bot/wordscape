@@ -3043,7 +3043,7 @@ function draw() {
  <circle cx="335" cy="${P[12].y - 20}" r="2.2"/>
 </g>
 
- <!-- Stork Mountain Base: Industrial factory cogs and warm ambient glows -->
+  <!-- Warehouse Zone: Industrial depot ambient glow rings -->
  <g stroke="rgba(245, 158, 11, 0.22)" stroke-width="3" fill="none">
  <circle cx="35" cy="${P[1].y}" r="32" stroke-dasharray="8 6"/>
  <circle cx="345" cy="${P[2].y}" r="40" stroke-dasharray="10 8"/>
@@ -3055,12 +3055,12 @@ function draw() {
  // Top Welcome Banner Ribbon
  h += `
  <g filter="url(#shadow-3d)" data-map-fit data-map-anchor="190" data-map-padding="34" data-map-max="${vbW - 28}">
- <rect x="55" y="16" width="270" height="40" rx="20" fill="url(#gloss-orange)" stroke="#ffffff" stroke-width="3"/>
- <text x="190" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="0.5">THE BABY'S JOURNEY HOME</text>
+  <rect x="55" y="16" width="270" height="40" rx="6" fill="#1a1a2e" stroke="#f59e0b" stroke-width="2.5"/>
+  <text x="190" y="42" text-anchor="middle" font-size="13" font-weight="900" fill="#ffffff" letter-spacing="1">&#9670; DELIVERY ROUTE MAP &#9670;</text>
 </g>
  `;
 
- // 3. Winding Stepping-Stone Road (Layered 3D Cobblestones)
+  // 3. Delivery Route Road (Asphalt with lane markings)
  // Build the continuous Bezier curve path string
  let roadD = `M ${P[0].x} ${P[0].y}`;
  for (let i = 1; i < N; i++) {
@@ -3075,7 +3075,7 @@ function draw() {
  // Layer 3: Elevated sand/stone road surface
  h += `<path d="${roadD}" fill="none" stroke="url(#road-sand)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`;
  // Layer 4: Stepping-stone paver pattern
- h += `<path d="${roadD}" fill="none" stroke="#d97706" stroke-width="14" stroke-dasharray="14 18" stroke-linecap="round"/>`;
+  h += `<path d="${roadD}" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="12 20" stroke-linecap="round" opacity="0.8"/>`;
 
  // Cleared Segment Glow Trail
  if (cur > 0) {
@@ -3105,7 +3105,7 @@ function draw() {
  const pillY = p.y + 72;
  h += `
  <g filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="32" data-map-max="${vbW - 28}">
- <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="14" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2.5"/>
+  <rect x="${pillX - pillW/2}" y="${pillY}" width="${pillW}" height="28" rx="4" fill="url(#ribbon-grad)" stroke="#f59e0b" stroke-width="2"/>
  <text x="${pillX}" y="${pillY + 18}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff" letter-spacing="0.6">${PILL[i]}</text>
 </g>
  `;
@@ -3114,30 +3114,30 @@ function draw() {
  h += `<g class="node" data-stop-index="${i}" role="button" tabindex="0" aria-label="${nodeLabel}" onclick="tap(${i})">`;
 
  if (it.t === 'gate') {
- // Monumental Checkpoint Gate Archway
+  // Warehouse Barrier / Checkpoint Scanner Gate
  const gateOpen = done || O[it.g];
  const gateGrad = gateOpen ? 'url(#gloss-green)' : 'url(#arch-wood)';
  const gateBorder = gateOpen ? '#10b981' : '#f59e0b';
  h += `
  <g filter="url(#pedestal-shadow)">
- <!-- Left and Right Stone Checkpoint Pillars -->
- <rect x="${p.x - 74}" y="${p.y - 32}" width="20" height="64" rx="8" fill="#334155" stroke="#475569" stroke-width="2"/>
- <circle cx="${p.x - 64}" cy="${p.y - 34}" r="12" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
+  <!-- Checkpoint Scanner Posts -->
+  <rect x="${p.x - 72}" y="${p.y - 36}" width="14" height="72" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <rect x="${p.x - 74}" y="${p.y - 44}" width="18" height="10" rx="3" fill="${gateOpen ? "#10b981" : "#ef4444"}"/>
  
- <rect x="${p.x + 54}" y="${p.y - 32}" width="20" height="64" rx="8" fill="#334155" stroke="#475569" stroke-width="2"/>
- <circle cx="${p.x + 64}" cy="${p.y - 34}" r="12" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
+  <rect x="${p.x + 58}" y="${p.y - 36}" width="14" height="72" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <rect x="${p.x + 58}" y="${p.y - 44}" width="18" height="10" rx="3" fill="${gateOpen ? "#10b981" : "#ef4444"}"/>
 
- <!-- Crossbar Checkpoint Beam -->
- <rect x="${p.x - 60}" y="${p.y - 26}" width="120" height="52" rx="16" fill="${gateGrad}" stroke="${gateBorder}" stroke-width="3.5"/>
- <!-- Top glare arc on gate -->
- <path d="M ${p.x - 48} ${p.y - 18} Q ${p.x} ${p.y - 24} ${p.x + 48} ${p.y - 18}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Barrier Crossbar -->
+  <rect x="${p.x - 58}" y="${p.y - 28}" width="116" height="56" rx="8" fill="${gateGrad}" stroke="${gateBorder}" stroke-width="2.5"/>
+  <!-- Barrier stripes -->
+  <rect x="${p.x - 46}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x - 28}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x - 10}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x + 8}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="${p.x + 26}" y="${p.y - 20}" width="8" height="40" rx="2" fill="rgba(255,255,255,0.15)"/>
 
  <!-- Gate number -->
  <text x="${p.x}" y="${p.y + 8}" text-anchor="middle" font-size="19" font-weight="900" fill="#ffffff">${it.g}</text>
 </g>
  `;
  } else {
- // 3D Candy Crush / Royal Match Glossy Pedestal & Button
+  // Delivery Stop Node (parcel-pin style)
  const badgeFill = done ? 'url(#gloss-green)' : isC ? (it.t === 'bonus' ? 'url(#gloss-gold)' : 'url(#gloss-orange)') : 'url(#gloss-gray)';
  const bevelColor = done ? '#064e3b' : isC ? '#7c2d12' : '#1e293b';
 
@@ -3184,8 +3184,8 @@ function draw() {
  const nodeLabelX = Math.max(nodeLabelWidth / 2 + 14, Math.min(vbW - nodeLabelWidth / 2 - 14, p.x));
  h += `
  <g class="map-node-label" filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="20" data-map-max="${nodeLabelMax}">
-  <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="11" fill="#102943" stroke="#8bbcf2" stroke-width="1.5"/>
-  <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">${nodeName}</text>
+   <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${p.y + 40}" width="${nodeLabelWidth}" height="22" rx="3" fill="#2d1a00" stroke="#f59e0b" stroke-width="1.5"/>
+   <text x="${nodeLabelX}" y="${p.y + 55}" text-anchor="middle" font-size="10" font-weight="800" fill="#fde68a">${nodeName}</text>
  </g>
  `;
 
@@ -3211,7 +3211,7 @@ function draw() {
  <circle cx="${c.x}" cy="${c.y - 50}" r="28"/>
 </clipPath>
 </defs>
- <circle cx="${c.x}" cy="${c.y - 50}" r="31" fill="#ff8a1f" stroke="#ffffff" stroke-width="3" filter="url(#shadow-3d)"/>
+  <circle cx="${c.x}" cy="${c.y - 50}" r="31" fill="#1a2e4a" stroke="#f59e0b" stroke-width="3" filter="url(#shadow-3d)"/>
  <image href="${pinImg}" x="${c.x - 28}" y="${c.y - 78}" width="56" height="56" clip-path="url(#pin-clip-${c.x}-${c.y})" preserveAspectRatio="xMidYMid slice"/>
  `;
  } else {
@@ -3223,8 +3223,8 @@ function draw() {
 
  // Floating"YOU ARE HERE" Indicator Flag
  h += `
- <rect x="${c.x - 42}" y="${c.y - 104}" width="84" height="20" rx="10" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" filter="url(#shadow-3d)"/>
- <text x="${c.x}" y="${c.y - 90}" text-anchor="middle" font-size="9" font-weight="900" fill="#1e293b" letter-spacing="0.5">DISPATCH HERE</text>
+  <rect x="${c.x - 44}" y="${c.y - 106}" width="88" height="22" rx="4" fill="#1a1a2e" stroke="#f59e0b" stroke-width="2" filter="url(#shadow-3d)"/>
+  <text x="${c.x}" y="${c.y - 91}" text-anchor="middle" font-size="9" font-weight="900" fill="#f59e0b" letter-spacing="0.8">&#128230; EN ROUTE</text>
 </g>
 </g>
  `;
@@ -3292,7 +3292,7 @@ function tap(i) {
  }
  return modal(`<h2> Admin Preview: ${it.e || ''} ${it.n}</h2>${cue}<p>${DESC[it.k] || ''}</p>` + bt('Launch Level ', `launch(${i})`) + bt('Close', 'X()', 1));
  }
- if (it.t === 'fin') return cur >= N - 1 ? evalCard() : info(' Evaluation', 'Clear every stop on the map, including the live bonus, to unlock your seminar evaluation and certificate pass.');
+ if (it.t === 'fin') return evalCard();
  if (it.t === 'gate') {
  if (done) return modal(`<h2> ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
  if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
@@ -5201,14 +5201,14 @@ function evalCard() {
  const requiredStops = I.map((stop, index) => ({ stop, index }))
   .filter(({ stop }) => stop.t === 'game' || stop.t === 'bonus');
  const missingStops = requiredStops.filter(({ index }) => !R[index] || R[index].gate);
- const lockedGates = I.filter(stop => stop.t === 'gate' && !O[stop.g]).length;
- if (missingStops.length || lockedGates || cur < N - 1) {
-  const remaining = missingStops.length
-   ? `${missingStops.length} challenge${missingStops.length === 1 ? '' : 's'} remaining`
-   : lockedGates
-    ? `${lockedGates} host checkpoint${lockedGates === 1 ? '' : 's'} still locked`
-    : 'the final delivery has not been reached';
-  info('Certificate Locked', `Complete the full delivery route before viewing your certificate (${remaining}).`);
+ const incompleteGates = I.map((stop, index) => ({ stop, index }))
+  .filter(({ stop, index }) => stop.t === 'gate' && !O[stop.g] && !(R[index] && R[index].gate));
+ if (missingStops.length || incompleteGates.length) {
+  const missingItems = [
+   ...missingStops.map(({ stop }) => `<li>${stop.n}</li>`),
+   ...incompleteGates.map(({ stop }) => `<li>${GL[stop.g]} still needs host authorization</li>`)
+  ];
+  info('Certificate Locked', `Complete the remaining requirements to unlock your certificate:<ul style="text-align:left;margin:12px 0;padding-left:24px">${missingItems.join('')}</ul>`);
   return;
  }
  const total = requiredStops.reduce((sum, { index }) => {
