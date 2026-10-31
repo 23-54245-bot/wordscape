@@ -2253,6 +2253,9 @@ class SoundEngine {
  this.ctx = null;
  this.musicTimer = null;
  this.musicStep = 0;
+ this.whistle = new Audio('assets/whistle.mp3?v=098f2ae');
+ this.whistle.preload = 'auto';
+ this.whistle.volume = 0.7;
  this.pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
  }
  init() {
@@ -2276,6 +2279,13 @@ class SoundEngine {
  if (this.musicTimer) {
   clearInterval(this.musicTimer);
   this.musicTimer = null;
+ }
+ playWhistle() {
+  if (!soundEnabled) return;
+  try {
+   this.whistle.currentTime = 0;
+   this.whistle.play().catch(() => {});
+  } catch(e) {}
  }
  }
  playTone(freq, type='sine', duration=0.12, gain=0.2) {
@@ -6004,6 +6014,7 @@ $('#go').onclick = async () => {
  return;
  }
  if (accountErr) accountErr.style.display = 'none';
+ audio.playWhistle();
  user = inputName;
  pid = inputPid;
  courierKey = normalizeId(user, pid);
