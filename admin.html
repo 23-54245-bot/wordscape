@@ -1425,6 +1425,61 @@ $('#host-login-form').addEventListener('submit', async event => {
 
 $('#host-sign-out-btn').onclick = () => showLogin('');
 
+// Colorful cursor trail for the Host Control Tower.
+(function initCursorTrail() {
+  if (!window.matchMedia('(pointer: fine)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvas = document.createElement('canvas');
+  canvas.setAttribute('aria-hidden', 'true');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  const context = canvas.getContext('2d');
+  const points = [];
+  let width = 0;
+  let height = 0;
+  let pixelRatio = 1;
+
+  function resize() {
+    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.round(width * pixelRatio);
+    canvas.height = Math.round(height * pixelRatio);
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  window.addEventListener('pointermove', event => {
+    points.push({ x: event.clientX, y: event.clientY, life: 1, hue: (performance.now() / 8) % 360 });
+    if (points.length > 34) points.shift();
+  }, { passive: true });
+  window.addEventListener('pointerleave', () => points.splice(0, points.length));
+
+  function render() {
+    context.clearRect(0, 0, width, height);
+    for (let i = 1; i < points.length; i += 1) {
+      const previous = points[i - 1];
+      const point = points[i];
+      const opacity = point.life * (i / points.length);
+      context.beginPath();
+      context.moveTo(previous.x, previous.y);
+      context.lineTo(point.x, point.y);
+      context.lineWidth = 2 + (i / points.length) * 5;
+      context.lineCap = 'round';
+      context.strokeStyle = `hsla(${point.hue}, 100%, 68%, ${opacity * 0.8})`;
+      context.shadowColor = `hsla(${point.hue}, 100%, 62%, ${opacity})`;
+      context.shadowBlur = 14;
+      context.stroke();
+    }
+    context.shadowBlur = 0;
+    for (const point of points) point.life -= 0.035;
+    while (points.length && points[0].life <= 0) points.shift();
+    requestAnimationFrame(render);
+  }
+
+  resize();
+  render();
+})();
+
 try {
   const savedSession = JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY) || 'null');
   if (savedSession && savedSession.uid === HOST_UID && savedSession.idToken && savedSession.refreshToken) {
