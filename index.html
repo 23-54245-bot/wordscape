@@ -3551,7 +3551,7 @@ function draw() {
  // Each checkpoint uses its matching raised dock illustration.
  const gateArt = gateOpen ? MAP_GATE_ART[it.g] : (MAP_GATE_LOCKED_ART[it.g] || MAP_GATE_ART[it.g]);
  h += `
- <image href="${gateArt}" x="${p.x - 43}" y="${p.y - 74}" width="86" height="104" preserveAspectRatio="xMidYMax meet"/>
+ <image href="${gateArt}" x="${p.x - 43}" y="${p.y - 62}" width="86" height="104" preserveAspectRatio="xMidYMax meet"/>
  `;
  } else {
  // Each delivery stop keeps its own level color; stars and the active ring communicate progress.
