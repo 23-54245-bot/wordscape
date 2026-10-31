@@ -145,6 +145,17 @@ header {
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
 }
 
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  #cursor-trail-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
 button, input { font: inherit; }
 .btn {
   background: var(--accent);
@@ -1425,60 +1436,137 @@ $('#host-login-form').addEventListener('submit', async event => {
 
 $('#host-sign-out-btn').onclick = () => showLogin('');
 
-// Colorful cursor trail for the Host Control Tower.
-(function initCursorTrail() {
-  if (!window.matchMedia('(pointer: fine)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const canvas = document.createElement('canvas');
-  canvas.setAttribute('aria-hidden', 'true');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
-  document.body.appendChild(canvas);
-  const context = canvas.getContext('2d');
-  const points = [];
-  let width = 0;
-  let height = 0;
-  let pixelRatio = 1;
+if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+ const trailCanvas = document.createElement('canvas');
+ trailCanvas.id = 'cursor-trail-canvas';
+ trailCanvas.setAttribute('aria-hidden', 'true');
+ document.body.appendChild(trailCanvas);
+ const trailContext = trailCanvas.getContext('2d');
+ const trailPoints = [];
+ const trailSparkles = [];
+ const trailColors = ['#ff8a1f', '#ffd34e', '#168cff', '#35d8ff'];
+ let lastPointer = null;
+ let trailFrame = 0;
+ let sparkleDistance = 0;
 
-  function resize() {
-    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = Math.round(width * pixelRatio);
-    canvas.height = Math.round(height * pixelRatio);
-    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  }
+ const resizeTrailCanvas = () => {
+  const scale = Math.min(window.devicePixelRatio || 1, 2);
+  trailCanvas.width = Math.round(window.innerWidth * scale);
+  trailCanvas.height = Math.round(window.innerHeight * scale);
+  trailContext.setTransform(scale, 0, 0, scale, 0, 0);
+ };
 
-  window.addEventListener('resize', resize, { passive: true });
-  window.addEventListener('pointermove', event => {
-    points.push({ x: event.clientX, y: event.clientY, life: 1, hue: (performance.now() / 8) % 360 });
-    if (points.length > 34) points.shift();
-  }, { passive: true });
-  window.addEventListener('pointerleave', () => points.splice(0, points.length));
+ const drawCursorTrail = now => {
+  trailFrame = 0;
+  trailContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  while (trailPoints.length && now - trailPoints[0].time > 850) trailPoints.shift();
 
-  function render() {
-    context.clearRect(0, 0, width, height);
-    for (let i = 1; i < points.length; i += 1) {
-      const previous = points[i - 1];
-      const point = points[i];
-      const opacity = point.life * (i / points.length);
-      context.beginPath();
-      context.moveTo(previous.x, previous.y);
-      context.lineTo(point.x, point.y);
-      context.lineWidth = 2 + (i / points.length) * 5;
-      context.lineCap = 'round';
-      context.strokeStyle = `hsla(${point.hue}, 100%, 68%, ${opacity * 0.8})`;
-      context.shadowColor = `hsla(${point.hue}, 100%, 62%, ${opacity})`;
-      context.shadowBlur = 14;
-      context.stroke();
+  if (trailPoints.length > 1) {
+   const last = trailPoints[trailPoints.length - 1];
+   const pointAt = (index, offset) => {
+    const point = trailPoints[index];
+    const previous = trailPoints[Math.max(0, index - 1)];
+    const next = trailPoints[Math.min(trailPoints.length - 1, index + 1)];
+    const dx = next.x - previous.x;
+    const dy = next.y - previous.y;
+    const length = Math.hypot(dx, dy) || 1;
+    return { x: point.x - (dy / length) * offset, y: point.y + (dx / length) * offset };
+   };
+   const opacity = 0.12 * (1 - (now - last.time) / 850);
+
+   trailColors.forEach((color, colorIndex) => {
+    const offset = (colorIndex - (trailColors.length - 1) / 2) * 2.4;
+    const first = pointAt(0, offset);
+    trailContext.beginPath();
+    trailContext.moveTo(first.x, first.y);
+    for (let i = 1; i < trailPoints.length - 1; i++) {
+     const point = pointAt(i, offset);
+     const next = pointAt(i + 1, offset);
+     trailContext.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
     }
-    context.shadowBlur = 0;
-    for (const point of points) point.life -= 0.035;
-    while (points.length && points[0].life <= 0) points.shift();
-    requestAnimationFrame(render);
+    const end = pointAt(trailPoints.length - 1, offset);
+    trailContext.lineTo(end.x, end.y);
+    trailContext.globalAlpha = opacity;
+    trailContext.strokeStyle = color;
+    trailContext.lineWidth = 1.8;
+    trailContext.lineCap = 'round';
+    trailContext.lineJoin = 'round';
+    trailContext.shadowColor = color;
+    trailContext.shadowBlur = 2;
+    trailContext.stroke();
+   });
   }
 
-  resize();
-  render();
-})();
+  for (let i = trailSparkles.length - 1; i >= 0; i--) {
+   const sparkle = trailSparkles[i];
+   const progress = (now - sparkle.time) / 620;
+   if (progress >= 1) {
+    trailSparkles.splice(i, 1);
+    continue;
+   }
+   const size = sparkle.size * (0.65 + Math.sin(progress * Math.PI) * 0.6);
+   trailContext.save();
+   trailContext.translate(sparkle.x + sparkle.vx * progress * 18, sparkle.y + sparkle.vy * progress * 18);
+   trailContext.rotate(sparkle.rotation + progress * 0.7);
+   trailContext.globalAlpha = Math.sin(progress * Math.PI) * 0.62;
+   trailContext.fillStyle = sparkle.color;
+   trailContext.shadowColor = sparkle.color;
+   trailContext.shadowBlur = 5;
+   trailContext.beginPath();
+   trailContext.moveTo(0, -size);
+   trailContext.quadraticCurveTo(size * 0.12, -size * 0.12, size, 0);
+   trailContext.quadraticCurveTo(size * 0.12, size * 0.12, 0, size);
+   trailContext.quadraticCurveTo(-size * 0.12, size * 0.12, -size, 0);
+   trailContext.quadraticCurveTo(-size * 0.12, -size * 0.12, 0, -size);
+   trailContext.fill();
+   trailContext.restore();
+  }
+
+  trailContext.globalAlpha = 1;
+  trailContext.shadowBlur = 0;
+  if (trailPoints.length > 1 || trailSparkles.length) trailFrame = requestAnimationFrame(drawCursorTrail);
+ };
+
+ const scheduleTrailFrame = () => {
+  if (!trailFrame) trailFrame = requestAnimationFrame(drawCursorTrail);
+ };
+
+ resizeTrailCanvas();
+ window.addEventListener('resize', resizeTrailCanvas, { passive: true });
+ window.addEventListener('blur', () => { lastPointer = null; }, { passive: true });
+ document.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'mouse') return;
+  const point = { x: event.clientX, y: event.clientY };
+  if (lastPointer) {
+   const distance = Math.hypot(point.x - lastPointer.x, point.y - lastPointer.y);
+   sparkleDistance += distance;
+   if (sparkleDistance >= 20) {
+    const colorIndex = Math.floor(Math.random() * trailColors.length);
+    trailSparkles.push({
+     x: point.x + (Math.random() - 0.5) * 8,
+     y: point.y + (Math.random() - 0.5) * 8,
+     vx: (Math.random() - 0.5) * 1.4,
+     vy: (Math.random() - 0.5) * 1.4,
+     rotation: Math.random() * Math.PI,
+     size: 2 + Math.random() * 2,
+     color: trailColors[colorIndex],
+     time: performance.now()
+    });
+    sparkleDistance %= 20;
+    if (trailSparkles.length > 60) trailSparkles.splice(0, trailSparkles.length - 60);
+   }
+   const steps = Math.max(1, Math.ceil(distance / 5));
+   const time = performance.now();
+   for (let step = 1; step <= steps; step++) {
+    const progress = step / steps;
+    trailPoints.push({ x: lastPointer.x + (point.x - lastPointer.x) * progress, y: lastPointer.y + (point.y - lastPointer.y) * progress, time });
+   }
+   if (trailPoints.length > 260) trailPoints.splice(0, trailPoints.length - 260);
+   scheduleTrailFrame();
+  }
+  lastPointer = point;
+ }, { passive: true });
+}
 
 try {
   const savedSession = JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY) || 'null');
