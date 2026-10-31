@@ -1862,6 +1862,10 @@ select option {
  <input id="nm" placeholder="e.g. Jedeann Cabaluna" maxlength="40" autocomplete="name" required>
  <label for="pid" style="font-weight:700;font-size:0.85rem;display:block;text-align:left">PLAYER ID NO.</label>
  <input id="pid" placeholder="e.g. 23-54245" maxlength="20" inputmode="numeric" autocomplete="off" required>
+ <label for="remember-login" style="display:flex;align-items:center;gap:8px;margin:10px 0 14px;font-size:0.85rem;font-weight:700;text-align:left;cursor:pointer">
+  <input id="remember-login" type="checkbox" style="width:18px;height:18px;accent-color:var(--accent)">
+  Remember my sign-in
+ </label>
  <p id="account-err" role="alert" style="display:none;color:#fecaca;font-size:0.85rem;text-align:left;margin:-6px 0 10px"></p>
 
  <h2 class="avatar-picker-title">Choose an Avatar</h2>
@@ -2501,6 +2505,7 @@ function res(el, title, score, max, extra) {
  ============================================================= */
 const STORAGE_PREFIX = 'streamlined_courier_';
 const CONTROL_KEY = 'streamlined_control_v6';
+const LOGIN_MEMORY_KEY = 'streamlined_login_memory_v1';
 let user = '', pid = '', courierKey = '';
 let cur = 0;
 let R = []; // Results per stop index
@@ -5902,6 +5907,30 @@ function signOut() {
  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function restoreRememberedLogin() {
+ try {
+  const saved = JSON.parse(localStorage.getItem(LOGIN_MEMORY_KEY) || 'null');
+  if (!saved || !saved.name || !saved.pid) return;
+  $('#nm').value = saved.name;
+  $('#pid').value = saved.pid;
+  $('#remember-login').checked = true;
+ } catch (error) {
+  console.warn('Unable to restore remembered sign-in:', error);
+ }
+}
+
+function saveRememberedLogin(name, playerId) {
+ try {
+  if ($('#remember-login').checked) {
+   localStorage.setItem(LOGIN_MEMORY_KEY, JSON.stringify({ name, pid: playerId }));
+  } else {
+   localStorage.removeItem(LOGIN_MEMORY_KEY);
+  }
+ } catch (error) {
+  console.warn('Unable to save remembered sign-in:', error);
+ }
+}
+
 $('#sign-out-btn').onclick = () => modal(`
  <h2>Sign out?</h2>
  <p>Your saved delivery progress will stay on this device. You can sign back in with your courier details.</p>
@@ -5977,6 +6006,7 @@ $('#go').onclick = async () => {
  user = inputName;
  pid = inputPid;
  courierKey = normalizeId(user, pid);
+ saveRememberedLogin(inputName, inputPid);
 
  const localState = loadState();
  const loginButton = $('#go');
@@ -6018,6 +6048,8 @@ $('#go').onclick = async () => {
  `);
  loginButton.disabled = false;
 };
+
+restoreRememberedLogin();
 
 // Check for deep-link stage param (e.g. ?stage=2)
 function checkUrlParams() {
