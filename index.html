@@ -3857,6 +3857,11 @@ function launch(i) {
   console.error('Cannot launch invalid or non-playable stop:', i);
   return;
  }
+ const completedStop = !!R[i] && typeof R[i].pts === 'number';
+ if (!isAdmin && i !== cur && !completedStop) {
+  info('Stage Locked', 'Complete the current stage and wait for the host to unlock the next checkpoint before entering this stage.');
+  return;
+ }
  if (activeStopIndex !== null) stopActiveGameTimers();
  activeStopIndex = i;
  activeStopCompleted = false;
