@@ -3732,6 +3732,52 @@ function focusCur() {
 let isAdmin = false;
 let requestedStage = null;
 const STAGE_STARTS = { 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 7: 24 };
+const STAGE_CERTIFICATES = {
+ 1: { first: 0, last: 2, title: 'Word Puzzle Dispatch' },
+ 2: { first: 4, last: 6, title: 'Baby Delivery Maze' },
+ 3: { first: 8, last: 10, title: 'Broken Delivery Response' },
+ 4: { first: 12, last: 14, title: 'Detective Case Investigation' },
+ 5: { first: 16, last: 18, title: 'Courier Badge Match' },
+ 6: { first: 20, last: 22, title: 'Spot & Fix Inspection' },
+ 7: { first: 24, last: 24, title: 'Final Delivery Challenge' }
+};
+
+function stageCertificateForStop(index) {
+ return Object.entries(STAGE_CERTIFICATES).find(([, stage]) => stage.last === index)?.[0] || null;
+}
+
+function showStageCertificate(stageNumber) {
+ const stage = STAGE_CERTIFICATES[stageNumber];
+ if (!stage) return;
+ const records = Array.from({ length: stage.last - stage.first + 1 }, (_, offset) => R[stage.first + offset]).filter(Boolean);
+ const total = records.reduce((sum, record) => sum + (Number(record.pts) || 0), 0);
+ const maxTotal = Array.from({ length: stage.last - stage.first + 1 }, (_, offset) => I[stage.first + offset].cap)
+  .reduce((sum, cap) => sum + cap, 0);
+ const stars = records.reduce((sum, record) => sum + (Number(record.stars) || 0), 0);
+ const completedAt = records.reduce((latest, record) => Math.max(latest, Number(record.completedAt) || 0), 0);
+ const completedOn = new Intl.DateTimeFormat('en-PH', { dateStyle: 'long', timeZone: 'Asia/Manila' })
+  .format(completedAt ? new Date(completedAt) : new Date());
+ const name = String(user || 'Courier').replace(/[&<>"']/g, character => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+ }[character]));
+ const nextAction = Number(stageNumber) < 7 ? 'nextStop()' : 'evalCard()';
+ modal(`
+ <div class="certificate" role="article" aria-labelledby="stage-certificate-title">
+  <div class="certificate-kicker">Streamlined · Stage Clearance</div>
+  <h1 id="stage-certificate-title">Stage ${stageNumber} Cleared</h1>
+  <p>This certificate is presented to</p>
+  <div class="certificate-name">${name}</div>
+  <p><b>${stage.title}</b></p>
+  <div class="certificate-grade">✓ Delivery Authorized</div>
+  <div class="certificate-score">${total.toLocaleString()} / ${maxTotal.toLocaleString()} points · ${stars} / ${records.length * 3} stars</div>
+  <div class="certificate-date">Cleared ${completedOn}</div>
+ </div>
+ <div id="certificate-actions">
+  ${bt(Number(stageNumber) < 7 ? 'Continue to Next Stage' : 'View Final Certificate', nextAction)}
+  ${bt('Return to Map', 'leave();X()', 1)}
+ </div>
+ `);
+}
 
 function applyRequestedStage() {
  const stageStart = STAGE_STARTS[requestedStage];
@@ -3964,8 +4010,12 @@ function onStopCompleted(score, max) {
   topNavBtn.title = 'Proceed to next stop';
  }
 
+ const clearedStage = fresh ? stageCertificateForStop(i) : null;
  if (I[i].t === 'bonus') {
-  evalCard();
+  if (clearedStage) showStageCertificate(Number(clearedStage));
+  else evalCard();
+ } else if (clearedStage) {
+  showStageCertificate(Number(clearedStage));
  } else {
   let replayMsg = '';
   if (!fresh) {
