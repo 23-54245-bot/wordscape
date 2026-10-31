@@ -3485,10 +3485,11 @@ function draw() {
  const parkedTruckPosition = truckTargetIndex === 0
   ? { x: truckStop.x + 57, y: truckStop.y - 62 }
   : truckStop;
- const truckFacing = truckTargetIndex === 0 ? -35 : truckDriveAngle;
+ // Keep the truck body level on every stage. The road bends, but the artwork
+ // should not lean with the segment or snap to a different angle at a stop.
  const truckPosition = reducedMotion || truckTargetIndex === 0
-  ? ` transform="translate(${parkedTruckPosition.x} ${parkedTruckPosition.y}) rotate(${truckFacing})"`
-  : ` transform="rotate(${truckFacing})"`;
+  ? ` transform="translate(${parkedTruckPosition.x} ${parkedTruckPosition.y})"`
+  : '';
  if (truckVisible) h += `
  <g class="map-delivery-truck" aria-hidden="true"${truckPosition} filter="url(#pedestal-shadow)">
   ${truckMotion}
