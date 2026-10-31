@@ -3630,7 +3630,7 @@ function draw() {
  const labelPalette = it.t === 'gate'
   ? MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i - 1] || 1) - 1] || MAP_LEVEL_PALETTES[0]
   : MAP_LEVEL_PALETTES[(MAP_LEVEL_NUMBER[i] || 1) - 1] || MAP_LEVEL_PALETTES[0];
- const labelY = i === 0 ? p.y + 62 : p.y + 40;
+ const labelY = i === 0 ? p.y + 48 : p.y + 40;
  h += `
  <g class="map-node-label" filter="url(#shadow-3d)" data-map-fit data-map-anchor="${p.x}" data-map-padding="20" data-map-max="${nodeLabelMax}">
    <rect x="${nodeLabelX - nodeLabelWidth / 2}" y="${labelY}" width="${nodeLabelWidth}" height="22" rx="7" fill="#102d54" stroke="${labelPalette.accent}" stroke-width="1.8"/>
