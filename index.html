@@ -2248,6 +2248,8 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 class SoundEngine {
  constructor() {
  this.ctx = null;
+ this.musicTimer = null;
+ this.musicStep = 0;
  this.pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
  }
  init() {
@@ -2256,6 +2258,22 @@ class SoundEngine {
  if (AudioCtx) this.ctx = new AudioCtx();
  }
  if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+ this.startMusic();
+ }
+ startMusic() {
+ if (!soundEnabled || this.musicTimer || !this.ctx) return;
+ const notes = [130.81, 164.81, 196.00, 164.81, 146.83, 174.61, 220.00, 174.61];
+ this.musicTimer = setInterval(() => {
+  if (!soundEnabled) return;
+  const note = notes[this.musicStep++ % notes.length];
+  this.playTone(note, 'sine', 0.42, 0.035);
+ }, 720);
+ }
+ stopMusic() {
+ if (this.musicTimer) {
+  clearInterval(this.musicTimer);
+  this.musicTimer = null;
+ }
  }
  playTone(freq, type='sine', duration=0.12, gain=0.2) {
  if (!soundEnabled) return;
@@ -2288,6 +2306,15 @@ class SoundEngine {
  error() {
  this.playTone(180, 'sawtooth', 0.18, 0.15);
  haptic([60, 50, 60]);
+ }
+ menuTap() {
+  this.playTone(392, 'triangle', 0.07, 0.11);
+ }
+ stageClear() {
+  [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+   setTimeout(() => this.playTone(freq, 'sine', 0.24, 0.18), i * 65);
+  });
+  haptic([35, 45, 55]);
  }
  roundWin() {
  [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
@@ -3749,6 +3776,7 @@ function stageCertificateForStop(index) {
 function showStageCertificate(stageNumber) {
  const stage = STAGE_CERTIFICATES[stageNumber];
  if (!stage) return;
+ audio.stageClear();
  const records = Array.from({ length: stage.last - stage.first + 1 }, (_, offset) => R[stage.first + offset]).filter(Boolean);
  const total = records.reduce((sum, record) => sum + (Number(record.pts) || 0), 0);
  const maxTotal = Array.from({ length: stage.last - stage.first + 1 }, (_, offset) => I[stage.first + offset].cap)
@@ -3789,6 +3817,7 @@ function applyRequestedStage() {
 
 function tap(i) {
  audio.init();
+ audio.menuTap();
  const it = I[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), cue = story(i);
  if (isAdmin) {
  if (it.t === 'gate') {
@@ -6024,7 +6053,12 @@ function updateMuteButton() {
 $('#mute-btn').onclick = () => {
  soundEnabled = !soundEnabled;
  updateMuteButton();
- if (soundEnabled) audio.letterPick(0);
+ if (soundEnabled) {
+  audio.init();
+  audio.letterPick(0);
+ } else {
+  audio.stopMusic();
+ }
 };
 updateMuteButton();
 
