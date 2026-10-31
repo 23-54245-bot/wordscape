@@ -2265,11 +2265,11 @@ class SoundEngine {
  }
  startMusic() {
  if (!soundEnabled || this.musicTimer || !this.ctx) return;
- const notes = [130.81, 164.81, 196.00, 164.81, 146.83, 174.61, 220.00, 174.61];
+ const notes = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 349.23];
  this.musicTimer = setInterval(() => {
   if (!soundEnabled) return;
   const note = notes[this.musicStep++ % notes.length];
-  this.playTone(note, 'sine', 0.42, 0.035);
+  this.playTone(note, 'triangle', 0.5, 0.075);
  }, 720);
  }
  stopMusic() {
@@ -2328,6 +2328,7 @@ class SoundEngine {
 }
 const audio = new SoundEngine();
 let soundEnabled = true;
+document.addEventListener('pointerdown', () => audio.init(), { passive: true });
 
 /* =============================================================
  CONFETTI CANNON
