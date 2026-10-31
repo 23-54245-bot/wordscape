@@ -127,8 +127,8 @@ header {
 
 /* Toggle button */
 .toggle-btn {
-  background: #334155;
-  color: #94a3b8;
+  background: #dc2626;
+  color: #fff;
   border: 0;
   padding: 8px 16px;
   border-radius: 999px;
@@ -137,6 +137,7 @@ header {
   transition: all 0.2s;
   min-width: 90px;
   text-align: center;
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.35);
 }
 .toggle-btn.active {
   background: var(--good);
@@ -657,7 +658,25 @@ let authSession = null;
 let courierPollInterval = null;
 
 const STORAGE_PREFIX = 'streamlined_courier_';
-let gates = { 1: 0, 2: 0, 3: 0, 4: 0 };
+const COURIER_AVATAR_IMAGES = Object.assign(Object.create(null), {
+  'pip the fox': 'assets/avatars/pip-fox.svg',
+  'orbit the cat': 'assets/avatars/orbit-cat.svg',
+  'wren the owl': 'assets/avatars/wren-owl.svg',
+  'clover the bunny': 'assets/avatars/clover-bunny.svg',
+  'tumble the turtle': 'assets/avatars/tumble-turtle.svg',
+  'maple the bear': 'assets/avatars/maple-bear.svg',
+  'skipper the otter': 'assets/avatars/skipper-otter.svg',
+  'patch the raccoon': 'assets/avatars/patch-raccoon.svg',
+  'baby diamond': 'assets/avatars/clover-bunny.svg',
+  hunter: 'assets/avatars/pip-fox.svg',
+  junior: 'assets/avatars/tumble-turtle.svg',
+  'nate gardner': 'assets/avatars/maple-bear.svg',
+  'pigeon toady': 'assets/avatars/skipper-otter.svg',
+  tulip: 'assets/avatars/wren-owl.svg',
+  alpha: 'assets/avatars/orbit-cat.svg',
+  beta: 'assets/avatars/patch-raccoon.svg'
+});
+let gates = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
 let seminarCode = '';
 let evaluationUrl = '';
 let evaluationQr = '';
@@ -983,12 +1002,12 @@ function getCourierTimeData(c) {
     startTime = Math.min(...completedList.map(r => r.completedAt));
   }
 
-  let finishTime = c.finishTime ? Number(c.finishTime) : null;
-  if (!finishTime && res[16] && res[16].completedAt) {
-    finishTime = Number(res[16].completedAt);
-  }
-
-  const isFinished = Boolean(res[16] || completedList.length >= 13);
+  const isFinished = isCourierFinished(res);
+  const finishTime = isFinished
+    ? (Number(res[24] && res[24].completedAt) ||
+       (completedList.length ? Math.max(...completedList.map(r => Number(r.completedAt) || 0)) : null) ||
+       (Number(c.finishTime) || null))
+    : null;
   const latestTime = finishTime || (completedList.length > 0 ? Math.max(...completedList.map(r => r.completedAt)) : (c.updatedAt || 0));
 
   let elapsedMs = 0;
@@ -1022,10 +1041,34 @@ function getCourierTimeData(c) {
   };
 }
 
+function isCourierFinished(results, gateControls = gates) {
+  if (!Array.isArray(results)) return false;
+  const requiredStops = [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 24];
+  const requiredGates = [[3, 1], [7, 2], [11, 3], [15, 4], [19, 5], [23, 6]];
+  return requiredStops.every(index => {
+    const result = results[index];
+    if (!result || typeof result !== 'object') return false;
+    const points = Number(result.pts);
+    return Number.isFinite(points) && points >= 0;
+  }) && requiredGates.every(([index, gate]) => {
+    const result = results[index];
+    return (!!result && (result.gate === 1 || result.gate === true)) ||
+      gateControls[gate] === 1 || gateControls[gate] === true;
+  });
+}
+
 function calculateScore(c) {
   if (typeof c.score === 'number' && c.score > 0) return c.score;
   if (!c.results || !Array.isArray(c.results)) return 0;
   return c.results.reduce((a, r) => a + (r && r.pts || 0), 0);
+}
+
+function courierAvatarImage(avatar) {
+  if (!avatar || typeof avatar !== 'object') return '';
+  const image = String(avatar.img || '');
+  if (Object.values(COURIER_AVATAR_IMAGES).includes(image)) return image;
+  const name = String(avatar.name || '').trim().toLowerCase();
+  return COURIER_AVATAR_IMAGES[name] || '';
 }
 
 function sortCouriers(a, b) {
@@ -1064,9 +1107,9 @@ function refreshCouriers() {
   couriers.forEach(c => {
     const cleared = (c.results || []).filter(r => r && !r.gate).length;
     if (cleared >= 3) s1++;
-    if (cleared >= 7) s2++;
-    if (cleared >= 10) s3++;
-    if (cleared >= 11) fin++;
+    if (cleared >= 6) s2++;
+    if (cleared >= 9) s3++;
+    if (isCourierFinished(c.results)) fin++;
   });
   $('#stat-s1').textContent = s1;
   $('#stat-s2').textContent = s2;
@@ -1087,6 +1130,7 @@ function refreshCouriers() {
   tbody.innerHTML = filtered.map((c, idx) => {
     const totalScore = calculateScore(c);
     const stopIdx = c.cur !== undefined ? c.cur : (c.stops || 0);
+    const avatarImage = courierAvatarImage(c.avatar);
     const res = c.results || [];
     // Stage 1 (Word Puzzle): stops 0, 1, 2
     let r1 = (res[0]?.pts||0) + (res[1]?.pts||0) + (res[2]?.pts||0);
@@ -1110,7 +1154,7 @@ function refreshCouriers() {
       <tr>
         <td style="font-weight:800;color:var(--accent)">#${idx + 1}</td>
         <td style="font-weight:700">
-          ${c.avatar && c.avatar.img ? `<img src="${c.avatar.img}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--accent)">` : ''}
+          ${avatarImage ? `<img src="${avatarImage}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--accent)">` : ''}
           ${escapeHtml(c.name)}
         </td>
         <td><code>${escapeHtml(c.pid || '—')}</code></td>
@@ -1157,16 +1201,64 @@ async function deleteCourier(key, name) {
   refreshCouriers();
 }
 
-function grantLatePass(key) {
+async function grantLatePass(key) {
+  const courierId = String(key).startsWith(STORAGE_PREFIX)
+    ? String(key).slice(STORAGE_PREFIX.length)
+    : '';
+  if (!/^[a-z0-9]+$/.test(courierId)) {
+    alert('Could not identify this courier account.');
+    return;
+  }
+
   try {
-    const c = JSON.parse(localStorage.getItem(key));
-    if (c) {
-      c.cur = Math.min(12, (c.cur || 0) + 4);
-      localStorage.setItem(key, JSON.stringify(c));
-      alert(`Granted Late Pass to ${c.name}. Advanced to stop ${c.cur}.`);
-      refreshCouriers();
+    const localRecord = JSON.parse(localStorage.getItem(STORAGE_PREFIX + courierId) || 'null');
+    const remoteRecord = remoteCouriers[courierId];
+    const c = remoteRecord && (!localRecord ||
+      Number(remoteRecord.updatedAt || 0) >= Number(localRecord.updatedAt || 0))
+      ? remoteRecord
+      : localRecord;
+    if (!c || !c.name) {
+      alert('This courier record is no longer available. Refresh the courier list and try again.');
+      return;
     }
-  } catch(e) {}
+
+    const currentStop = Math.max(0, Math.min(24, Math.floor(Number(c.cur) || 0)));
+    const nextStop = Math.min(24, (Math.floor(currentStop / 4) + 1) * 4);
+    if (nextStop <= currentStop) {
+      alert(`${c.name} is already at the final stage.`);
+      return;
+    }
+
+    const results = Array.isArray(c.results) ? [...c.results] : Array(26).fill(null);
+    const gateIndex = nextStop - 1; if ([3, 7, 11, 15, 19, 23].includes(gateIndex) && (!results[gateIndex] || !results[gateIndex].pts)) { results[gateIndex] = { gate: 1 }; }
+    const updatedCourier = {
+      ...c,
+      cur: nextStop,
+      results,
+      updatedAt: Date.now()
+    };
+
+    if (FIREBASE_DB_URL) {
+      const token = await getAuthToken();
+      const response = await fetch(
+        `${FIREBASE_DB_URL}/streamlined_couriers/${courierId}.json?auth=${encodeURIComponent(token)}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedCourier)
+        }
+      );
+      if (!response.ok) throw new Error(`Courier update failed (${response.status})`);
+    }
+
+    localStorage.setItem(STORAGE_PREFIX + courierId, JSON.stringify(updatedCourier));
+    remoteCouriers[courierId] = updatedCourier;
+    alert(`Late Pass granted to ${c.name}. Advanced to stop ${nextStop + 1}.`);
+    refreshCouriers();
+  } catch(error) {
+    console.error('Courier late-pass update failed:', error);
+    alert(`Could not grant the Late Pass: ${error.message || 'Check the connection and try again.'}`);
+  }
 }
 
 $('#wipe-all-btn').onclick = () => {
