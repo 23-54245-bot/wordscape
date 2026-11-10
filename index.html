@@ -2520,7 +2520,7 @@ const LOGIN_MEMORY_KEY = 'streamlined_login_memory_v1';
 let user = '', pid = '', courierKey = '';
 let cur = 0;
 let R = []; // Results per stop index
-let O = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; // Host gate controls (1=Stage2, 2=Stage3, 3=Bonus, 4=Eval)
+let O = { 1: 0, 2: 0, 3: 0 }; // Release groups: Stages 2-3, 4-5, and 6-Final
 let seminarCode = '';
 let evaluationUrl = '';
 let evaluationQr = '';
@@ -2553,7 +2553,7 @@ function sanitizeResults(results) {
  const sanitized = Array.from({ length: count }, (_, index) => {
   const result = results[index];
   if (!result || typeof result !== 'object') return null;
-  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
+  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' || I[index].t === 'pass' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
 
   if (isGateStop) {
    if (result.gate === 1 || result.gate === true || result.gate) return { gate: 1 };
@@ -2591,20 +2591,29 @@ function sanitizeResults(results) {
  return sanitized;
 }
 
-function sanitizeGates(gates) {
- const normalized = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
- if (!gates || typeof gates !== 'object') return normalized;
+function sanitizeGates(gates, gateGroups) {
+ const source = gateGroups && typeof gateGroups === 'object'
+  ? gateGroups
+  : {
+   1: gates && (gates[1] === 1 || gates[1] === true || gates[2] === 1 || gates[2] === true),
+   2: gates && (gates[3] === 1 || gates[3] === true || gates[4] === 1 || gates[4] === true),
+   3: gates && (gates[5] === 1 || gates[5] === true || gates[6] === 1 || gates[6] === true)
+  };
+ const normalized = { 1: 0, 2: 0, 3: 0 };
  Object.keys(normalized).forEach(key => {
-  normalized[key] = gates[key] === 1 || gates[key] === true ? 1 : 0;
+  normalized[key] = source[key] === 1 || source[key] === true ? 1 : 0;
  });
  return normalized;
+}
+function legacyGateControls(gateGroups) {
+ return { 1: gateGroups[1], 2: gateGroups[1], 3: gateGroups[2], 4: gateGroups[2], 5: gateGroups[3], 6: gateGroups[3] };
 }
 
 function loadState() {
  // Load host control switches
  try {
  const ctrl = JSON.parse(localStorage.getItem(CONTROL_KEY) || '{}');
- if (ctrl.gates) O = sanitizeGates(ctrl.gates);
+ if (ctrl.gates || ctrl.gateGroups) O = sanitizeGates(ctrl.gates, ctrl.gateGroups);
  if (typeof ctrl.seminarCode === 'string') seminarCode = ctrl.seminarCode;
  evaluationUrl = normalizeEvaluationUrl(ctrl.evaluationUrl);
  if (isEvaluationQrDataUrl(ctrl.evaluationQr)) evaluationQr = ctrl.evaluationQr;
@@ -2677,7 +2686,7 @@ async function restoreAccount(localState) {
  const localResults = sanitizeResults(localState && localState.results);
  const remoteResults = sanitizeResults(remote.results);
  R = Array.from({ length: N }, (_, index) => {
-  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
+  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' || I[index].t === 'pass' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
   const localResult = localResults[index];
   const remoteResult = remoteResults[index];
 
@@ -2836,9 +2845,12 @@ async function syncControlFromFirebase() {
  const data = await res.json();
  if (data && typeof data === 'object') {
  let changed = false;
- if (data.gates && JSON.stringify(data.gates) !== JSON.stringify(O)) {
- O = Object.assign({}, O, data.gates);
- changed = true;
+ if (data.gates || data.gateGroups) {
+ const incomingGates = sanitizeGates(data.gates, data.gateGroups);
+ if (JSON.stringify(incomingGates) !== JSON.stringify(O)) {
+  O = incomingGates;
+  changed = true;
+ }
  }
          if (typeof data.seminarCode === 'string' && data.seminarCode !== seminarCode) {
           seminarCode = data.seminarCode;
@@ -2862,7 +2874,8 @@ async function syncControlFromFirebase() {
  if (changed || !localStorage.getItem(CONTROL_KEY)) {
  try {
  localStorage.setItem(CONTROL_KEY, JSON.stringify({
-  gates: O,
+  gates: legacyGateControls(O),
+  gateGroups: O,
   seminarCode,
   evaluationUrl,
   evaluationQr,
@@ -2891,31 +2904,31 @@ const I = [
  { t:'game', k:'mz', lv:0, n:'Delivery Maze: Route 1 (Easy)', e:'', cap:450 },
  { t:'game', k:'mz', lv:1, n:'Delivery Maze: Route 2 (Medium)', e:'', cap:480 },
  { t:'game', k:'mz', lv:2, n:'Delivery Maze: Route 3 (Hard)', e:'', cap:500 },
- { t:'gate', g:2 },
+ { t:'pass' },
 
  // STAGE 3: FIX THE BROKEN DELIVERY (Roadblock Scenarios)
  { t:'game', k:'bd', scen:0, n:'Broken Delivery: Scenario 1 (Easy)', e:'', cap:450 },
  { t:'game', k:'bd', scen:1, n:'Broken Delivery: Scenario 2 (Medium)', e:'', cap:480 },
  { t:'game', k:'bd', scen:2, n:'Broken Delivery: Scenario 3 (Hard)', e:'', cap:500 },
- { t:'gate', g:3 },
+ { t:'gate', g:2 },
 
  // STAGE 4: DETECTIVE CASE INVESTIGATION (Suspect Deduction)
  { t:'game', k:'dt', caseIdx:0, n:'Detective Case: Case 1 (Easy)', e:'', cap:450 },
  { t:'game', k:'dt', caseIdx:1, n:'Detective Case: Case 2 (Medium)', e:'', cap:480 },
  { t:'game', k:'dt', caseIdx:2, n:'Detective Case: Case 3 (Hard)', e:'', cap:500 },
- { t:'gate', g:4 },
+ { t:'pass' },
 
  // STAGE 5: FLIP N MATCH (Courier Badges)
  { t:'game', k:'fm', lv:0, n:'Flip n Match: 8 Cards (Easy)', e:'', cap:450 },
  { t:'game', k:'fm', lv:1, n:'Flip n Match: 12 Cards (Medium)', e:'', cap:480 },
  { t:'game', k:'fm', lv:2, n:'Flip n Match: 16 Cards (Hard)', e:'', cap:500 },
- { t:'gate', g:5 },
+ { t:'gate', g:3 },
 
  // STAGE 6: SPOT & FIX THE ERRORS (Defect Inspection)
  { t:'game', k:'sf', lv:0, n:'Spot & Fix: Depot Floor (Easy)', e:'', cap:450 },
  { t:'game', k:'sf', lv:1, n:'Spot & Fix: Conveyor Chute (Medium)', e:'', cap:480 },
  { t:'game', k:'sf', lv:2, n:'Spot & Fix: Flight Deck (Hard)', e:'', cap:500 },
- { t:'gate', g:6 },
+ { t:'pass' },
 
  // FINAL STAGE: HOME ARRIVAL
  { t:'bonus', k:'bn', n:'Final Delivery Challenge', e:'', cap:500 },
@@ -2968,13 +2981,10 @@ const MAP_GATE_LOCKED_ART = {
  6: 'assets/map-dock-6-locked.png?v=d261ffc'
 };
 
-const GN = { 
- 1:'Stage 2 (Canyon Delivery Maze)', 
- 2:'Stage 3 (Roadblock Scenarios)', 
- 3:'Stage 4 (Detective Investigation)',
- 4:'Stage 5 (Courier Memory Match)',
- 5:'Stage 6 (Quality Inspection)',
- 6:'the Final Home Delivery'
+const GN = {
+ 1:'Stages 2-3 (Canyon Maze and Broken Delivery)',
+ 2:'Stages 4-5 (Detective and Match Release)',
+ 3:'Stage 6 and Final Delivery'
 };
 const PILL = { 
  0: ' STAGE 1 - WORD PUZZLE DEPOT', 
@@ -3004,13 +3014,10 @@ const BEAT = {
  24: 'Delivery completed! The baby has arrived safely home.'
 };
 
-const GL = { 
- 1:'Gate 1 - Canyon Pass', 
- 2:'Gate 2 - Roadblock Transit', 
- 3:'Gate 3 - Security Clearance', 
- 4:'Gate 4 - Badge Verification', 
- 5:'Gate 5 - Inspection Hub', 
- 6:'Gate 6 - Final Delivery' 
+const GL = {
+ 1:'Gate 1+2 - Canyon and Roadblock Release',
+ 2:'Gate 3+4 - Detective and Match Release',
+ 3:'Gate 5+6 - Inspection and Final Release'
 };
 
 const SC = [
@@ -3150,11 +3157,18 @@ document.addEventListener('keydown', event => {
 });
 
 function adv() {
- while (cur < N && I[cur].t === 'gate' && O[I[cur].g]) {
- R[cur] = { gate: 1 };
- cur++;
- saveState();
+ let advanced = false;
+ while (cur < N) {
+  const stop = I[cur];
+  if (stop.t === 'pass' || (stop.t === 'gate' && O[stop.g])) {
+   R[cur] = { gate: 1 };
+   cur++;
+   advanced = true;
+   continue;
+  }
+  break;
  }
+ if (advanced) saveState();
 }
 
 function renderStarPolygon(cx, cy, r, isFilled) {
@@ -3565,6 +3579,7 @@ function draw() {
 
  // 4. Level Nodes, Checkpoint Gates & Milestone Banners
  I.forEach((it, i) => {
+ if (it.t === 'pass') return;
  const p = P[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), isC = i === cur;
  const gateOpen = it.t === 'gate' && (O[it.g] === 1 || O[it.g] === true);
  const nodeState = done ? 'completed'
@@ -3773,7 +3788,8 @@ function focusCur() {
 
 let isAdmin = false;
 let requestedStage = null;
-const STAGE_STARTS = { 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 7: 24 };
+const STAGE_STARTS = { 2: 4, 4: 12, 6: 20 };
+const STAGE_GATE_GROUP = { 2: 1, 4: 2, 6: 3 };
 const STAGE_CERTIFICATES = {
  1: { first: 0, last: 2, title: 'Word Puzzle Dispatch' },
  2: { first: 4, last: 6, title: 'Baby Delivery Maze' },
@@ -3824,7 +3840,8 @@ function showStageCertificate(stageNumber) {
 
 function applyRequestedStage() {
  const stageStart = STAGE_STARTS[requestedStage];
- if (!stageStart || !O[requestedStage - 1]) return false;
+ const gateGroup = STAGE_GATE_GROUP[requestedStage];
+ if (!stageStart || !gateGroup || !O[gateGroup]) return false;
  cur = Math.max(cur, stageStart);
  R[stageStart - 1] = { gate: 1 };
  return true;
@@ -3846,8 +3863,8 @@ function tap(i) {
  if (it.t === 'fin') return evalCard();
  if (it.t === 'gate') {
  if (done) return modal(`<h2> ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
- if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlocks when the seminar host releases it from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
- return info(' Gate ' + it.g, 'Clear all previous stops to reach this gate.');
+ if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlock when the seminar host releases this gate from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
+ return info(' ' + GL[it.g], 'Clear all previous stops to reach this gate.');
  }
  if (it.t === 'bonus') {
  if (done) return modal(`<h2> Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus Round', `launch(${i})`) + bt('Close', 'X()', 1));
@@ -3868,7 +3885,7 @@ let activeStopIndex = null;
 let activeStopCompleted = false;
 function launch(i) {
  X();
- if (!Number.isInteger(i) || i < 0 || i >= N || I[i].t === 'gate' || I[i].t === 'fin') {
+ if (!Number.isInteger(i) || i < 0 || i >= N || I[i].t === 'gate' || I[i].t === 'pass' || I[i].t === 'fin') {
   console.error('Cannot launch invalid or non-playable stop:', i);
   return;
  }
@@ -3978,7 +3995,11 @@ function nextStop() {
  alert('Please complete this delivery challenge first to unlock the next stop! ');
  return;
  }
- const targetStop = (activeStopIndex !== null ? activeStopIndex + 1 : cur);
+ let targetStop = (activeStopIndex !== null ? activeStopIndex + 1 : cur);
+ while (targetStop < N && I[targetStop].t === 'pass') {
+  R[targetStop] = { gate: 1 };
+  targetStop++;
+ }
  if (targetStop < N) {
  const nextIt = I[targetStop];
  if (nextIt.t === 'gate') {
@@ -6078,7 +6099,7 @@ function checkUrlParams() {
  }
  const stageParam = urlParams.get('stage');
  const parsedStage = Number.parseInt(stageParam, 10);
- requestedStage = Number.isInteger(parsedStage) && parsedStage >= 2 && parsedStage <= 7
+ requestedStage = Number.isInteger(parsedStage) && Object.prototype.hasOwnProperty.call(STAGE_STARTS, parsedStage)
   ? parsedStage
   : null;
  const playParam = urlParams.get('play');

@@ -22,7 +22,7 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 - Game scores share a 250-point completion baseline, a game-specific accuracy bonus (up to 150/180/200 by difficulty), and any applicable 50-point no-help bonus, clamped to the stop's cap. The final quiz awards 500 points. Results show the score and star rating separately.
 - Replaying an already passed stop updates its saved result only when the new score is higher; the best result is retained.
 - The Next Stop control is available only after the active stop has been completed.
-- Gate authorization is separate from game completion and can be released by the host/control system.
+- Host authorization is grouped into three checkpoints: Gate 1+2 releases Stages 2?3, Gate 3+4 releases Stages 4?5, and Gate 5+6 releases Stage 6 and Final Delivery. Each group has one host control and one stage link.
 - The final evaluation totals points from all 19 playable stops (maximum 9,080 points). Grade bands use the course maximum: A+ at 85%+, A at 70%+, B+ at 60%+, otherwise B.
 - The certificate is available only after every game and bonus stop is complete, all host checkpoints are released, and the courier reaches the final evaluation. It shows the courier name, grade, points, stars, and completion date, and can be printed or saved as a PDF.
 
