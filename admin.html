@@ -1537,6 +1537,17 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
     trailContext.shadowBlur = 2;
     trailContext.stroke();
    });
+
+   const capRadius = 5;
+   const headGlow = trailContext.createRadialGradient(last.x, last.y, 0, last.x, last.y, capRadius);
+   headGlow.addColorStop(0, 'rgba(255,255,255,0.9)');
+   headGlow.addColorStop(0.35, trailColors[0]);
+   headGlow.addColorStop(1, 'rgba(255,138,31,0)');
+   trailContext.globalAlpha = Math.min(1, opacity * 2.5);
+   trailContext.fillStyle = headGlow;
+   trailContext.beginPath();
+   trailContext.arc(last.x, last.y, capRadius, 0, Math.PI * 2);
+   trailContext.fill();
   }
 
   for (let i = trailSparkles.length - 1; i >= 0; i--) {
