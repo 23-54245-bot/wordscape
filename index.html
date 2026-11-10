@@ -56,9 +56,6 @@
 
 * {
  box-sizing: border-box;
- user-select: none;
- -webkit-user-select: none;
- -webkit-touch-callout: none;
 }
 html { scroll-padding-top: env(safe-area-inset-top, 0px); overflow-x: hidden; }
 html::-webkit-scrollbar { display: none; }
@@ -123,7 +120,25 @@ h2 { margin: 4px 0 8px; font-weight: 700; }
 }
 
 button, select, input { font: inherit; color: inherit; border: 0; }
-button { cursor: pointer; }
+button {
+ cursor: pointer;
+ user-select: none;
+ -webkit-user-select: none;
+ -webkit-touch-callout: none;
+}
+.skip-link {
+ position: fixed;
+ top: 8px;
+ left: 8px;
+ z-index: 1000;
+ transform: translateY(-160%);
+ padding: 10px 14px;
+ border-radius: 8px;
+ background: #fff;
+ color: #102d54;
+ font-weight: 800;
+}
+.skip-link:focus { transform: translateY(0); }
 :focus-visible {
  outline: 3px solid #38bdf8;
  outline-offset: 3px;
@@ -605,6 +620,7 @@ header {
  text-align: center;
  max-height: 90vh;
  overflow-y: auto;
+ scrollbar-width: none;
  box-shadow:
  0 10px 0 rgba(0,0,0,0.22),
  0 20px 50px rgba(0,0,0,0.45),
@@ -613,6 +629,7 @@ header {
  border: 3px solid #93c5fd;
  position: relative;
 }
+.mbox::-webkit-scrollbar { display: none; }
 .mbox .btn + .btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent;  margin-top: 18px; }
 .stars { font-size: 2.2rem; letter-spacing: 4px; color: #f5b301; margin: 4px 0; }
 .dim { color: #cbd5e1; }
@@ -632,6 +649,42 @@ header {
 .certificate-grade { font-size: 1.15rem; font-weight: 900; color: #8a5a12; }
 .certificate-score { margin-top: 8px; font-weight: 700; }
 .certificate-date { margin-top: 20px; font-size: 0.85rem; color: #475569; }
+.stage-certificate {
+ border: 7px double #d99b37;
+ border-radius: 22px;
+ padding: 18px 14px;
+ background: #fffaf0;
+ color: #17345a;
+}
+.stage-certificate .certificate-kicker {
+ color: #9a6416;
+ font-size: 0.72rem;
+ letter-spacing: 0.08em;
+}
+.stage-certificate .certificate-medallion {
+ display: grid;
+ place-items: center;
+ width: 52px;
+ height: 52px;
+ margin: 12px auto;
+ border: 5px solid #e8b44e;
+ border-radius: 50%;
+ color: #e39a24;
+ font-size: 1.8rem;
+}
+.stage-certificate h1 {
+ font-size: 1.35rem;
+ margin: 6px 0;
+}
+.stage-certificate .certificate-grade {
+ width: fit-content;
+ margin: 12px auto;
+ padding: 8px 18px;
+ border: 2px solid #e7bd64;
+ border-radius: 14px;
+ background: #fff0c4;
+}
+.stage-certificate .certificate-date { margin-top: 12px; }
 #certificate-actions {
  display: flex;
  flex-direction: column;
@@ -647,6 +700,31 @@ header {
 #certificate-actions p {
  margin: 0;
 }
+#save-status {
+ margin: 6px 0 0;
+ min-height: 1.25em;
+ color: #e2e8f0;
+ font-size: .75rem;
+ text-align: center;
+}
+#save-status[data-state="offline"],
+#save-status[data-state="warning"] { color: #fde68a; }
+#save-status[data-state="saved"] { color: #bbf7d0; }
+#progress-guidance {
+ margin: 10px 0 6px;
+ color: #f8fafc;
+ line-height: 1.45;
+}
+#map-help-btn { margin: 0 auto; }
+.tutorial-list {
+ margin: 10px 0 16px;
+ padding-left: 22px;
+ text-align: left;
+ line-height: 1.5;
+}
+.tutorial-list li + li { margin-top: 8px; }
+.game-tip-copy { text-align: left; line-height: 1.5; }
+#play .row .sm { min-height: 44px; }
 @media print {
  @page { size: landscape; margin: 12mm; }
  body { background: #fff !important; color: #111 !important; }
@@ -1340,7 +1418,7 @@ select option {
  }
  #play-sticky-header {
  display: grid !important;
- grid-template-columns: auto minmax(0, 1fr) auto;
+ grid-template-columns: 46px minmax(0, 1fr) 46px 46px;
  gap: 6px;
  padding: 7px !important;
  }
@@ -1403,7 +1481,7 @@ select option {
  justify-self: start;
  }
  #play-sticky-header {
- grid-template-columns: auto minmax(0, 1fr);
+ grid-template-columns: 44px minmax(0, 1fr) 44px 44px;
  }
  #nav-next-btn {
  grid-column: 1 / -1;
@@ -1770,7 +1848,7 @@ select option {
 
  #play-sticky-header {
   display: grid !important;
-  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  grid-template-columns: 46px minmax(0, 1fr) 46px 46px;
   align-items: center;
   gap: 10px;
   padding: 8px 12px !important;
@@ -1828,8 +1906,8 @@ select option {
   #mapv .map-profile { flex: 1 1 100%; }
   #mapv .map-actions { width: 100%; justify-content: flex-end; }
   #mapv .profile-avatar { width: 46px; height: 46px; flex-basis: 46px; }
-  #play-sticky-header { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 7px; }
-  #play-sticky-header .game-nav-icon { width: 40px; height: 40px; min-height: 40px; }
+  #play-sticky-header { grid-template-columns: 44px minmax(0, 1fr) 44px 44px; gap: 7px; }
+  #play-sticky-header .game-nav-icon { width: 44px; height: 44px; min-height: 44px; }
  }
 
  @media (max-width: 360px) {
@@ -1840,7 +1918,7 @@ select option {
   #mapv .map-profile-info .ttl { font-size: .58rem; }
   #mapv .profile-score { padding: 3px 5px; font-size: .68rem; }
   #mapv .map-actions { width: auto; gap: 5px; }
-  #mapv .map-actions .map-icon-control { width: 34px; height: 34px; min-height: 34px; font-size: .88rem; border-width: 2px; }
+  #mapv .map-actions .map-icon-control { width: 44px; height: 44px; min-height: 44px; font-size: .95rem; border-width: 2px; }
   #mapv > header { padding: 10px; }
  }
 }
@@ -1850,6 +1928,7 @@ select option {
 <body>
 <div class="bg-layer"></div>
 <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+<a class="skip-link" href="#main-content">Skip to game content</a>
 
 <main id="main-content">
 <!-- LOGIN SCREEN -->
@@ -1898,11 +1977,13 @@ select option {
  <button class="sm map-icon-control" id="sign-out-btn" type="button" aria-label="Sign out" title="Sign out">✕</button>
 </div>
 </div>
- <div class="pbar"><i id="hb"></i></div>
+ <div class="pbar" role="progressbar" aria-label="Delivery challenges completed" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0"><i id="hb"></i></div>
+ <p id="save-status" role="status" aria-live="polite" data-state="saved">Progress is saved on this device.</p>
 </header>
 
  <div id="map-frame"><svg id="map" role="group" aria-label="Interactive delivery map. Use Tab to move between stops and Enter or Space to open one."></svg></div>
- <p class="sub" style="margin-top:10px">Choose a delivery stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
+ <p id="progress-guidance" class="sub" role="status" aria-live="polite" style="margin-top:10px">Choose a delivery stop to play. Complete every stop to earn your Chief Logistics Director certificate!</p>
+ <button class="sm" id="map-help-btn" type="button" onclick="showTutorial(false)">How to Play</button>
 </div>
 
 <!-- PLAY SCREEN (CONTAINER FOR ALL 5 ENGINES) -->
@@ -1910,7 +1991,9 @@ select option {
  <div class="row" id="play-sticky-header" style="justify-content:space-between;align-items:center;margin:0 0 10px;position:sticky;top:0;z-index:90;background:rgba(12,24,43,0.92);backdrop-filter:blur(12px);padding:8px 12px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.16)">
  <button class="sm game-nav-icon" onclick="leave()" aria-label="Return to delivery map" title="Return to map">🗺️</button>
  <span id="nav-stage-indicator" style="font-size:0.85rem;font-weight:800;color:var(--ink);text-align:center;flex:1;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
- <button class="sm game-nav-icon" id="challenge-toggle-btn" onclick="toggleChallengeMode()" aria-label="Toggle challenge mode" aria-pressed="false" title="Challenge mode off">⏱️</button>
+ <button class="sm game-nav-icon" type="button" onclick="showChallengeTip()" aria-label="Show a challenge tip" title="Quick tip">💡</button>
+ <button class="sm game-nav-icon" id="challenge-toggle-btn" onclick="toggleChallengeMode()" aria-label="Show the optional challenge timer" aria-pressed="false" title="Show optional challenge timer">⏱️</button>
+ <span id="challenge-mode-status" class="visually-hidden" role="status" aria-live="polite"></span>
 </div>
  <!-- GAME 0: WORD PUZZLE (WORDSCAPES) -->
  <section id="g0" hidden>
@@ -2251,11 +2334,6 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 class SoundEngine {
  constructor() {
  this.ctx = null;
- this.musicTimer = null;
- this.musicStep = 0;
- this.whistle = new Audio('assets/whistle.mp3?v=098f2ae');
- this.whistle.preload = 'auto';
- this.whistle.volume = 0.7;
  this.pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
  }
  init() {
@@ -2264,30 +2342,9 @@ class SoundEngine {
  if (AudioCtx) this.ctx = new AudioCtx();
  }
  if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
- this.startMusic();
  }
- startMusic() {
- if (!soundEnabled || this.musicTimer || !this.ctx) return;
- const notes = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 349.23];
- this.musicTimer = setInterval(() => {
-  if (!soundEnabled) return;
-  const note = notes[this.musicStep++ % notes.length];
-  this.playTone(note, 'triangle', 0.5, 0.075);
- }, 720);
- }
- stopMusic() {
- if (this.musicTimer) {
-  clearInterval(this.musicTimer);
-  this.musicTimer = null;
- }
- }
- playWhistle() {
-  if (!soundEnabled) return;
-  try {
-   this.whistle.currentTime = 0;
-   this.whistle.play().catch(() => {});
-  } catch(e) {}
- }
+ stopMusic() {}
+ startMusic() {}
  playTone(freq, type='sine', duration=0.12, gain=0.2) {
  if (!soundEnabled) return;
  this.init();
@@ -2411,7 +2468,8 @@ function updateChallengeUI() {
  if (btn) {
   btn.textContent = '⏱️';
   btn.setAttribute('aria-pressed', String(challengeMode));
-  btn.title = `Challenge mode ${challengeMode ? 'on' : 'off'}`;
+  btn.setAttribute('aria-label', challengeMode ? 'Hide the optional challenge timer' : 'Show the optional challenge timer');
+  btn.title = challengeMode ? 'Hide optional challenge timer' : 'Show optional challenge timer';
   btn.classList.toggle('is-active', challengeMode);
  }
  const timerSelectors = ['#wp-t', '#sf-t', '#mz-t', '#bd-t', '#dt-t', '#fm-t', '#bn-t'];
@@ -2419,10 +2477,25 @@ function updateChallengeUI() {
   const el = document.querySelector(sel);
   if (el) el.style.visibility = challengeMode ? 'visible' : 'hidden';
  });
+ const status = $('#challenge-mode-status');
+ if (status) {
+  status.textContent = challengeMode
+   ? 'Optional timer shown. Time does not change your score.'
+   : 'Optional timer hidden. Time does not change your score.';
+ }
 }
 function toggleChallengeMode() {
  challengeMode = !challengeMode;
  updateChallengeUI();
+}
+function startTimedReplay(stopIndex) {
+ if (!Number.isInteger(stopIndex) || !R[stopIndex] || typeof R[stopIndex].pts !== 'number') {
+  info('Replay Unavailable', 'Complete this delivery stop before starting a timed replay.');
+  return;
+ }
+ challengeMode = true;
+ updateChallengeUI();
+ launch(stopIndex);
 }
 
 function Timer(el) {
@@ -2492,18 +2565,20 @@ function res(el, title, score, max, extra) {
  if (topNavBtn) topNavBtn.style.animation = 'navPulse 1.4s infinite';
 
  el.innerHTML = `
- <div class="card" style="text-align:center;margin-top:14px">
- <h2>${title}</h2>
+ <section class="card" aria-labelledby="stop-result-title" style="text-align:center;margin-top:14px">
+ <h2 id="stop-result-title">${title}</h2>
  <div class="big"> ${score}</div>
  ${st(calculateStars(score, max))}
  <p class="sub">Star rating: ${calculateStars(score, max)} / 3</p>
- <p style="margin:6px 0;font-size:1.05rem"><b>Score: ${score} / ${max} points</b></p>
+ <p role="status" aria-live="polite" aria-atomic="true" style="margin:6px 0;font-size:1.05rem"><b>Score: ${score} / ${max} points</b></p>
  ${extra ? `<div class="sub">${extra}</div>` : ''}
  <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
  <button class="btn green" onclick="nextStop()" style="font-size:1.05rem">${nextLabel}</button>
+ <button class="btn alt" onclick="launch(${activeStopIndex})">Replay Level</button>
+ <button class="sm" onclick="startTimedReplay(${activeStopIndex})">Try Timed Replay</button>
  <button class="btn alt" onclick="leave()">Return to Map</button>
 </div>
-</div>
+</section>
  `;
 
  setTimeout(() => {
@@ -2605,8 +2680,59 @@ function sanitizeGates(gates, gateGroups) {
  });
  return normalized;
 }
+
 function legacyGateControls(gateGroups) {
  return { 1: gateGroups[1], 2: gateGroups[1], 3: gateGroups[2], 4: gateGroups[2], 5: gateGroups[3], 6: gateGroups[3] };
+}
+
+function mergeCourierProgress(localData, remoteData) {
+ const local = localData && typeof localData === 'object' ? localData : {};
+ const remote = remoteData && typeof remoteData === 'object' ? remoteData : {};
+ if (remote.name && remote.pid &&
+     normalizeId(remote.name, remote.pid) !== normalizeId(local.name || user, local.pid || pid)) {
+  throw new Error('The saved account identity does not match this name and player ID.');
+ }
+ const localResults = sanitizeResults(local.results);
+ const remoteResults = sanitizeResults(remote.results);
+ const results = Array.from({ length: N }, (_, index) => {
+  const isGateStop = I[index] && (I[index].t === 'gate' || I[index].t === 'pass');
+  const localResult = localResults[index];
+  const remoteResult = remoteResults[index];
+  if (isGateStop) {
+   return localResult && localResult.gate || remoteResult && remoteResult.gate ? { gate: 1 } : null;
+  }
+  if (!localResult) return remoteResult;
+  if (!remoteResult) return localResult;
+  const localCompletedAt = Number(localResult.completedAt) || 0;
+  const remoteCompletedAt = Number(remoteResult.completedAt) || 0;
+  return remoteResult.pts > localResult.pts ||
+   (remoteResult.pts === localResult.pts && remoteCompletedAt > localCompletedAt)
+   ? remoteResult
+   : localResult;
+ });
+ const furthestResult = results.reduce(
+  (furthest, result, index) => result ? Math.max(furthest, index + 1) : furthest,
+  0
+ );
+ const localCur = Number(local.cur), remoteCur = Number(remote.cur);
+ const startTimes = [Number(local.startTime), Number(remote.startTime)].filter(value => value > 0);
+ const finishTimes = [Number(local.finishTime), Number(remote.finishTime)].filter(value => value > 0);
+ return {
+  ...remote,
+  ...local,
+  name: local.name || remote.name || user,
+  pid: local.pid || remote.pid || pid,
+  results,
+  cur: Math.max(0, Math.min(N - 1, Math.floor(Math.max(
+   Number.isFinite(localCur) ? localCur : 0,
+   Number.isFinite(remoteCur) ? remoteCur : 0,
+   furthestResult
+  )))),
+  avatar: local.avatar || remote.avatar || null,
+  startTime: startTimes.length ? Math.min(...startTimes) : null,
+  finishTime: finishTimes.length ? Math.min(...finishTimes) : null,
+  updatedAt: Math.max(Number(local.updatedAt) || 0, Number(remote.updatedAt) || 0)
+ };
 }
 
 function loadState() {
@@ -2675,6 +2801,10 @@ function restoreAvatar(avatar) {
 }
 
 async function restoreAccount(localState) {
+ if (!navigator.onLine) {
+  setSaveStatus('Offline · Continuing with device data. Cloud sync will resume when you reconnect.', 'offline');
+  return Boolean(localState && localState.name && localState.pid);
+ }
  const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, { cache: 'no-store' });
  if (!response.ok) throw new Error(`Account lookup failed (${response.status})`);
  const remote = await response.json();
@@ -2683,40 +2813,20 @@ async function restoreAccount(localState) {
  throw new Error('The saved account identity does not match this name and player ID.');
  }
 
- const localResults = sanitizeResults(localState && localState.results);
- const remoteResults = sanitizeResults(remote.results);
- R = Array.from({ length: N }, (_, index) => {
-  const isGateStop = (typeof I !== 'undefined' && I[index]) ? I[index].t === 'gate' || I[index].t === 'pass' : (index === 3 || index === 7 || index === 11 || index === 15 || index === 19 || index === 23);
-  const localResult = localResults[index];
-  const remoteResult = remoteResults[index];
-
-  if (isGateStop) {
-   if ((localResult && localResult.gate) || (remoteResult && remoteResult.gate)) {
-    return { gate: 1 };
+ const merged = mergeCourierProgress(localState, remote);
+ R = merged.results;
+ cur = merged.cur;
+ if (merged.startTime) {
+  try {
+   const startKey = 'streamlined_start_' + courierKey;
+   const localStart = Number(localStorage.getItem(startKey)) || 0;
+   if (!localStart || merged.startTime < localStart) {
+    localStorage.setItem(startKey, String(merged.startTime));
    }
-   return null;
+  } catch (error) {
+   console.warn('Unable to restore the courier start time locally:', error);
   }
-
-  if (!localResult) return remoteResult;
-  if (!remoteResult) return localResult;
-
-  const localCompletedAt = Number(localResult.completedAt) || 0;
-  const remoteCompletedAt = Number(remoteResult.completedAt) || 0;
-  if (remoteResult.pts > localResult.pts ||
-      (remoteResult.pts === localResult.pts && remoteCompletedAt > localCompletedAt)) {
-   return remoteResult;
-  }
-  return localResult;
- });
-
- const localCur = Number(localState && localState.cur);
- const remoteCur = Number(remote.cur);
- cur = Math.max(
-  Number.isFinite(localCur) ? localCur : 0,
-  Number.isFinite(remoteCur) ? remoteCur : 0,
-  R.reduce((furthest, result, index) => result ? Math.max(furthest, index + 1) : furthest, 0)
- );
- cur = Math.max(0, Math.min(N - 1, Math.floor(cur)));
+ }
 
  // Keep a player-selected avatar; otherwise restore the saved cloud avatar.
  if (remote.avatar && !chosenAvatar) restoreAvatar(remote.avatar);
@@ -2727,14 +2837,89 @@ let pendingSync = false;
 let syncInFlight = false;
 let syncQueued = false;
 let queuedSyncPayload = null;
+let localSaveAvailable = true;
+function setSaveStatus(message, state = 'saved') {
+ const status = document.getElementById('save-status');
+ if (!status) return;
+ status.textContent = message;
+ status.dataset.state = state;
+}
+
+async function writeMergedCourierProgress(data, key) {
+ const url = `${FIREBASE_DB_URL}/streamlined_couriers/${key}.json`;
+ let candidate = data;
+ for (let attempt = 0; attempt < 4; attempt++) {
+  const remoteResponse = await fetch(url, {
+   cache: 'no-store',
+   headers: { 'X-Firebase-ETag': 'true' }
+  });
+  if (!remoteResponse.ok) throw new Error(`Sync lookup status ${remoteResponse.status}`);
+  const etag = remoteResponse.headers.get('ETag');
+  if (!etag) throw new Error('Cloud sync did not return a Firebase ETag; progress was kept locally.');
+  const remoteData = await remoteResponse.json();
+  let storedData = null;
+  try {
+   storedData = JSON.parse(localStorage.getItem(STORAGE_PREFIX + key) || 'null');
+  } catch (error) {
+   console.warn('Unable to read the local copy while syncing; merging the queued snapshot with cloud progress:', error);
+  }
+  if (storedData) candidate = mergeCourierProgress(candidate, storedData);
+  const merged = mergeCourierProgress(candidate, remoteData);
+  const body = {
+   name: merged.name || 'Courier',
+   pid: merged.pid || '',
+   score: merged.results.reduce((sum, result) => sum + (result && result.pts || 0), 0),
+   stops: merged.results.filter(result => result && !result.gate).length,
+   cur: merged.cur || 0,
+   avatar: (merged.avatar && merged.avatar.name) ? merged.avatar : (chosenAvatar || null),
+   results: merged.results,
+   startTime: merged.startTime || null,
+   finishTime: merged.finishTime || null,
+   updatedAt: Math.max(Number(merged.updatedAt) || 0, Date.now())
+  };
+  const writeResponse = await fetch(url, {
+   method: 'PUT',
+   headers: { 'Content-Type': 'application/json', 'If-Match': etag },
+   body: JSON.stringify(body)
+  });
+  if (writeResponse.status === 412) continue;
+  if (!writeResponse.ok) throw new Error(`Sync status ${writeResponse.status}`);
+
+  if (courierKey === key) {
+   try {
+    const latestLocal = JSON.parse(localStorage.getItem(STORAGE_PREFIX + key) || 'null');
+    const combined = mergeCourierProgress(merged, latestLocal);
+    combined.updatedAt = Math.max(body.updatedAt, Number(latestLocal && latestLocal.updatedAt) || 0);
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(combined));
+    R = combined.results;
+    cur = combined.cur;
+   } catch (error) {
+    localSaveAvailable = false;
+    console.warn('Cloud progress synced, but the merged local copy could not be updated:', error);
+   }
+  }
+  return;
+ }
+ throw new Error('Cloud progress changed on another device during four sync attempts. The latest local progress remains queued for retry.');
+}
+
 async function syncToFirebase(payload) {
  if (!FIREBASE_DB_URL || !courierKey) return;
+ if (!navigator.onLine) {
+  pendingSync = true;
+  setSaveStatus(localSaveAvailable
+   ? 'Saved on this device · Offline; cloud sync will retry when you reconnect.'
+   : 'Device save failed · Cloud sync will retry when you reconnect.',
+   localSaveAvailable ? 'offline' : 'warning');
+  return;
+ }
  if (syncInFlight) {
  syncQueued = true;
  if (payload) queuedSyncPayload = payload;
  return;
  }
  syncInFlight = true;
+ let lastPayload = payload;
  try {
  let nextPayload = payload;
  do {
@@ -2743,32 +2928,29 @@ async function syncToFirebase(payload) {
  queuedSyncPayload = null;
  nextPayload = null;
  if (!data) break;
- const totalScore = (data.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
- const stopsCleared = (data.results || []).filter(r => r && !r.gate).length;
- const body = {
-  name: data.name || 'Courier',
-  pid: data.pid || '',
-  score: totalScore,
-  stops: stopsCleared,
-  cur: data.cur || 0,
-  avatar: (data.avatar && data.avatar.name) ? data.avatar : (chosenAvatar || null),
-  results: data.results || [],
-  startTime: data.startTime || null,
-  finishTime: data.finishTime || null,
-  updatedAt: data.updatedAt || Date.now()
- };
- const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(body)
- });
- if (!res.ok) throw new Error('Sync status ' + res.status);
+ lastPayload = data;
+ await writeMergedCourierProgress(data, courierKey);
  pendingSync = false;
+ setSaveStatus(localSaveAvailable
+  ? 'Progress saved on this device and synced to the cloud.'
+  : 'Progress synced to the cloud; device storage is unavailable.',
+  localSaveAvailable ? 'saved' : 'warning');
  } while (syncQueued && navigator.onLine);
- if (syncQueued && !navigator.onLine) pendingSync = true;
+ if (syncQueued && !navigator.onLine) {
+  pendingSync = true;
+   setSaveStatus(localSaveAvailable
+    ? 'Saved on this device · Offline; cloud sync will retry when you reconnect.'
+    : 'Device save failed · Cloud sync will retry when you reconnect.',
+    localSaveAvailable ? 'offline' : 'warning');
+ }
  } catch(e) {
  console.warn('Firebase sync queued for retry:', e);
+ if (!queuedSyncPayload && lastPayload) queuedSyncPayload = lastPayload;
  pendingSync = true;
+ setSaveStatus(localSaveAvailable
+  ? 'Saved on this device · Cloud sync will retry automatically.'
+  : 'Device save failed · Cloud sync will retry automatically.',
+  'warning');
  } finally {
  syncInFlight = false;
  if (syncQueued && navigator.onLine && !pendingSync) {
@@ -2781,7 +2963,23 @@ async function syncToFirebase(payload) {
 }
 
 // Automatically retry queued score upload if network reconvenes
-window.addEventListener('online', () => { if (pendingSync) syncToFirebase(); });
+window.addEventListener('online', () => {
+ if (pendingSync) {
+  setSaveStatus('Connection restored · Syncing progress…', 'warning');
+  syncToFirebase();
+ } else {
+  setSaveStatus(localSaveAvailable
+   ? 'Online · Progress is saved on this device.'
+   : 'Online · Device storage is unavailable; keep the page open while syncing.',
+   localSaveAvailable ? 'saved' : 'warning');
+ }
+});
+window.addEventListener('offline', () => {
+ setSaveStatus(localSaveAvailable
+  ? 'Offline · Progress is saved on this device and will sync when you reconnect.'
+  : 'Offline · Device storage is unavailable; keep this page open until you reconnect.',
+  localSaveAvailable ? 'offline' : 'warning');
+});
 setInterval(() => { if (pendingSync && navigator.onLine) syncToFirebase(); }, 5000);
 
 function saveState() {
@@ -2819,10 +3017,21 @@ function saveState() {
  finishTime: finishTime,
  updatedAt: Date.now()
  };
+ let localSaveSucceeded = false;
  try {
  localStorage.setItem(STORAGE_PREFIX + courierKey, JSON.stringify(payload));
+  localSaveSucceeded = true;
  } catch(e) {
-  console.warn('Unable to persist courier progress locally; cloud sync will still be attempted:', e);
+  console.error('Unable to persist courier progress locally; cloud sync will still be attempted:', e);
+ }
+ localSaveAvailable = localSaveSucceeded;
+ if (localSaveSucceeded) {
+  setSaveStatus(navigator.onLine
+   ? 'Progress saved on this device · Syncing to cloud…'
+   : 'Progress saved on this device · Offline; cloud sync will retry when you reconnect.',
+   navigator.onLine ? 'warning' : 'offline');
+ } else {
+  setSaveStatus('Could not save on this device · Check available storage and keep this page open while syncing.', 'warning');
  }
  syncToFirebase(payload);
 }
@@ -2841,16 +3050,14 @@ async function syncControlFromFirebase() {
  if (!FIREBASE_DB_URL) return;
  try {
  const res = await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, { cache: 'no-store' });
+ if (!res.ok) throw new Error(`Host control refresh failed (${res.status})`);
  if (res.ok) {
  const data = await res.json();
  if (data && typeof data === 'object') {
  let changed = false;
- if (data.gates || data.gateGroups) {
- const incomingGates = sanitizeGates(data.gates, data.gateGroups);
- if (JSON.stringify(incomingGates) !== JSON.stringify(O)) {
-  O = incomingGates;
-  changed = true;
- }
+ if ((data.gates || data.gateGroups) && JSON.stringify(sanitizeGates(data.gates, data.gateGroups)) !== JSON.stringify(O)) {
+ O = sanitizeGates(data.gates, data.gateGroups);
+ changed = true;
  }
          if (typeof data.seminarCode === 'string' && data.seminarCode !== seminarCode) {
           seminarCode = data.seminarCode;
@@ -2881,13 +3088,21 @@ async function syncControlFromFirebase() {
   evaluationQr,
   updatedAt: data.updatedAt || Date.now()
  }));
- } catch(e) {}
+ } catch(e) {
+  console.warn('Unable to cache host controls locally:', e);
+ }
  adv();
  if ($('#mapv') && !$('#mapv').hidden) draw();
  }
  }
  }
- } catch(e) {}
+ } catch(e) {
+  if (!navigator.onLine) {
+   setSaveStatus('Offline · Host updates may be delayed. Device-saved progress remains available.', 'offline');
+  } else {
+   console.warn('Unable to refresh host controls:', e);
+  }
+ }
 }
 
 /* =============================================================
@@ -2983,8 +3198,8 @@ const MAP_GATE_LOCKED_ART = {
 
 const GN = {
  1:'Stages 2-3 (Canyon Maze and Broken Delivery)',
- 2:'Stages 4-5 (Detective and Match Release)',
- 3:'Stage 6 and Final Delivery'
+ 2:'Stages 4-5 (Detective and Flip n Match)',
+ 3:'Stages 6-7 (Spot & Fix and Final Delivery)'
 };
 const PILL = { 
  0: ' STAGE 1 - WORD PUZZLE DEPOT', 
@@ -3775,7 +3990,30 @@ function draw() {
  $('#hn').textContent = user || 'Courier';
  $('#ht').textContent = title();
  $('#hs').textContent = ' ' + total;
- $('#hb').style.width = Math.round((cleared / 18) * 100) + '%';
+ $('#hb').style.width = Math.round((cleared / 19) * 100) + '%';
+ const progressBar = document.querySelector('.pbar[role="progressbar"]');
+ if (progressBar) {
+  progressBar.setAttribute('aria-valuenow', String(Math.min(cleared, 19)));
+  progressBar.setAttribute('aria-valuetext', `${Math.min(cleared, 19)} of 19 delivery challenges completed`);
+ }
+ updateProgressGuidance();
+}
+
+function updateProgressGuidance() {
+ const guidance = document.getElementById('progress-guidance');
+ if (!guidance || !I.length) return;
+ if (cur >= N || I[cur].t === 'fin') {
+  guidance.textContent = 'All delivery challenges are complete. Open Certificate & Eval to review your results and completion certificate.';
+  return;
+ }
+ const next = I[cur];
+ if (next.t === 'gate') {
+  guidance.textContent = O[next.g]
+   ? `Stage complete. Gate ${next.g} is open—tap its checkpoint on the map, then choose Next Stage to continue.`
+   : `Stage complete. Waiting for the host to open Gate ${next.g}. Tap the checkpoint to view your certificate and current gate status.`;
+  return;
+ }
+ guidance.textContent = `Next up: ${next.n}. Tap the glowing stop on the map to start. Your progress saves automatically as you play.`;
 }
 
 function focusCur() {
@@ -3790,6 +4028,7 @@ let isAdmin = false;
 let requestedStage = null;
 const STAGE_STARTS = { 2: 4, 4: 12, 6: 20 };
 const STAGE_GATE_GROUP = { 2: 1, 4: 2, 6: 3 };
+const GATE_PREVIOUS_STAGE = { 1: 1, 2: 3, 3: 5 };
 const STAGE_CERTIFICATES = {
  1: { first: 0, last: 2, title: 'Word Puzzle Dispatch' },
  2: { first: 4, last: 6, title: 'Baby Delivery Maze' },
@@ -3804,7 +4043,9 @@ function stageCertificateForStop(index) {
  return Object.entries(STAGE_CERTIFICATES).find(([, stage]) => stage.last === index)?.[0] || null;
 }
 
-function showStageCertificate(stageNumber) {
+let activeStageCertificateDetails = null;
+
+function showStageCertificate(stageNumber, gateNumber = null) {
  const stage = STAGE_CERTIFICATES[stageNumber];
  if (!stage) return;
  audio.stageClear();
@@ -3816,26 +4057,90 @@ function showStageCertificate(stageNumber) {
  const completedAt = records.reduce((latest, record) => Math.max(latest, Number(record.completedAt) || 0), 0);
  const completedOn = new Intl.DateTimeFormat('en-PH', { dateStyle: 'long', timeZone: 'Asia/Manila' })
   .format(completedAt ? new Date(completedAt) : new Date());
+ const gateIndex = gateNumber === null ? -1 : stage.last + 1;
+ const gatePassed = gateIndex >= 0 && R[gateIndex] &&
+  (R[gateIndex].gate === 1 || R[gateIndex].gate === true);
+ const gateAuthorized = gateNumber !== null && (gatePassed || O[gateNumber]);
+ const grade = total >= Math.ceil(maxTotal * 0.85) ? 'A+'
+  : total >= Math.ceil(maxTotal * 0.70) ? 'A'
+   : total >= Math.ceil(maxTotal * 0.60) ? 'B+'
+    : 'B';
+ const gateStatus = gateNumber === null ? '' : gatePassed
+  ? `<p><b>${GL[gateNumber]} cleared.</b></p>`
+  : O[gateNumber]
+   ? `<p><b>${GL[gateNumber]} is open.</b> ${GN[gateNumber]} are authorized.</p>`
+   : `<p><b>${GL[gateNumber]} is awaiting host authorization.</b></p>`;
  const name = String(user || 'Courier').replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
  }[character]));
+ const certificateDetails = {
+  name: user || 'Courier',
+  grade,
+  total,
+  maxTotal,
+  stars,
+  maxStars: records.length * 3,
+  completedOn,
+  stageNumber,
+  stageTitle: stage.title
+ };
+ activeStageCertificateDetails = certificateDetails;
  const nextAction = Number(stageNumber) < 7 ? 'nextStop()' : 'evalCard()';
  modal(`
- <div class="certificate" role="article" aria-labelledby="stage-certificate-title">
+ <div class="certificate stage-certificate" role="article" aria-labelledby="stage-certificate-title">
   <div class="certificate-kicker">Streamlined · Stage Clearance</div>
-  <h1 id="stage-certificate-title">Stage ${stageNumber} Cleared</h1>
+  <div class="certificate-medallion" aria-hidden="true">★</div>
+  <h1 id="stage-certificate-title">STAGE ${stageNumber} CLEARED</h1>
   <p>This certificate is presented to</p>
   <div class="certificate-name">${name}</div>
-  <p><b>${stage.title}</b></p>
-  <div class="certificate-grade">✓ Delivery Authorized</div>
-  <div class="certificate-score">${total.toLocaleString()} / ${maxTotal.toLocaleString()} points · ${stars} / ${records.length * 3} stars</div>
+  <p>for completing <b>${stage.title}</b></p>
+  <div class="certificate-grade">GRADE ${grade}</div>
+  <div class="certificate-score">STAGE SCORE ${total.toLocaleString()} / ${maxTotal.toLocaleString()}</div>
+  <div class="certificate-score">${stars} / ${records.length * 3} STARS</div>
   <div class="certificate-date">Cleared ${completedOn}</div>
+  ${gateStatus}
  </div>
  <div id="certificate-actions">
-  ${bt(Number(stageNumber) < 7 ? 'Continue to Next Stage' : 'View Final Certificate', nextAction)}
-  ${bt('Return to Map', 'leave();X()', 1)}
+  <button class="btn" type="button" onclick="shareCertificateStory(activeStageCertificateDetails)">Share Story Image</button>
+  <button class="sm" type="button" onclick="downloadCertificateStoryFromButton(activeStageCertificateDetails)">Download Story Image</button>
+  <p id="certificate-share-status" class="sub" role="status" aria-live="polite">Save or share this certificate as a portrait image.</p>
+  ${gateNumber === null
+   ? bt(Number(stageNumber) < 7 ? 'Continue to Next Stage' : 'View Final Certificate', nextAction)
+   : `<button class="btn" type="button" ${gateAuthorized ? '' : 'disabled'} onclick="continueFromGateCertificate(${gateNumber})">Next Stage</button>`}
+  ${bt('Close', 'X()', 1)}
  </div>
  `);
+}
+
+function continueFromGateCertificate(gateNumber) {
+ const stage = STAGE_CERTIFICATES[GATE_PREVIOUS_STAGE[gateNumber]];
+ if (!stage) return;
+ const gateIndex = stage.last + 1;
+ const gatePassed = R[gateIndex] && (R[gateIndex].gate === 1 || R[gateIndex].gate === true);
+ if (!gatePassed && !O[gateNumber]) {
+  info('Waiting for Dispatch', `${GL[gateNumber]} must be opened by the host before continuing.`);
+  return;
+ }
+ R[gateIndex] = { gate: 1 };
+ cur = Math.max(cur, gateIndex + 1);
+ saveState();
+ X();
+ launch(stage.last + 2);
+}
+
+function showChallengeTip() {
+ const stop = activeStopIndex === null ? null : I[activeStopIndex];
+ if (!stop) return info('Challenge Tip', 'Start a challenge to see a tip for its controls and objectives.');
+ const tips = {
+  wp: '<b>Word Puzzle:</b> Select or swipe letters to build a word, then press Enter. Use Shuffle if you get stuck. The in-game Hint reveals a board letter and uses one of your three hints; using a hint removes the no-help bonus.',
+  sf: '<b>Spot & Fix:</b> Inspect the full picture, then tap a visible problem area and choose the best correction. Zoom in if you are playing on a small screen.',
+  mz: '<b>Delivery Maze:</b> Use the arrow buttons, arrow keys, WASD, or swipe to move. Reach the nursery while carrying the baby; parcels are optional bonus collectibles.',
+  bd: '<b>Broken Delivery:</b> Read each dispatch problem before choosing a fix. Check the sequence and consequences, not just the wording that sounds familiar.',
+  dt: '<b>Detective Investigation:</b> Review the evidence records, pin useful clues, and compare suspect alibis before confirming. Progressive hints are available; revealing the answer forfeits the no-help bonus.',
+  fm: '<b>Flip n Match:</b> Reveal cards in pairs and remember each location. Take your time; challenge mode is optional.',
+  bn: '<b>Final Delivery:</b> Read the handoff instructions carefully and use the seminar code supplied by the host when requested.'
+ };
+ modal(`<h2>Quick Challenge Tip</h2><div class="game-tip-copy">${tips[stop.k] || 'Read each instruction before starting and use the on-screen controls to complete the delivery.'}<p class="sub" style="text-align:left;margin-top:12px">This quick tip does not affect your score. Some in-game answer hints may reduce the no-help bonus, as noted beside those hints.</p></div>${bt('Got it', 'X()', 1)}`);
 }
 
 function applyRequestedStage() {
@@ -3862,17 +4167,24 @@ function tap(i) {
  }
  if (it.t === 'fin') return evalCard();
  if (it.t === 'gate') {
+ const stageNumber = GATE_PREVIOUS_STAGE[it.g];
+ const stage = STAGE_CERTIFICATES[stageNumber];
+ const stageComplete = stage && Array.from(
+  { length: stage.last - stage.first + 1 },
+  (_, offset) => R[stage.first + offset]
+ ).every(result => result && typeof result.pts === 'number');
+ if (stageComplete) return showStageCertificate(stageNumber, it.g);
  if (done) return modal(`<h2> ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
  if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlock when the seminar host releases this gate from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
  return info(' ' + GL[it.g], 'Clear all previous stops to reach this gate.');
  }
  if (it.t === 'bonus') {
- if (done) return modal(`<h2> Final Delivery</h2>${st(R[i].stars)}<p>Score: <b>${R[i].pts}</b></p>` + bt('Replay Bonus Round', `launch(${i})`) + bt('Close', 'X()', 1));
+ if (done) return modal(`<h2> Final Delivery</h2>${st(R[i].stars)}<p>Personal best: <b>${R[i].pts}</b></p>` + bt('Replay Bonus Round', `launch(${i})`) + bt('Try Timed Replay', `startTimedReplay(${i})`, 1) + bt('Close', 'X()', 1));
  if (i === cur) return modal(`<h2> Final Delivery</h2>${cue}<p>${DESC.bn}</p>` + bt('Open Bonus Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
  return info(' Final Delivery', 'Clear the earlier stops and gates first.');
  }
  if (done) {
- return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Recorded Score: <b>${R[i].pts}</b></p>` + bt('Replay Stop', `launch(${i})`) + bt('Close', 'X()', 1));
+ return modal(`<h2>${it.n}</h2>${st(R[i].stars)}<p>Personal best: <b>${R[i].pts}</b></p>` + bt('Replay Stop', `launch(${i})`) + bt('Try Timed Replay', `startTimedReplay(${i})`, 1) + bt('Close', 'X()', 1));
  }
  if (i === cur) {
  return modal(`<h2>${it.e} ${it.n}</h2>${cue}<p>${DESC[it.k]}</p>` + bt('Start Challenge', `launch(${i})`) + bt('Close', 'X()', 1));
@@ -4092,18 +4404,27 @@ function onStopCompleted(score, max) {
    if (improved) {
     replayMsg = `<p class="sub" style="color:var(--good);font-weight:700">🏆 New Best Score! +${pts - prevPts} pts improvement (was ${prevPts} pts)</p>`;
    } else {
-    replayMsg = `<p class="sub" style="font-weight:700">Your best score remains: <b>${R[i].pts} pts</b> — keep practicing to beat it!</p>`;
+    replayMsg = `<p class="sub" style="font-weight:700">Personal best: <b>${R[i].pts} pts</b>. This run scored ${pts}; the best result is kept.</p>`;
    }
   }
+  const attemptStars = calculateStars(pts, maxPts);
+  const nextStarTarget = attemptStars < 3 ? Math.ceil(maxPts * (attemptStars === 1 ? 0.60 : 0.85)) : null;
+  const scoreGuidance = pts >= maxPts
+   ? 'Perfect score! You reached this stop’s point cap.'
+   : nextStarTarget
+    ? `To earn the next star, aim for ${nextStarTarget} points (${Math.max(0, nextStarTarget - pts)} more). Try careful first attempts and save optional hints.`
+    : 'Three stars earned! Keep improving accuracy or save optional hints to raise your score.';
   modal(`
   <h2>${fresh ? '🎉 Delivered!' : '🔄 Replay Complete!'}</h2>
-  ${st(fresh ? stars : R[i].stars)}
-  <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' pts Earned! 🌟' : 'Replay Score: ' + score + ' pts'}</b></p>
+  ${st(attemptStars)}
+  <p style="font-size:1.2rem;margin:8px 0"><b>${fresh ? '+' + pts + ' pts Earned! 🌟' : 'Replay Score: ' + pts + ' pts'}</b></p>
+  <p class="sub" role="status" aria-live="polite">${scoreGuidance}</p>
   ${replayMsg}
   ${fresh && BEAT[i] ? '<p class="sub" style="color:var(--good);font-weight:700">' + BEAT[i] + '</p>' : ''}
   ${bt('Next ➡', 'nextStop()')}
-  ${bt('Return to Map', 'leave();X()')}
-  ${bt('Review Result', 'X()', 1)}
+  ${bt('Replay Level', `launch(${i})`, 1)}
+  ${bt('Try Timed Replay', `startTimedReplay(${i})`, 1)}
+  ${bt('Return to Map', 'leave();X()', 1)}
   `);
  }
 }
@@ -5667,8 +5988,13 @@ function createCertificateStoryBlob(details) {
  context.font = '900 74px Arial, sans-serif';
  context.fillText('★', 540, 523);
 
- centeredText('CERTIFICATE', 680, '800 34px Arial, sans-serif', '#9a6416');
- centeredText('OF COMPLETION', 746, '900 66px Arial, sans-serif', '#17345a');
+ centeredText(details.stageTitle ? 'STAGE CLEARANCE' : 'CERTIFICATE', 680, '800 34px Arial, sans-serif', '#9a6416');
+ centeredText(
+  details.stageTitle ? `STAGE ${details.stageNumber} CLEARED` : 'OF COMPLETION',
+  746,
+  details.stageTitle ? '900 58px Arial, sans-serif' : '900 66px Arial, sans-serif',
+  '#17345a'
+ );
  centeredText('This certificate is presented to', 850, '400 32px Arial, sans-serif', '#526477');
 
  const name = String(details.name || 'Courier');
@@ -5682,8 +6008,18 @@ function createCertificateStoryBlob(details) {
  }
  centeredText(name, 960, `900 ${nameFontSize}px Arial, sans-serif`, '#17345a', 820);
 
- centeredText('for completing every delivery challenge', 1070, '400 32px Arial, sans-serif', '#526477');
- centeredText('and the final handoff quiz', 1128, '400 32px Arial, sans-serif', '#526477');
+ centeredText(
+  details.stageTitle ? 'for completing this delivery stage' : 'for completing every delivery challenge',
+  1070,
+  '400 32px Arial, sans-serif',
+  '#526477'
+ );
+ centeredText(
+  details.stageTitle || 'and the final handoff quiz',
+  1128,
+  details.stageTitle ? '700 32px Arial, sans-serif' : '400 32px Arial, sans-serif',
+  details.stageTitle ? '#17345a' : '#526477'
+ );
 
  roundedRect(280, 1210, 520, 118, 34);
  context.fillStyle = '#fff0c4';
@@ -5693,9 +6029,14 @@ function createCertificateStoryBlob(details) {
  context.stroke();
  centeredText(`GRADE ${details.grade}`, 1269, '900 52px Arial, sans-serif', '#8a5a12');
 
- centeredText(`FINAL SCORE  ${details.total.toLocaleString()} / ${details.maxTotal.toLocaleString()}`, 1405, '800 30px Arial, sans-serif', '#17345a');
+ centeredText(
+  `${details.stageTitle ? 'STAGE SCORE' : 'FINAL SCORE'}  ${details.total.toLocaleString()} / ${details.maxTotal.toLocaleString()}`,
+  1405,
+  '800 30px Arial, sans-serif',
+  '#17345a'
+ );
  centeredText(`${details.stars} / ${details.maxStars} STARS`, 1470, '800 30px Arial, sans-serif', '#9a6416');
- centeredText(`COMPLETED ${details.completedOn.toUpperCase()}`, 1540, '700 24px Arial, sans-serif', '#526477');
+ centeredText(`${details.stageTitle ? 'CLEARED' : 'COMPLETED'} ${details.completedOn.toUpperCase()}`, 1540, '700 24px Arial, sans-serif', '#526477');
 
  context.strokeStyle = '#e8c879';
  context.lineWidth = 4;
@@ -5718,13 +6059,14 @@ function createCertificateStoryBlob(details) {
  });
 }
 
-function certificateStoryFilename() {
+function certificateStoryFilename(details = {}) {
  const safeName = String(user || 'courier')
   .normalize('NFKD')
   .replace(/[^\w-]+/g, '-')
   .replace(/^-+|-+$/g, '')
   .slice(0, 48) || 'courier';
- return `streamlined-certificate-${safeName}.png`;
+ const certificateType = details.stageTitle ? `stage-${details.stageNumber}-certificate` : 'certificate';
+ return `streamlined-${certificateType}-${safeName}.png`;
 }
 
 async function downloadCertificateStory(details) {
@@ -5732,7 +6074,7 @@ async function downloadCertificateStory(details) {
  const url = URL.createObjectURL(blob);
  const link = document.createElement('a');
  link.href = url;
- link.download = certificateStoryFilename();
+ link.download = certificateStoryFilename(details);
  document.body.appendChild(link);
  link.click();
  link.remove();
@@ -5744,7 +6086,7 @@ async function downloadCertificateStoryFromButton(details) {
  status.textContent = 'Preparing your certificate image…';
  try {
   await downloadCertificateStory(details);
-  status.textContent = 'Story image saved. Upload it to your Facebook or Instagram Story.';
+  status.textContent = 'Certificate image saved. Upload it to your Facebook or Instagram Story.';
  } catch (error) {
   console.error('Certificate story image download failed:', error);
   status.textContent = 'Could not download the image. Please use Print or Save Certificate instead.';
@@ -5756,18 +6098,20 @@ async function shareCertificateStory(details) {
  status.textContent = 'Preparing your certificate image…';
  try {
   const blob = await createCertificateStoryBlob(details);
-  const file = new File([blob], certificateStoryFilename(), { type: 'image/png' });
+  const file = new File([blob], certificateStoryFilename(details), { type: 'image/png' });
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
    await navigator.share({
     files: [file],
-    title: 'My STREAMLINED Certificate',
-    text: 'I completed The Baby’s Journey Home Logistics Master Challenge!'
+    title: details.stageTitle ? `My Stage ${details.stageNumber} Certificate` : 'My STREAMLINED Certificate',
+    text: details.stageTitle
+     ? `I cleared Stage ${details.stageNumber}: ${details.stageTitle}!`
+     : 'I completed The Baby’s Journey Home Logistics Master Challenge!'
    });
    status.textContent = 'Share sheet opened. Choose Facebook or Instagram if available.';
    return;
   }
   await downloadCertificateStory(details);
-  status.textContent = 'Story image saved. Upload it to your Facebook or Instagram Story.';
+  status.textContent = 'Certificate image saved. Upload it to your Facebook or Instagram Story.';
  } catch (error) {
   if (error && error.name === 'AbortError') {
    status.textContent = 'Sharing cancelled.';
@@ -6001,13 +6345,20 @@ function buildAvatarGrid(avatars) {
  if (chosenAvatar) restoreAvatar(chosenAvatar);
 }
 
-fetch('assets/avatars.json?v=' + Date.now())
- .then(r => r.json())
+const avatarsReady = fetch('assets/avatars.json?v=' + Date.now())
+ .then(r => {
+ if (!r.ok) throw new Error(`Avatar list request failed (${r.status})`);
+ return r.json();
+ })
  .then(avatars => {
+ if (!Array.isArray(avatars) || avatars.length === 0) {
+  throw new Error('Avatar list is empty or invalid');
+ }
  window._avatars = avatars;
  buildAvatarGrid(avatars);
  })
- .catch(() => {
+ .catch(error => {
+ console.warn('Unable to load avatar list; using built-in avatars:', error);
  const fallback = [
  { name: 'Pip the Fox', img: 'assets/avatars/pip-fox.svg' },
  { name: 'Orbit the Cat', img: 'assets/avatars/orbit-cat.svg' },
@@ -6022,6 +6373,61 @@ fetch('assets/avatars.json?v=' + Date.now())
  buildAvatarGrid(fallback);
  });
 
+function tutorialStorageKey() {
+ return `streamlined_tutorial_seen_${courierKey}`;
+}
+
+function finishTutorial() {
+ try {
+  localStorage.setItem(tutorialStorageKey(), '1');
+ } catch (error) {
+  console.warn('Unable to remember tutorial completion:', error);
+ }
+ X();
+ focusCur();
+}
+
+function showTutorial(firstRun = false) {
+ modal(`
+  <h2>How to Play</h2>
+  <p class="sub">A quick guide to the delivery journey</p>
+  <ol class="tutorial-list">
+   <li><b>Follow the map.</b> Tap the glowing stop to open your next delivery challenge. The map message tells you what is next.</li>
+   <li><b>Use the challenge controls.</b> Word puzzles use letter selection; mazes use arrows, WASD, or swipes; other challenges explain their controls on screen. Tap 💡 anytime for a quick tip.</li>
+   <li><b>Earn points and stars.</b> Completing a challenge earns points; accuracy earns more. Optional answer hints are available in Word Puzzle and Detective, and can reduce the no-help bonus.</li>
+   <li><b>Checkpoints need the host.</b> After Stages 1, 3, and 5, tap the gate to check whether the next stage pair is open. If it is waiting, ask the host; Next Stage becomes available after authorization.</li>
+   <li><b>Your progress saves automatically.</b> It is saved on this device first, then synced to the cloud when online. Watch the save status beneath your courier profile.</li>
+  </ol>
+  ${firstRun
+   ? bt('Start Delivery Mission', 'finishTutorial()') + bt('Skip Guide', 'finishTutorial()', 1)
+   : bt('Close Guide', 'X()', 1)}
+ `);
+}
+
+function hasSeenTutorial() {
+ try {
+  return localStorage.getItem(tutorialStorageKey()) === '1';
+ } catch (error) {
+  console.warn('Unable to check tutorial status:', error);
+  return false;
+ }
+}
+
+function showWelcome(isReturningCourier) {
+ if (!hasSeenTutorial()) {
+  showTutorial(true);
+  return;
+ }
+ modal(`
+  <h2>${isReturningCourier ? 'Welcome back!' : 'A Baby is Born!'}</h2>
+  <p>${isReturningCourier
+   ? 'Your courier account and saved progress have been restored.'
+   : 'A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.'}</p>
+  ${bt('Start Delivery Mission', 'X();focusCur()')}
+  ${bt('How to Play', 'showTutorial(false)', 1)}
+ `);
+}
+
 $('#go').onclick = async () => {
  audio.init();
  const accountErr = document.getElementById('account-err');
@@ -6035,27 +6441,32 @@ $('#go').onclick = async () => {
  return;
  }
  if (accountErr) accountErr.style.display = 'none';
- audio.playWhistle();
  user = inputName;
  pid = inputPid;
  courierKey = normalizeId(user, pid);
  saveRememberedLogin(inputName, inputPid);
 
- const localState = loadState();
  const loginButton = $('#go');
  loginButton.disabled = true;
+ await avatarsReady;
+ const localState = loadState();
  let isReturningCourier = Boolean(localState && localState.name && localState.pid);
  try {
  isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
  await syncControlFromFirebase();
  } catch (error) {
+ if (!navigator.onLine || error instanceof TypeError || /Account lookup failed \(5\d\d\)/.test(error.message)) {
+ console.warn('Cloud account restore unavailable; continuing with device-saved progress:', error);
+ setSaveStatus('Offline · Continuing with device data. Cloud sync will resume when you reconnect.', 'offline');
+ } else {
  console.warn('Account restore error:', error);
  if (accountErr) {
- accountErr.textContent = 'Could not verify your account. Check your connection and try again.';
- accountErr.style.display = 'block';
+  accountErr.textContent = 'Could not verify your account. Check your connection and try again.';
+  accountErr.style.display = 'block';
  }
  loginButton.disabled = false;
  return;
+ }
  }
 
  if (!chosenAvatar) {
@@ -6072,13 +6483,7 @@ $('#go').onclick = async () => {
  V('#mapv');
  draw();
 
- modal(`
- <h2>${isReturningCourier ? ' Welcome back!' : ' A Baby is Born!'}</h2>
- <p>${isReturningCourier
- ? 'Your courier account and saved progress have been restored.'
- : 'A new baby has just come out of the <b>Baby Making Machine</b> and must reach its family! As Dispatch Courier, guide the bundle across all 4 stages of the journey.'}</p>
- ${bt('Start Delivery Mission ', 'X();focusCur()')}
- `);
+ showWelcome(isReturningCourier);
  loginButton.disabled = false;
 };
 
@@ -6124,8 +6529,6 @@ $('#mute-btn').onclick = () => {
  if (soundEnabled) {
   audio.init();
   audio.letterPick(0);
- } else {
-  audio.stopMusic();
  }
 };
 updateMuteButton();

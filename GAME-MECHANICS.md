@@ -20,11 +20,20 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 
 - Each completed game stop records points and awards 1–3 stars based on its difficulty cap: 3 stars at 85% or higher, 2 at 60% or higher, otherwise 1. The caps are 450 (Easy), 480 (Medium), and 500 (Hard).
 - Game scores share a 250-point completion baseline, a game-specific accuracy bonus (up to 150/180/200 by difficulty), and any applicable 50-point no-help bonus, clamped to the stop's cap. The final quiz awards 500 points. Results show the score and star rating separately.
-- Replaying an already passed stop updates its saved result only when the new score is higher; the best result is retained.
+- Replaying an already passed stop updates its saved result only when the new score is higher; the best result is retained. Result feedback identifies the next star threshold and whether the replay improved the personal best.
+- Completed stops can be replayed normally or with the optional timer shown. The timer is for self-challenge only and does not change scoring; the 19 stops also provide six different challenge types with three escalating levels each.
 - The Next Stop control is available only after the active stop has been completed.
-- Host authorization is grouped into three checkpoints: Gate 1+2 releases Stages 2?3, Gate 3+4 releases Stages 4?5, and Gate 5+6 releases Stage 6 and Final Delivery. Each group has one host control and one stage link.
+- The map identifies the next challenge or explains when a host-controlled checkpoint is waiting. The How to Play guide can be reopened from the map, and a challenge-specific, no-penalty quick tip is available from the sticky game toolbar.
+- Host authorization is grouped into three checkpoints: Gate 1+2 releases Stages 2–3, Gate 3+4 releases Stages 4–5, and Gate 5+6 releases Stage 6 and Final Delivery. Each group has one host control and one stage link.
+- Completing a stage presents its portrait-style clearance certificate, which can be downloaded or shared as a story image. At the end of Stages 1, 3, and 5, tapping the following paired checkpoint gate reopens the certificate, shows checkpoint status, and provides a Next Stage button that is enabled after host authorization.
+- Host stage links for Stages 2, 4, and 6 apply after courier sign-in only when their paired checkpoint is open; the authorized checkpoint is recorded as passed. The paired stage and Final Delivery then proceed without another checkpoint between them.
+- The first sign-in for each courier opens a skippable guide covering map navigation, challenge controls, scoring, answer hints, and checkpoints.
+- Progress is saved locally before cloud synchronization. The map shows whether progress is synced, waiting for connectivity, or needs attention; queued cloud saves retry when the connection returns. Cloud restoration and writes merge the best result for each stop and use Firebase ETags to prevent concurrent devices from overwriting one another. When account lookup is unavailable due to lost connectivity, players can continue from their device-saved progress.
+- Keyboard users can skip directly to game content; map progress is announced to assistive technology, challenge guidance uses live status regions, and primary mobile controls keep touch-friendly target sizes.
+- The leaderboard counts a courier as finished only after all 19 game/bonus stops are complete and all three paired checkpoints have either been passed or are currently released. A host Late Pass advances to the next stage group and records that checkpoint without awarding scores for skipped challenges.
 - The final evaluation totals points from all 19 playable stops (maximum 9,080 points). Grade bands use the course maximum: A+ at 85%+, A at 70%+, B+ at 60%+, otherwise B.
-- The certificate is available only after every game and bonus stop is complete, all host checkpoints are released, and the courier reaches the final evaluation. It shows the courier name, grade, points, stars, and completion date, and can be printed or saved as a PDF.
+- The certificate is available after every game and bonus stop is complete and all host checkpoints have been passed. Previously passed checkpoints remain complete even if a host later closes their gates. The evaluation can be opened from the certificate map stop without depending on the saved cursor position. It shows the courier name, grade, points, stars, and completion date, and can be printed or saved as a PDF.
+- Players can export a 9:16 certificate image for Stories. Supported mobile browsers open the native share sheet for Facebook or Instagram; otherwise, the image can be downloaded and uploaded manually. The shared image includes the courier name, grade, score, stars, and completion date.
 
 ## 1. Word Puzzle
 
@@ -46,9 +55,9 @@ Stops are played in sequence on the delivery map. Completing a stop records its 
 
 ## 2. Baby Delivery Maze
 
-**Goal:** Navigate from the factory start to the nursery exit through a wall maze. Movement is by arrow buttons, keyboard arrows/WASD, or touch swipe.
+**Goal:** Guide the courier carrying the baby from dispatch to the nursery through a wall maze. Optional parcels are bonus collectibles, not the delivery item. Movement is by arrow buttons, keyboard arrows/WASD, or touch swipe.
 
-| Route | Size | Parcels | Move par |
+| Route | Size | Bonus parcels | Move par |
 |---|---:|---:|---:|
 | Canyon Route 1 (Easy) | 9×9 | 3 | 18 |
 | Broken Bridge (Medium) | 11×11 | 3 | 28 |

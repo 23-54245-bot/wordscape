@@ -227,8 +227,8 @@ const BEAT={2:'The baby is ready for the journey.',6:'The delivery survived the 
 const GL={1:'Dispatch Gate',2:'Roadblock',3:'Last-Mile Gate'};
 const SC=[['🏭',0,'machine'],['⚙️',1],['📦',2],['🐺',4,'wolves'],['🚧',5],['🌩️',6],['🚚',7],['🔎',8],['🌫️',9],['🗼',10],['🏡',12,'family'],['🌳',13]];
 /* ---- Your own artwork goes in an assets folder next to this file. Missing files fall back to emoji. ---- */
-const ASSETS={baby:'assets/baby.png',junior:'assets/junior.png',tulip:'assets/tulip.png',wolves:'assets/wolves.png',machine:'assets/machine.png',family:'assets/family.png',zone1:'assets/zone1.jpg',zone2:'assets/zone2.jpg',zone3:'assets/zone3.jpg',zone4:'assets/zone4.jpg'};
-const okA={},FB={baby:'👶',junior:'🐦',tulip:'👧',wolves:'🐺',machine:'🏭',family:'🏡'};
+const ASSETS={baby:'assets/baby.png',junior:'assets/junior.png',wolves:'assets/wolves.png',machine:'assets/machine.png',family:'assets/family.png',zone1:'assets/zone1.jpg',zone2:'assets/zone2.jpg',zone3:'assets/zone3.jpg',zone4:'assets/zone4.jpg'};
+const okA={},FB={baby:'👶',junior:'🐦',tulip:'🐦',wolves:'🐺',machine:'🏭',family:'🏡'};
 function loadAssets(){Object.entries(ASSETS).forEach(([k,u])=>{const im=new Image();im.onload=()=>{okA[k]=u;if(!$('#mapv').hidden)draw()};im.src=u})}
 const pic=(k,s=48)=>okA[k]?`<img src="${okA[k]}" alt="${k}" style="height:${s}px;border-radius:10px">`:`<span style="font-size:${Math.round(s*.8)}px">${FB[k]}</span>`;
 const STORY={0:{w:['machine'],t:'A new baby has just come out of the Baby Making Machine and must be prepared for delivery.'},4:{w:['junior','tulip','wolves'],t:'Junior and Tulip are carrying the baby when wolves, heavy traffic, and a miscommunication get in the way.'},8:{w:['junior','tulip'],t:'The delivery is delayed. Junior and Tulip must find out what is holding them back.'},12:{w:['baby','family'],t:'At last the baby reaches Nate’s family, and the storks’ mission is restored.'}};
@@ -320,4 +320,3 @@ loadAssets();
 </script>
 </body>
 </html>
-
