@@ -1445,9 +1445,11 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
  const trailPoints = [];
  const trailSparkles = [];
  const trailColors = ['#ff8a1f', '#ffd34e', '#168cff', '#35d8ff'];
- let lastPointer = null;
+ let pointerTarget = null;
+ let trailHead = null;
  let trailFrame = 0;
  let sparkleDistance = 0;
+ let lastFrameTime = 0;
 
  const resizeTrailCanvas = () => {
   const scale = Math.min(window.devicePixelRatio || 1, 2);
@@ -1458,7 +1460,47 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 
  const drawCursorTrail = now => {
   trailFrame = 0;
+  const elapsed = lastFrameTime ? Math.min(now - lastFrameTime, 50) : 16;
+  lastFrameTime = now;
   trailContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  if (pointerTarget) {
+   if (!trailHead) trailHead = { ...pointerTarget };
+   const previous = { ...trailHead };
+   const smoothing = 1 - Math.exp(-elapsed / 28);
+   trailHead.x += (pointerTarget.x - trailHead.x) * smoothing;
+   trailHead.y += (pointerTarget.y - trailHead.y) * smoothing;
+   const distance = Math.hypot(trailHead.x - previous.x, trailHead.y - previous.y);
+   if (distance > 0.3) {
+    const steps = Math.max(1, Math.ceil(distance / 3));
+    for (let step = 1; step <= steps; step++) {
+     const progress = step / steps;
+     trailPoints.push({
+      x: previous.x + (trailHead.x - previous.x) * progress,
+      y: previous.y + (trailHead.y - previous.y) * progress,
+      time: now
+     });
+    }
+    if (trailPoints.length > 260) trailPoints.splice(0, trailPoints.length - 260);
+
+    sparkleDistance += distance;
+    while (sparkleDistance >= 20) {
+     trailSparkles.push({
+      x: trailHead.x + (Math.random() - 0.5) * 8,
+      y: trailHead.y + (Math.random() - 0.5) * 8,
+      vx: (Math.random() - 0.5) * 1.4,
+      vy: (Math.random() - 0.5) * 1.4,
+      rotation: Math.random() * Math.PI,
+      size: 2 + Math.random() * 2,
+      color: trailColors[Math.floor(Math.random() * trailColors.length)],
+      time: now
+     });
+     sparkleDistance -= 20;
+    }
+    if (trailSparkles.length > 60) trailSparkles.splice(0, trailSparkles.length - 60);
+   }
+  }
+
   while (trailPoints.length && now - trailPoints[0].time > 850) trailPoints.shift();
 
   if (trailPoints.length > 1) {
@@ -1524,7 +1566,13 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 
   trailContext.globalAlpha = 1;
   trailContext.shadowBlur = 0;
-  if (trailPoints.length > 1 || trailSparkles.length) trailFrame = requestAnimationFrame(drawCursorTrail);
+  const catchingUp = pointerTarget && trailHead &&
+   Math.hypot(pointerTarget.x - trailHead.x, pointerTarget.y - trailHead.y) > 0.5;
+  if (catchingUp || trailPoints.length > 1 || trailSparkles.length) {
+   trailFrame = requestAnimationFrame(drawCursorTrail);
+  } else {
+   lastFrameTime = 0;
+  }
  };
 
  const scheduleTrailFrame = () => {
@@ -1533,38 +1581,17 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 
  resizeTrailCanvas();
  window.addEventListener('resize', resizeTrailCanvas, { passive: true });
- window.addEventListener('blur', () => { lastPointer = null; }, { passive: true });
+ window.addEventListener('blur', () => {
+  pointerTarget = null;
+  trailHead = null;
+  trailPoints.length = 0;
+  trailSparkles.length = 0;
+  scheduleTrailFrame();
+ }, { passive: true });
  document.addEventListener('pointermove', event => {
   if (event.pointerType !== 'mouse') return;
-  const point = { x: event.clientX, y: event.clientY };
-  if (lastPointer) {
-   const distance = Math.hypot(point.x - lastPointer.x, point.y - lastPointer.y);
-   sparkleDistance += distance;
-   if (sparkleDistance >= 20) {
-    const colorIndex = Math.floor(Math.random() * trailColors.length);
-    trailSparkles.push({
-     x: point.x + (Math.random() - 0.5) * 8,
-     y: point.y + (Math.random() - 0.5) * 8,
-     vx: (Math.random() - 0.5) * 1.4,
-     vy: (Math.random() - 0.5) * 1.4,
-     rotation: Math.random() * Math.PI,
-     size: 2 + Math.random() * 2,
-     color: trailColors[colorIndex],
-     time: performance.now()
-    });
-    sparkleDistance %= 20;
-    if (trailSparkles.length > 60) trailSparkles.splice(0, trailSparkles.length - 60);
-   }
-   const steps = Math.max(1, Math.ceil(distance / 5));
-   const time = performance.now();
-   for (let step = 1; step <= steps; step++) {
-    const progress = step / steps;
-    trailPoints.push({ x: lastPointer.x + (point.x - lastPointer.x) * progress, y: lastPointer.y + (point.y - lastPointer.y) * progress, time });
-   }
-   if (trailPoints.length > 260) trailPoints.splice(0, trailPoints.length - 260);
-   scheduleTrailFrame();
-  }
-  lastPointer = point;
+  pointerTarget = { x: event.clientX, y: event.clientY };
+  scheduleTrailFrame();
  }, { passive: true });
 }
 
