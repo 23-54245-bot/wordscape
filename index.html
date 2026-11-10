@@ -3056,8 +3056,10 @@ window.addEventListener('storage', e => {
 });
 
 // Real-time Cloud Sync for Host Gates & Live Seminar Code
+let controlSyncInFlight = false;
 async function syncControlFromFirebase() {
- if (!FIREBASE_DB_URL) return;
+ if (!FIREBASE_DB_URL || controlSyncInFlight) return;
+ controlSyncInFlight = true;
  try {
  const res = await fetch(`${FIREBASE_DB_URL}/streamlined_control.json`, { cache: 'no-store' });
  if (!res.ok) throw new Error(`Host control refresh failed (${res.status})`);
@@ -3112,6 +3114,8 @@ async function syncControlFromFirebase() {
   } else {
    console.warn('Unable to refresh host controls:', e);
   }
+ } finally {
+  controlSyncInFlight = false;
  }
 }
 
@@ -3254,8 +3258,7 @@ const SC = [
 
 const ASSETS = {
  baby: 'assets/baby.png', junior: 'assets/junior.png',
- wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png',
- zone1: 'assets/zone1.jpg', zone2: 'assets/zone2.jpg', zone3: 'assets/zone3.jpg', zone4: 'assets/zone4.jpg'
+ wolves: 'assets/wolves.png', machine: 'assets/machine.png', family: 'assets/family.png'
 };
 const okA = {}, FB = { baby:'👶', junior:'🐦', tulip:'🐦', wolves:'🐺', machine:'🏭', family:'🏡', toady:'🐦' };
 function loadAssets() {
@@ -6579,7 +6582,7 @@ function FmTimer(el) {
  return elapsed;
  };
  return {
- start() { t0 = Date.now(); clearInterval(iv); iv = setInterval(f, 33); f(); },
+ start() { t0 = Date.now(); clearInterval(iv); iv = setInterval(f, 100); f(); },
  stop() { clearInterval(iv); return f(); },
  reset() { clearInterval(iv); if (el) el.textContent = '00:00:00'; }
  };
