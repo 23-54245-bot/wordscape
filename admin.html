@@ -1521,13 +1521,20 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
     const first = pointAt(0, offset);
     trailContext.beginPath();
     trailContext.moveTo(first.x, first.y);
-    for (let i = 1; i < trailPoints.length - 1; i++) {
-     const point = pointAt(i, offset);
-     const next = pointAt(i + 1, offset);
-     trailContext.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
+    for (let i = 0; i < trailPoints.length - 1; i++) {
+     const previous = pointAt(Math.max(0, i - 1), offset);
+     const start = pointAt(i, offset);
+     const end = pointAt(i + 1, offset);
+     const next = pointAt(Math.min(trailPoints.length - 1, i + 2), offset);
+     trailContext.bezierCurveTo(
+      start.x + (end.x - previous.x) / 6,
+      start.y + (end.y - previous.y) / 6,
+      end.x - (next.x - start.x) / 6,
+      end.y - (next.y - start.y) / 6,
+      end.x,
+      end.y
+     );
     }
-    const end = pointAt(trailPoints.length - 1, offset);
-    trailContext.lineTo(end.x, end.y);
     trailContext.globalAlpha = opacity;
     trailContext.strokeStyle = color;
     trailContext.lineWidth = 1.8;
