@@ -2561,7 +2561,7 @@ function res(el, title, score, max, extra) {
  const nextIdx = (activeStopIndex !== null ? activeStopIndex : cur) + 1;
  let nextLabel = 'Next Stop ';
  if (nextIdx < N) {
- if (I[nextIdx].t === 'gate') nextLabel = O[I[nextIdx].g] ? 'Pass Checkpoint Gate ' : 'Proceed to Gate ';
+ if (I[nextIdx].t === 'gate') nextLabel = O[I[nextIdx].g] ? `Pass Dock ${I[nextIdx].g} ` : `Proceed to Dock ${I[nextIdx].g} `;
  else if (I[nextIdx].t === 'bonus') nextLabel = 'Final Delivery Challenge ';
  else if (I[nextIdx].t === 'fin') nextLabel = 'View Certificate ';
  } else {
@@ -3244,9 +3244,9 @@ const BEAT = {
 };
 
 const GL = {
- 1:'Gate 1+2 - Canyon and Roadblock Release',
- 2:'Gate 3+4 - Detective and Match Release',
- 3:'Gate 5+6 - Inspection and Final Release'
+ 1:'Dock 1',
+ 2:'Dock 2',
+ 3:'Dock 3'
 };
 
 const SC = [
@@ -4022,8 +4022,8 @@ function updateProgressGuidance() {
  const next = I[cur];
  if (next.t === 'gate') {
   guidance.textContent = O[next.g]
-   ? `Stage complete. Gate ${next.g} is open—tap its checkpoint on the map, then choose Next Stage to continue.`
-   : `Stage complete. Waiting for the host to open Gate ${next.g}. Tap the checkpoint to view your certificate and current gate status.`;
+   ? `Stage complete. Dock ${next.g} is open—tap it on the map, then choose Next Stage to continue.`
+   : `Stage complete. Waiting for the host to open Dock ${next.g}. Tap it to view your certificate and status.`;
   return;
  }
  guidance.textContent = `Next up: ${next.n}. Tap the glowing stop on the map to start. Your progress saves automatically as you play.`;
@@ -4171,7 +4171,7 @@ function tap(i) {
  const it = I[i], done = it.t === 'gate' ? (!!R[i] && (R[i].gate === 1 || R[i].gate === true)) : (!!R[i] && typeof R[i].pts === 'number'), cue = story(i);
  if (isAdmin) {
  if (it.t === 'gate') {
- return info(` Gate ${it.g} (Admin Preview)`, `Host preview active. Gate status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
+ return info(` Dock ${it.g} (Admin Preview)`, `Host preview active. Dock status: ${O[it.g] ? 'OPEN' : 'LOCKED'}.`);
  }
  if (it.t === 'fin') {
  return evalCard();
@@ -4188,8 +4188,8 @@ function tap(i) {
  ).every(result => result && typeof result.pts === 'number');
  if (stageComplete) return showStageCertificate(stageNumber, it.g);
  if (done) return modal(`<h2> ${GL[it.g]} (Cleared)</h2><p>This checkpoint has been cleared and authorized by dispatch.</p>` + (i + 1 < N ? bt('Proceed to Next Stop ', `launch(${i + 1})`) : '') + bt('Close', 'X()', 1));
- if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlock when the seminar host releases this gate from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
- return info(' ' + GL[it.g], 'Clear all previous stops to reach this gate.');
+ if (i === cur) return modal(`<h2> ${GL[it.g]}</h2><p>You have cleared all prior stops! <b>${GN[it.g]}</b> unlock when the seminar host opens this dock from the Control Tower.</p><p class="sub">Waiting for dispatcher authorization...</p>` + bt('Close', 'X()', 1));
+ return info(' ' + GL[it.g], 'Clear all previous stops to reach this dock.');
  }
  if (it.t === 'bonus') {
  if (done) return modal(`<h2> Final Delivery</h2>${st(R[i].stars)}<p>Personal best: <b>${R[i].pts}</b></p>` + bt('Replay Bonus Round', `launch(${i})`) + bt('Try Timed Replay', `startTimedReplay(${i})`, 1) + bt('Close', 'X()', 1));
@@ -4231,7 +4231,7 @@ function launch(i) {
  const nextIdx = i + 1;
  let nextLabel = 'Next Stop ';
  if (nextIdx < N) {
- if (I[nextIdx].t === 'gate') nextLabel = O[I[nextIdx].g] ? 'Pass Gate ' : 'To Gate ';
+ if (I[nextIdx].t === 'gate') nextLabel = O[I[nextIdx].g] ? `Pass Dock ${I[nextIdx].g} ` : `To Dock ${I[nextIdx].g} `;
  else if (I[nextIdx].t === 'bonus') nextLabel = 'Final Delivery ';
  else if (I[nextIdx].t === 'fin') nextLabel = 'Certificate ';
  } else {
@@ -6408,7 +6408,7 @@ function showTutorial(firstRun = false) {
    <li><b>Follow the map.</b> Tap the glowing stop to open your next delivery challenge. The map message tells you what is next.</li>
    <li><b>Use the challenge controls.</b> Word puzzles use letter selection; mazes use arrows, WASD, or swipes; other challenges explain their controls on screen. Tap 💡 anytime for a quick tip.</li>
    <li><b>Earn points and stars.</b> Completing a challenge earns points; accuracy earns more. Optional answer hints are available in Word Puzzle and Detective, and can reduce the no-help bonus.</li>
-   <li><b>Checkpoints need the host.</b> After Stages 1, 3, and 5, tap the gate to check whether the next stage pair is open. If it is waiting, ask the host; Next Stage becomes available after authorization.</li>
+   <li><b>Docks need the host.</b> After Stages 1, 3, and 5, tap Dock 1, 2, or 3 to check whether the next stage pair is open. If it is waiting, ask the host; Next Stage becomes available after authorization.</li>
    <li><b>Your progress saves automatically.</b> It is saved on this device first, then synced to the cloud when online. Watch the save status beneath your courier profile.</li>
   </ol>
   ${firstRun
