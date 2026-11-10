@@ -2280,13 +2280,13 @@ class SoundEngine {
   clearInterval(this.musicTimer);
   this.musicTimer = null;
  }
+ }
  playWhistle() {
   if (!soundEnabled) return;
   try {
    this.whistle.currentTime = 0;
    this.whistle.play().catch(() => {});
   } catch(e) {}
- }
  }
  playTone(freq, type='sine', duration=0.12, gain=0.2) {
  if (!soundEnabled) return;
