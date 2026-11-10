@@ -1473,12 +1473,10 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
  document.body.appendChild(trailCanvas);
  const trailContext = trailCanvas.getContext('2d');
  const trailPoints = [];
- const trailSparkles = [];
  const trailColors = ['#ff8a1f', '#ffd34e', '#168cff', '#35d8ff'];
  let pointerTarget = null;
  let trailHead = null;
  let trailFrame = 0;
- let sparkleDistance = 0;
  let lastFrameTime = 0;
 
  const resizeTrailCanvas = () => {
@@ -1512,22 +1510,6 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
      });
     }
     if (trailPoints.length > 260) trailPoints.splice(0, trailPoints.length - 260);
-
-    sparkleDistance += distance;
-    while (sparkleDistance >= 20) {
-     trailSparkles.push({
-      x: trailHead.x + (Math.random() - 0.5) * 8,
-      y: trailHead.y + (Math.random() - 0.5) * 8,
-      vx: (Math.random() - 0.5) * 1.4,
-      vy: (Math.random() - 0.5) * 1.4,
-      rotation: Math.random() * Math.PI,
-      size: 2 + Math.random() * 2,
-      color: trailColors[Math.floor(Math.random() * trailColors.length)],
-      time: now
-     });
-     sparkleDistance -= 20;
-    }
-    if (trailSparkles.length > 60) trailSparkles.splice(0, trailSparkles.length - 60);
    }
   }
 
@@ -1535,88 +1517,55 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
 
   if (trailPoints.length > 1) {
    const last = trailPoints[trailPoints.length - 1];
-   const pointAt = (index, offset) => {
-    const point = trailPoints[index];
-    const previous = trailPoints[Math.max(0, index - 1)];
-    const next = trailPoints[Math.min(trailPoints.length - 1, index + 1)];
-    const dx = next.x - previous.x;
-    const dy = next.y - previous.y;
-    const length = Math.hypot(dx, dy) || 1;
-    return { x: point.x - (dy / length) * offset, y: point.y + (dx / length) * offset };
-   };
    const opacity = 0.12 * (1 - (now - last.time) / 850);
-
-   trailColors.forEach((color, colorIndex) => {
-    const offset = (colorIndex - (trailColors.length - 1) / 2) * 2.4;
-    const first = pointAt(0, offset);
+   const first = trailPoints[0];
+   const path = () => {
     trailContext.beginPath();
     trailContext.moveTo(first.x, first.y);
-    for (let i = 0; i < trailPoints.length - 1; i++) {
-     const previous = pointAt(Math.max(0, i - 1), offset);
-     const start = pointAt(i, offset);
-     const end = pointAt(i + 1, offset);
-     const next = pointAt(Math.min(trailPoints.length - 1, i + 2), offset);
-     trailContext.bezierCurveTo(
-      start.x + (end.x - previous.x) / 6,
-      start.y + (end.y - previous.y) / 6,
-      end.x - (next.x - start.x) / 6,
-      end.y - (next.y - start.y) / 6,
-      end.x,
-      end.y
-     );
+    for (let i = 1; i < trailPoints.length - 1; i++) {
+     const point = trailPoints[i];
+     const next = trailPoints[i + 1];
+     trailContext.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
     }
-    trailContext.globalAlpha = opacity;
-    trailContext.strokeStyle = color;
-    trailContext.lineWidth = 1.8;
-    trailContext.lineCap = 'round';
-    trailContext.lineJoin = 'round';
-    trailContext.shadowColor = color;
-    trailContext.shadowBlur = 2;
-    trailContext.stroke();
-   });
+    trailContext.lineTo(last.x, last.y);
+   };
+   const trailGradient = trailContext.createLinearGradient(first.x, first.y, last.x, last.y);
+   trailColors.forEach((color, index) => trailGradient.addColorStop(index / (trailColors.length - 1), color));
+   trailContext.save();
+   trailContext.globalAlpha = opacity;
+   trailContext.lineCap = 'round';
+   trailContext.lineJoin = 'round';
+   trailContext.strokeStyle = trailGradient;
+   trailContext.shadowColor = '#35d8ff';
+   trailContext.shadowBlur = 12;
+   trailContext.lineWidth = 7;
+   path();
+   trailContext.stroke();
+   trailContext.shadowBlur = 0;
+   trailContext.globalAlpha = Math.min(1, opacity * 1.6);
+   trailContext.strokeStyle = trailGradient;
+   trailContext.lineWidth = 2.5;
+   path();
+   trailContext.stroke();
+   trailContext.restore();
 
-   const capRadius = 5;
+   const capRadius = 7;
    const headGlow = trailContext.createRadialGradient(last.x, last.y, 0, last.x, last.y, capRadius);
    headGlow.addColorStop(0, 'rgba(255,255,255,0.9)');
-   headGlow.addColorStop(0.35, trailColors[0]);
+   headGlow.addColorStop(0.35, '#ffd34e');
    headGlow.addColorStop(1, 'rgba(255,138,31,0)');
-   trailContext.globalAlpha = Math.min(1, opacity * 2.5);
+   trailContext.globalAlpha = Math.min(1, opacity * 3);
    trailContext.fillStyle = headGlow;
    trailContext.beginPath();
    trailContext.arc(last.x, last.y, capRadius, 0, Math.PI * 2);
    trailContext.fill();
   }
 
-  for (let i = trailSparkles.length - 1; i >= 0; i--) {
-   const sparkle = trailSparkles[i];
-   const progress = (now - sparkle.time) / 620;
-   if (progress >= 1) {
-    trailSparkles.splice(i, 1);
-    continue;
-   }
-   const size = sparkle.size * (0.65 + Math.sin(progress * Math.PI) * 0.6);
-   trailContext.save();
-   trailContext.translate(sparkle.x + sparkle.vx * progress * 18, sparkle.y + sparkle.vy * progress * 18);
-   trailContext.rotate(sparkle.rotation + progress * 0.7);
-   trailContext.globalAlpha = Math.sin(progress * Math.PI) * 0.62;
-   trailContext.fillStyle = sparkle.color;
-   trailContext.shadowColor = sparkle.color;
-   trailContext.shadowBlur = 5;
-   trailContext.beginPath();
-   trailContext.moveTo(0, -size);
-   trailContext.quadraticCurveTo(size * 0.12, -size * 0.12, size, 0);
-   trailContext.quadraticCurveTo(size * 0.12, size * 0.12, 0, size);
-   trailContext.quadraticCurveTo(-size * 0.12, size * 0.12, -size, 0);
-   trailContext.quadraticCurveTo(-size * 0.12, -size * 0.12, 0, -size);
-   trailContext.fill();
-   trailContext.restore();
-  }
-
   trailContext.globalAlpha = 1;
   trailContext.shadowBlur = 0;
   const catchingUp = pointerTarget && trailHead &&
    Math.hypot(pointerTarget.x - trailHead.x, pointerTarget.y - trailHead.y) > 0.5;
-  if (catchingUp || trailPoints.length > 1 || trailSparkles.length) {
+  if (catchingUp || trailPoints.length > 1) {
    trailFrame = requestAnimationFrame(drawCursorTrail);
   } else {
    lastFrameTime = 0;
@@ -1633,7 +1582,6 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
   pointerTarget = null;
   trailHead = null;
   trailPoints.length = 0;
-  trailSparkles.length = 0;
   scheduleTrailFrame();
  }, { passive: true });
  document.addEventListener('pointermove', event => {
