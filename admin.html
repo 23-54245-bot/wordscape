@@ -1272,17 +1272,35 @@ async function grantLatePass(key) {
   }
 }
 
-$('#wipe-all-btn').onclick = () => {
+$('#wipe-all-btn').onclick = async () => {
   const check = prompt('Type RESET in uppercase to wipe all registered players:');
-  if (check === 'RESET') {
+  if (check !== 'RESET') return;
+
+  const button = $('#wipe-all-btn');
+  button.disabled = true;
+  try {
+    if (FIREBASE_DB_URL) {
+      const token = await getAuthToken();
+      const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json?auth=${encodeURIComponent(token)}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error(`Courier reset failed (${response.status})`);
+    }
+
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k.startsWith(STORAGE_PREFIX)) keysToRemove.push(k);
+      if (k && k.startsWith(STORAGE_PREFIX)) keysToRemove.push(k);
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
+    remoteCouriers = {};
     refreshCouriers();
     alert('All couriers have been reset.');
+  } catch (error) {
+    console.error('Courier reset failed:', error);
+    alert(`Could not reset couriers: ${error.message || 'Check the connection and try again.'}`);
+  } finally {
+    button.disabled = false;
   }
 };
 
