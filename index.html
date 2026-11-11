@@ -2261,7 +2261,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
    trailContext.lineCap = 'round';
    trailContext.lineJoin = 'round';
    trailContext.shadowColor = color;
-   trailContext.shadowBlur = 2;
+   trailContext.shadowBlur = 0;
    trailContext.stroke();
   });
  }
@@ -2280,7 +2280,7 @@ if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-m
   trailContext.globalAlpha = Math.sin(progress * Math.PI) * 0.62;
   trailContext.fillStyle = sparkle.color;
   trailContext.shadowColor = sparkle.color;
-  trailContext.shadowBlur = 5;
+  trailContext.shadowBlur = 0;
   trailContext.beginPath();
   trailContext.moveTo(0, -size);
   trailContext.quadraticCurveTo(size * 0.12, -size * 0.12, size, 0);
