@@ -635,6 +635,8 @@ const AUTH_SESSION_KEY = 'streamlined_host_auth_v1';
 let remoteCouriers = {};
 let authSession = null;
 let courierPollInterval = null;
+let courierPollInFlight = false;
+let courierListRevision = 0;
 
 const STORAGE_PREFIX = 'streamlined_courier_';
 const COURIER_AVATAR_IMAGES = Object.assign(Object.create(null), {
@@ -1187,7 +1189,7 @@ function refreshCouriers() {
         <td style="font-weight:800;color:var(--accent);font-size:1.05rem">⭐ ${totalScore}</td>
         <td>
           <button class="btn btn-sm btn-outline" onclick="grantLatePass('${c.key}')" title="Unlock next stage immediately">Late Pass</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteCourier('${c.key}', '${escapeHtml(c.name)}')" title="Delete record">🗑️</button>
+          <button class="btn btn-sm btn-danger" data-delete-courier="${escapeHtml(c.courierId)}" data-courier-name="${escapeHtml(c.name)}" title="Delete record" aria-label="Delete ${escapeHtml(c.name)}">🗑️</button>
         </td>
       </tr>
     `;
@@ -1202,21 +1204,40 @@ function escapeHtml(str) {
 
 async function deleteCourier(key, name) {
   if (!confirm(`Delete courier "${name}" from the database? This cannot be undone.`)) return;
-  localStorage.removeItem(key);
-  const cId = key.replace(STORAGE_PREFIX, '');
-  if (FIREBASE_DB_URL && cId) {
-    try {
-      const token = await getAuthToken();
-      const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${cId}.json?auth=${encodeURIComponent(token)}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error(`Courier delete failed (${response.status})`);
-      delete remoteCouriers[cId];
-    } catch(e) {
-      console.error('Firebase courier delete error:', e);
-      alert('Could not delete this courier from the database. Check your connection and Firebase database rules.');
-    }
+  const cId = String(key).startsWith(STORAGE_PREFIX)
+    ? String(key).slice(STORAGE_PREFIX.length)
+    : String(key);
+  if (!/^[a-z0-9]+$/.test(cId)) {
+    alert('Could not identify this courier record.');
+    return;
   }
-  refreshCouriers();
+
+  try {
+    if (FIREBASE_DB_URL) {
+      const token = await getAuthToken();
+      const response = await fetch(
+        `${FIREBASE_DB_URL}/streamlined_couriers/${cId}.json?auth=${encodeURIComponent(token)}`,
+        { method: 'DELETE' }
+      );
+      if (!response.ok) throw new Error(`Courier delete failed (${response.status})`);
+    }
+
+    localStorage.removeItem(STORAGE_PREFIX + cId);
+    if (key !== STORAGE_PREFIX + cId) localStorage.removeItem(key);
+    delete remoteCouriers[cId];
+    courierListRevision++;
+    refreshCouriers();
+  } catch(error) {
+    console.error('Firebase courier delete error:', error);
+    alert(`Could not delete this courier: ${error.message || 'Check your connection and Firebase database rules.'}`);
+  }
 }
+
+$('#couriers-tbody').addEventListener('click', event => {
+  const button = event.target.closest('[data-delete-courier]');
+  if (!button) return;
+  deleteCourier(button.dataset.deleteCourier, button.dataset.courierName);
+});
 
 async function grantLatePass(key) {
   const courierId = String(key).startsWith(STORAGE_PREFIX)
@@ -1306,6 +1327,7 @@ $('#wipe-all-btn').onclick = async () => {
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
     remoteCouriers = {};
+    courierListRevision++;
     refreshCouriers();
     alert('All couriers have been reset.');
   } catch (error) {
@@ -1322,19 +1344,25 @@ $('#search-input').oninput = refreshCouriers;
 
 // Real-time polling from Firebase Realtime DB
 async function pollFirebaseCouriers() {
-  if (!FIREBASE_DB_URL || !authSession) return;
+  if (!FIREBASE_DB_URL || !authSession || courierPollInFlight) return;
+  courierPollInFlight = true;
+  const revision = courierListRevision;
   try {
     const token = await getAuthToken();
     const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
-      remoteCouriers = data || {};
-      refreshCouriers();
+      if (revision === courierListRevision) {
+        remoteCouriers = data || {};
+        refreshCouriers();
+      }
     } else {
       throw new Error(`Firebase courier poll failed (${res.status})`);
     }
   } catch(e) {
     console.warn('Firebase poll error:', e);
+  } finally {
+    courierPollInFlight = false;
   }
   await loadControlFromRemote();
 }
