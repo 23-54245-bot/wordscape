@@ -5279,7 +5279,7 @@ $('#mz').addEventListener('touchend', e => {
  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
  Math.abs(dx) > Math.abs(dy) ? mzMove(0, dx > 0 ? 1 : -1) : mzMove(dy > 0 ? 1 : -1, 0);
 });
-$('#mz-a').onclick = mzStart;
+$('#mz-a').onclick = () => mzStart(mzCurLv);
 
 /* =============================================================
  GAME 3: FIX THE BROKEN DELIVERY (3 DISTINCT SCENARIOS)
@@ -6726,7 +6726,7 @@ function fmEnd() {
  onStopCompleted(scoring.score, scoring.max);
 }
 
-$('#fm-a').onclick = fmStart;
+$('#fm-a').onclick = () => fmStart(fmCurLevel);
 
 
 /* =============================================================
