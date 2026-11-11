@@ -637,6 +637,7 @@ let authSession = null;
 let courierPollInterval = null;
 let courierPollInFlight = false;
 let courierListRevision = 0;
+let lastCourierSnapshot = null;
 
 const STORAGE_PREFIX = 'streamlined_courier_';
 const COURIER_AVATAR_IMAGES = Object.assign(Object.create(null), {
@@ -1041,12 +1042,7 @@ function getCourierTimeData(c) {
 
   let clockStr = '—';
   if (latestTime) {
-    clockStr = new Intl.DateTimeFormat('en-PH', {
-      timeZone: 'Asia/Manila',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    }).format(new Date(latestTime));
+    clockStr = COURIER_CLOCK_FORMATTER.format(new Date(latestTime));
   }
 
   return {
@@ -1059,6 +1055,13 @@ function getCourierTimeData(c) {
     clockStr
   };
 }
+
+const COURIER_CLOCK_FORMATTER = new Intl.DateTimeFormat('en-PH', {
+  timeZone: 'Asia/Manila',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true
+});
 
 function isCourierFinished(results, gateControls = gates) {
   if (!Array.isArray(results)) return false;
@@ -1090,15 +1093,15 @@ function courierAvatarImage(avatar) {
   return COURIER_AVATAR_IMAGES[name] || '';
 }
 
-function sortCouriers(a, b) {
-  const scoreA = calculateScore(a);
-  const scoreB = calculateScore(b);
-  if (scoreB !== scoreA) {
-    return scoreB - scoreA; // 1st: Highest stars collected ranks first
+function sortCouriers(a, b, metrics) {
+  const metricA = metrics.get(a);
+  const metricB = metrics.get(b);
+  if (metricB.score !== metricA.score) {
+    return metricB.score - metricA.score; // 1st: Highest stars collected ranks first
   }
 
-  const tA = getCourierTimeData(a);
-  const tB = getCourierTimeData(b);
+  const tA = metricA.time;
+  const tB = metricB.time;
   if (tA.isFinished !== tB.isFinished) {
     return tA.isFinished ? -1 : 1;
   }
@@ -1110,25 +1113,34 @@ function sortCouriers(a, b) {
     return tA.latestTime - tB.latestTime; // Earlier finish timestamp ranks higher
   }
 
-  const stopsA = (a.results || []).filter(r => r && !r.gate).length;
-  const stopsB = (b.results || []).filter(r => r && !r.gate).length;
-  return stopsB - stopsA;
+  return metricB.stops - metricA.stops;
 }
 
 function refreshCouriers() {
   const couriers = getAllCouriers();
   const search = $('#search-input').value.toLowerCase().trim();
+  const metrics = new Map(couriers.map(c => {
+    const results = c.results || [];
+    const stops = results.filter(r => r && !r.gate).length;
+    return [c, {
+      score: calculateScore(c),
+      time: getCourierTimeData(c),
+      stops,
+      cleared: stops
+    }];
+  }));
 
   // Stats
   $('#stat-total').textContent = couriers.length;
   let s1 = 0, s2 = 0, s3 = 0, fin = 0;
 
   couriers.forEach(c => {
-    const cleared = (c.results || []).filter(r => r && !r.gate).length;
+    const metric = metrics.get(c);
+    const cleared = metric.cleared;
     if (cleared >= 3) s1++;
     if (cleared >= 6) s2++;
     if (cleared >= 9) s3++;
-    if (isCourierFinished(c.results)) fin++;
+    if (metric.time.isFinished) fin++;
   });
   $('#stat-s1').textContent = s1;
   $('#stat-s2').textContent = s2;
@@ -1138,7 +1150,7 @@ function refreshCouriers() {
   // Filter & sort
   const filtered = couriers.filter(c => 
     c.name.toLowerCase().includes(search) || (c.pid || '').toLowerCase().includes(search)
-  ).sort(sortCouriers);
+  ).sort((a, b) => sortCouriers(a, b, metrics));
 
   const tbody = $('#couriers-tbody');
   if (filtered.length === 0) {
@@ -1147,7 +1159,8 @@ function refreshCouriers() {
   }
 
   tbody.innerHTML = filtered.map((c, idx) => {
-    const totalScore = calculateScore(c);
+    const metric = metrics.get(c);
+    const totalScore = metric.score;
     const stopIdx = c.cur !== undefined ? c.cur : (c.stops || 0);
     const avatarImage = courierAvatarImage(c.avatar);
     const res = c.results || [];
@@ -1166,7 +1179,7 @@ function refreshCouriers() {
     // Bonus: stop 24
     let rBon = (res[24]?.pts||0);
 
-    const t = getCourierTimeData(c);
+    const t = metric.time;
     const timeDisplay = t.elapsedStr !== '—' ? `⏱️ ${t.elapsedStr}` : (t.clockStr !== '—' ? `🕒 ${t.clockStr}` : '—');
 
     return `
@@ -1226,6 +1239,7 @@ async function deleteCourier(key, name) {
     if (key !== STORAGE_PREFIX + cId) localStorage.removeItem(key);
     delete remoteCouriers[cId];
     courierListRevision++;
+    lastCourierSnapshot = null;
     refreshCouriers();
   } catch(error) {
     console.error('Firebase courier delete error:', error);
@@ -1328,6 +1342,7 @@ $('#wipe-all-btn').onclick = async () => {
     keysToRemove.forEach(k => localStorage.removeItem(k));
     remoteCouriers = {};
     courierListRevision++;
+    lastCourierSnapshot = null;
     refreshCouriers();
     alert('All couriers have been reset.');
   } catch (error) {
@@ -1352,8 +1367,10 @@ async function pollFirebaseCouriers() {
     const res = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
-      if (revision === courierListRevision) {
+      const snapshot = JSON.stringify(data || {});
+      if (revision === courierListRevision && snapshot !== lastCourierSnapshot) {
         remoteCouriers = data || {};
+        lastCourierSnapshot = snapshot;
         refreshCouriers();
       }
     } else {
@@ -1388,13 +1405,14 @@ function showAdmin() {
   refreshCouriers();
   if (courierPollInterval === null) {
     pollFirebaseCouriers();
-    courierPollInterval = setInterval(pollFirebaseCouriers, 3000);
+    courierPollInterval = setInterval(pollFirebaseCouriers, 10000);
   }
 }
 
 function showLogin(message) {
   clearAuthSession();
   remoteCouriers = {};
+  lastCourierSnapshot = null;
   if (courierPollInterval !== null) {
     clearInterval(courierPollInterval);
     courierPollInterval = null;
