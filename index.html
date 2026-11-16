@@ -2195,6 +2195,7 @@ select option {
 </div>
 </div>
 
+<script src="assets/player-auth.js"></script>
 <script>
 /* =============================================================
  SOUND ENGINE & MOBILE HAPTIC FEEDBACK
@@ -2781,6 +2782,8 @@ function loadState() {
  FIREBASE REAL-TIME DATABASE SYNC
  ============================================================= */
 const FIREBASE_DB_URL = 'https://wordscape-streamline-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_API_KEY = 'AIzaSyDASXCfa11-3WtQEy4c_M8RzuFw2LJBRGM';
+let playerAuthSession = null;
 
 function restoreAvatar(avatar) {
  if (!avatar) return;
@@ -2810,12 +2813,31 @@ function restoreAvatar(avatar) {
  });
 }
 
+async function authenticatePlayer() {
+ const result = await PlayerAuth.authenticateCourier(courierKey, FIREBASE_API_KEY);
+ playerAuthSession = result.session;
+}
+
+async function getPlayerAuthToken() {
+ if (!playerAuthSession) await authenticatePlayer(user, pid);
+ if (playerAuthSession.expiresAt > Date.now()) return playerAuthSession.idToken;
+
+ try {
+  playerAuthSession = await PlayerAuth.refreshSession(playerAuthSession, FIREBASE_API_KEY);
+ } catch (error) {
+  playerAuthSession = null;
+  throw error;
+ }
+ return playerAuthSession.idToken;
+}
+
 async function restoreAccount(localState) {
  if (!navigator.onLine) {
   setSaveStatus('Offline · Continuing with device data. Cloud sync will resume when you reconnect.', 'offline');
   return Boolean(localState && localState.name && localState.pid);
  }
- const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json`, { cache: 'no-store' });
+ const token = await getPlayerAuthToken();
+ const response = await fetch(`${FIREBASE_DB_URL}/streamlined_couriers/${courierKey}.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' });
  if (!response.ok) throw new Error(`Account lookup failed (${response.status})`);
  const remote = await response.json();
  if (!remote) return false;
@@ -2848,6 +2870,7 @@ let syncInFlight = false;
 let syncQueued = false;
 let queuedSyncPayload = null;
 let localSaveAvailable = true;
+let playerCloudAccessDenied = false;
 function setSaveStatus(message, state = 'saved') {
  const status = document.getElementById('save-status');
  if (!status) return;
@@ -2856,9 +2879,10 @@ function setSaveStatus(message, state = 'saved') {
 }
 
 async function writeMergedCourierProgress(data, key) {
- const url = `${FIREBASE_DB_URL}/streamlined_couriers/${key}.json`;
  let candidate = data;
  for (let attempt = 0; attempt < 4; attempt++) {
+  const token = await getPlayerAuthToken();
+  const url = `${FIREBASE_DB_URL}/streamlined_couriers/${key}.json?auth=${encodeURIComponent(token)}`;
   const remoteResponse = await fetch(url, {
    cache: 'no-store',
    headers: { 'X-Firebase-ETag': 'true' }
@@ -2915,6 +2939,10 @@ async function writeMergedCourierProgress(data, key) {
 
 async function syncToFirebase(payload) {
  if (!FIREBASE_DB_URL || !courierKey) return;
+ if (playerCloudAccessDenied) {
+  setSaveStatus('Saved on this device · Host settings restrict cloud progress sync.', 'warning');
+  return;
+ }
  if (!navigator.onLine) {
   pendingSync = true;
   setSaveStatus(localSaveAvailable
@@ -6278,6 +6306,8 @@ function signOut() {
  user = '';
  pid = '';
  courierKey = '';
+ playerAuthSession = null;
+ playerCloudAccessDenied = false;
  cur = 0;
  R = [];
  chosenAvatar = null;
@@ -6457,30 +6487,49 @@ $('#go').onclick = async () => {
  user = inputName;
  pid = inputPid;
  courierKey = normalizeId(user, pid);
+ if (courierKey === HOST_ADMIN_COURIER_KEY || courierKey === 'guest_courier') {
+  if (accountErr) {
+   accountErr.textContent = 'Enter a valid courier name and player ID to open your account.';
+   accountErr.style.display = 'block';
+  }
+  return;
+ }
+ playerAuthSession = null;
+ playerCloudAccessDenied = false;
  saveRememberedLogin(inputName, inputPid);
 
  const loginButton = $('#go');
  loginButton.disabled = true;
  await avatarsReady;
  const localState = loadState();
- let isReturningCourier = Boolean(localState && localState.name && localState.pid);
+ const hasLocalAccount = Boolean(localState && localState.name && localState.pid);
+ let isReturningCourier = hasLocalAccount;
  try {
- isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
+ if (navigator.onLine) {
+  await authenticatePlayer();
+  const cloudAccountRestored = await restoreAccount(localState);
+  isReturningCourier = hasLocalAccount || cloudAccountRestored;
+ } else {
+  isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
+ }
  await syncControlFromFirebase();
  } catch (error) {
  const accountLookupDenied = /Account lookup failed \((401|403)\)/.test(error.message);
- if (!navigator.onLine || error instanceof TypeError || /Account lookup failed \((401|403|5\d\d)\)/.test(error.message)) {
+ if (accountLookupDenied) {
+ console.warn('Cloud account restore was denied; local progress may be incomplete:', error);
+ playerCloudAccessDenied = true;
+ setSaveStatus('Cloud account access is restricted · Progress is device-only; existing cloud data is unchanged.', 'warning');
+ await syncControlFromFirebase();
+ } else if (!navigator.onLine || error instanceof TypeError || /Account lookup failed \(5\d\d\)/.test(error.message)) {
  console.warn('Cloud account restore unavailable; continuing with device-saved progress:', error);
  setSaveStatus(
-  accountLookupDenied
-   ? 'Cloud account lookup was denied. Continuing in device-only mode; cloud sync will retry automatically.'
-   : 'Offline · Continuing with device data. Cloud sync will resume when you reconnect.',
-  accountLookupDenied ? 'warning' : 'offline'
+  'Offline · Continuing with device data. Cloud sync will resume when you reconnect.',
+  'offline'
  );
  } else {
  console.warn('Account restore error:', error);
  if (accountErr) {
-  accountErr.textContent = 'Could not verify your account. Check your connection and try again.';
+ accountErr.textContent = error.message || 'Could not verify your account. Check your connection and try again.';
   accountErr.style.display = 'block';
  }
  loginButton.disabled = false;
@@ -6792,8 +6841,8 @@ function sortCouriers(a, b) {
  return scoreB - scoreA; // 1st Criterion: Highest stars collected ranks first!
  }
 
- const tA = getCourierTimeData(a);
- const tB = getCourierTimeData(b);
+ const tA = a.timeData || getCourierTimeData(a);
+ const tB = b.timeData || getCourierTimeData(b);
  if (tA.isFinished !== tB.isFinished) {
  return tA.isFinished ? -1 : 1; // Finished couriers rank above unfinished
  }
@@ -6805,8 +6854,8 @@ function sortCouriers(a, b) {
  return tA.latestTime - tB.latestTime; // Earlier finish timestamp ranks higher
  }
 
- const stopsA = (a.results || []).filter(r => r && !r.gate).length;
- const stopsB = (b.results || []).filter(r => r && !r.gate).length;
+ const stopsA = Number.isFinite(a.stops) ? a.stops : (a.results || []).filter(r => r && !r.gate).length;
+ const stopsB = Number.isFinite(b.stops) ? b.stops : (b.results || []).filter(r => r && !r.gate).length;
  return stopsB - stopsA;
 }
 
@@ -6820,16 +6869,17 @@ async function getLeaderboardEntries() {
  try {
  const item = JSON.parse(localStorage.getItem(k));
  if (item && item.name && normalizeId(item.name, item.pid || '') !== HOST_ADMIN_COURIER_KEY) {
+ const id = normalizeId(item.name, item.pid || '');
  const score = (item.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
  const stops = (item.results || []).filter(r => r && !r.gate).length;
- map.set(item.name.toLowerCase().trim(), {
+ map.set(id, {
  ...item,
  name: item.name,
  pid: item.pid || '',
  score: score,
  stops: stops,
  timeData: getCourierTimeData(item),
- isCurrent: courierKey === normalizeId(item.name, item.pid || '')
+ isCurrent: courierKey === id
  });
  }
  } catch(e) {}
@@ -6837,7 +6887,7 @@ async function getLeaderboardEntries() {
  }
 
  // Current session courier
- if (user && !isAdmin && courierKey !== HOST_ADMIN_COURIER_KEY && !map.has(user.toLowerCase().trim())) {
+ if (user && !isAdmin && courierKey !== HOST_ADMIN_COURIER_KEY && !map.has(courierKey)) {
  const myScore = (R || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
  const myStops = (R || []).filter(r => r && !r.gate).length;
  const myObj = {
@@ -6851,46 +6901,57 @@ async function getLeaderboardEntries() {
  isCurrent: true
  };
  myObj.timeData = getCourierTimeData(myObj);
- map.set(user.toLowerCase().trim(), myObj);
+ map.set(courierKey, myObj);
  }
 
  // 2. Fetch from Firebase
+ let source = 'cloud';
  if (FIREBASE_DB_URL) {
  try {
- const res = await fetch(FIREBASE_DB_URL + '/streamlined_couriers.json', { cache: 'no-store' });
- if (res.ok) {
+ const res = await fetch(FIREBASE_DB_URL + '/streamlined_public_leaderboard.json', { cache: 'no-store' });
+ if (!res.ok) throw new Error(`Cloud leaderboard request failed (${res.status})`);
  const data = await res.json();
- if (data && typeof data === 'object') {
- Object.values(data).forEach(entry => {
- if (entry && entry.name && normalizeId(entry.name, entry.pid || '') !== HOST_ADMIN_COURIER_KEY) {
- const k = entry.name.toLowerCase().trim();
- const existing = map.get(k);
- const score = (typeof entry.score === 'number' && entry.score > 0)
- ? entry.score
- : (entry.results || []).reduce((sum, r) => sum + (r && r.pts || 0), 0);
- const stops = (typeof entry.stops === 'number' && entry.stops > 0)
- ? entry.stops
- : (entry.results || []).filter(r => r && !r.gate).length;
-
- if (!existing || score > (existing.score || 0)) {
- map.set(k, {
- ...entry,
+ if (!Array.isArray(data)) throw new Error('Public leaderboard data is invalid.');
+ data.forEach((entry, index) => {
+ if (!entry || typeof entry.name !== 'string') return;
+ const score = Number(entry.score);
+ const stops = Number(entry.stops);
+ map.set(`public-${index}`, {
  name: entry.name,
- pid: entry.pid || '',
- score: score,
- stops: stops,
- timeData: getCourierTimeData(entry),
- isCurrent: (existing && existing.isCurrent) || (user && user.toLowerCase().trim() === k)
+ score: Number.isFinite(score) ? score : 0,
+ stops: Number.isFinite(stops) ? stops : 0,
+ timeData: entry.timeData && typeof entry.timeData === 'object'
+  ? {
+   elapsedStr: String(entry.timeData.elapsedStr || '-'),
+   clockStr: String(entry.timeData.clockStr || '-'),
+   isFinished: Boolean(entry.timeData.isFinished),
+   elapsedMs: Number(entry.timeData.elapsedMs) || 0,
+   latestTime: Number(entry.timeData.latestTime) || 0
+  }
+  : null,
+ isCurrent: false
  });
- }
- }
  });
+ } catch(e) {
+ console.warn('Firebase leaderboard unavailable; showing device-only rankings:', e);
+ source = 'local';
  }
- }
- } catch(e) {}
  }
 
- return Array.from(map.values()).sort(sortCouriers);
+ return {
+ entries: Array.from(map.values()).sort(sortCouriers),
+ source
+ };
+}
+
+function escapeLeaderboardText(value) {
+ return String(value).replace(/[&<>"']/g, character => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+ })[character]);
 }
 
 async function refreshLeaderboardUI() {
@@ -6900,22 +6961,30 @@ async function refreshLeaderboardUI() {
  entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Loading live rankings...</div>';
 
  try {
- const list = await getLeaderboardEntries();
- statusEl.textContent = ' Connected to Seminar Leaderboard';
+ const leaderboard = await getLeaderboardEntries();
+ const list = leaderboard.entries;
+ statusEl.textContent = leaderboard.source === 'cloud'
+  ? ' Connected to Seminar Leaderboard'
+  : ' Cloud leaderboard unavailable · Showing device-only rankings';
 
  if (list.length === 0) {
- entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first!</div>';
+ entriesEl.innerHTML = leaderboard.source === 'cloud'
+  ? '<div style="padding:24px;text-align:center;color:var(--mut)">No couriers ranked yet. Be the first!</div>'
+  : '<div style="padding:24px;text-align:center;color:var(--mut)">No device-saved courier rankings are available.</div>';
  return;
  }
 
+ let previousScore = null;
+ let rank = 0;
  entriesEl.innerHTML = list.map((entry, idx) => {
- const rank = idx + 1;
+ if (idx === 0 || entry.score !== previousScore) rank = idx + 1;
+ previousScore = entry.score;
  let badge = `#${rank}`;
- if (rank === 1) badge = '';
- else if (rank === 2) badge = '';
- else if (rank === 3) badge = '';
+ if (rank === 1) badge = '🥇';
+ else if (rank === 2) badge = '🥈';
+ else if (rank === 3) badge = '🥉';
 
- const isMe = entry.isCurrent || (user && user.toLowerCase().trim() === entry.name.toLowerCase().trim());
+ const isMe = entry.isCurrent;
  const meClass = isMe ? ' lb-item me' : ' lb-item';
  const timeStr = entry.timeData ? (entry.timeData.elapsedStr !== '-' ? entry.timeData.elapsedStr : entry.timeData.clockStr) : '-';
 
@@ -6923,7 +6992,7 @@ async function refreshLeaderboardUI() {
  <div class="${meClass}">
  <span class="lb-rank">${badge}</span>
  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
- <span class="lb-name" title="${entry.name}">${entry.name} ${isMe ? ' (You)' : ''}</span>
+ <span class="lb-name" title="${escapeLeaderboardText(entry.name)}">${escapeLeaderboardText(entry.name)} ${isMe ? ' (You)' : ''}</span>
  <div style="font-size:0.75rem;color:var(--mut);display:flex;gap:8px">
  <span>${entry.stops}/18 Cleared</span>
  <span> ${timeStr}</span>
@@ -6934,7 +7003,8 @@ async function refreshLeaderboardUI() {
  `;
  }).join('');
  } catch(e) {
- statusEl.textContent = ' Offline / Local Rankings';
+ statusEl.textContent = ' Leaderboard unavailable';
+ entriesEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--mut)">Could not load leaderboard rankings. Please check your connection and try again.</div>';
  }
 }
 
