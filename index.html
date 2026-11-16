@@ -6468,9 +6468,15 @@ $('#go').onclick = async () => {
  isReturningCourier = (await restoreAccount(localState)) || isReturningCourier;
  await syncControlFromFirebase();
  } catch (error) {
- if (!navigator.onLine || error instanceof TypeError || /Account lookup failed \(5\d\d\)/.test(error.message)) {
+ const accountLookupDenied = /Account lookup failed \((401|403)\)/.test(error.message);
+ if (!navigator.onLine || error instanceof TypeError || /Account lookup failed \((401|403|5\d\d)\)/.test(error.message)) {
  console.warn('Cloud account restore unavailable; continuing with device-saved progress:', error);
- setSaveStatus('Offline · Continuing with device data. Cloud sync will resume when you reconnect.', 'offline');
+ setSaveStatus(
+  accountLookupDenied
+   ? 'Cloud account lookup was denied. Continuing in device-only mode; cloud sync will retry automatically.'
+   : 'Offline · Continuing with device data. Cloud sync will resume when you reconnect.',
+  accountLookupDenied ? 'warning' : 'offline'
+ );
  } else {
  console.warn('Account restore error:', error);
  if (accountErr) {
